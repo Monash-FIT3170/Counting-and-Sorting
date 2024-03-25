@@ -13,3 +13,4 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 - Andrew Rudnytsky - arud0001@student.monash.edu
 - Linuka Ekanayake - leka0001@student.monash.edu
 - Garv Vohra - gvoh0002@student.monash.edu
+- Jesse Gordon - jgor0013@student.monash.edu
