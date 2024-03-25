@@ -8,6 +8,7 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 - Tye Bram Leigh Samuels - tsam0016@student.monash.edu
 - Navya Balraj - nbal0016@student.monash.edu
 - Behnam Mozafari - bmoz0002@student.monash.edu
+- Reuben Gue - rgue0001@student.monash.edu
 - Dylan Redman - dred0006@student.monash.edu
 - Andrew Rudnytsky - arud0001@student.monash.edu
 - Linuka Ekanayake - leka0001@student.monash.edu
