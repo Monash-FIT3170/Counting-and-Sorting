@@ -3,5 +3,9 @@
 The "Counting and Sorting" project endeavours to create an inventory management and stock replenishment system with a user friendly interface capable of real-time updates, enabling accurate reflections of stock availability and consumption patterns to minimise time and resources required for stock maintenance. 
 
 
-## Contributors
-- [Jesse](https://github.com/jesseGordon) - jgor0013@student.monash.edu
+## Team Members
+Jun Hao Ng - jngg0122@student.monash.edu
+Tye Bram Leigh Samuels - tsam0016@student.monash.edu
+Navya Balraj - nbal0016@student.monash.edu
+Behnam Mozafari - bmoz0002@student.monash.edu
+- [Jesse Gordon](https://github.com/jesseGordon) -  jgor0013@student.monash.edu
