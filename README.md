@@ -16,4 +16,6 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 - Garv Vohra - gvoh0002@student.monash.edu
 - Jesse Gordon - jgor0013@student.monash.edu
 - Ismail - Ihas0007@student.monash.edu
+- Abdus Sami - asam0025@student.monash.edu
+
 
