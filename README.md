@@ -9,3 +9,4 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 - Navya Balraj - nbal0016@student.monash.edu
 - Behnam Mozafari - bmoz0002@student.monash.edu
 - Andrew Rudnytsky - arud0001@student.monash.edu
+- Garv Vohra - gvoh0002@student.monash.edu
