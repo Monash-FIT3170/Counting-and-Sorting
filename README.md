@@ -5,3 +5,4 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 
 ## Contributors
 - [Jesse](https://github.com/jesseGordon) - jgor0013@student.monash.edu
+- Ismail - Ihas0007@student.monash.edu
