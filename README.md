@@ -4,8 +4,10 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 
 
 ## Team Members
-Jun Hao Ng - jngg0122@student.monash.edu
-Tye Bram Leigh Samuels - tsam0016@student.monash.edu
-Navya Balraj - nbal0016@student.monash.edu
-Behnam Mozafari - bmoz0002@student.monash.edu
-- [Jesse Gordon](https://github.com/jesseGordon) -  jgor0013@student.monash.edu
+- Jun Hao Ng - jngg0122@student.monash.edu
+- Tye Bram Leigh Samuels - tsam0016@student.monash.edu
+- Navya Balraj - nbal0016@student.monash.edu
+- Behnam Mozafari - bmoz0002@student.monash.edu
+- Dylan Redman - 32466218 - dred0006@student.monash.edu
+- Reuben Gue - rgue0001@student.monash.edu
+- Andrew Rudnytsky - arud0001@student.monash.edu
