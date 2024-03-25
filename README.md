@@ -18,4 +18,5 @@ The "Counting and Sorting" project endeavours to create an inventory management 
 - Ismail - Ihas0007@student.monash.edu
 - Abdus Sami - asam0025@student.monash.edu
 - Erin Koay - ekoa0001@student.monash.edu
+- Yokabit Fesshaye - yfes0001@student.monash.edu
 
