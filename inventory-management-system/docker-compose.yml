@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: inventorydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+  backend:
+    build: ./backend
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/inventorydb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+volumes:
+  db-data:
