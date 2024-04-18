@@ -40,8 +40,6 @@ CREATE TABLE IF NOT EXISTS InventoryItems (
     StoreID INT NOT NULL,
     ProductID INT NOT NULL,
     Quantity INT NOT NULL,
-    ManufactureDate DATE,
-    ExpirationDate DATE,
     Capacity INT NOT NULL,
     FOREIGN KEY (StoreID) REFERENCES Stores(StoreID),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
@@ -59,6 +57,7 @@ CREATE TABLE IF NOT EXISTS StockEntries (
 -- Creating ShoppingList Table
 CREATE TABLE IF NOT EXISTS ShoppingLists (
     ListID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255),
     ManagerID INT NOT NULL,
     StoreID INT NOT NULL,
     DateCreated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
