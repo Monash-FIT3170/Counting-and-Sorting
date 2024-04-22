@@ -1,7 +1,7 @@
 package model;
 
 import javax.persistence.*;
-import java.time;
+import java.util.Date;
 
 *//**
     * Represents a stock entry in the system.
@@ -14,12 +14,12 @@ public class StockEntry {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer entryID;
 
-  @ManyToOne
+  @ManyToOne // Not sure if this is right
   @JoinColumn(name = "InventoryItemID", referencedColumnName = "InventoryItemID")
   private InventoryItem inventoryItem;
 
   private Integer quantityChange;
-  private LocalDateTime dateModified;
+  private Date dateModified;
 
   // Default constructor
   public StockEntry() {}

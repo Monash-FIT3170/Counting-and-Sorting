@@ -22,5 +22,6 @@ public class InventoryItem {
     private Date expirationDate;
     private int capacity;
 
+    
     // Constructors, getters, and setters
 }
