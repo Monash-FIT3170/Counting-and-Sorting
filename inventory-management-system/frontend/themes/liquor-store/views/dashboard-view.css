@@ -1,0 +1,47 @@
+/* Borders */
+
+.dashboard-view vaadin-board-row > * {
+  border-bottom: 1px solid var(--lumo-contrast-10pct);
+  border-right: 1px solid var(--lumo-contrast-10pct);
+}
+
+.dashboard-view vaadin-board-row.small > * {
+  border-right: none;
+}
+
+.dashboard-view vaadin-board-row.medium > *:nth-child(even),
+.dashboard-view vaadin-board-row.medium > *:only-child {
+  border-right: none;
+}
+
+.dashboard-view vaadin-board-row.large > *:last-child {
+  border-right: none;
+}
+
+
+/* Adds a bottom and right border with soft rounded corners to all child elements */
+.dashboard-view vaadin-board-row > * {
+
+  border-radius: 12px; /* Adjust as per the desired roundness */
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow for depth */
+}
+
+/* Specific adjustments for 'small' board rows, if needed */
+.dashboard-view vaadin-board-row.small > * {
+  border-right: none;
+  /* Add border-radius only for specific corners if needed */
+}
+
+/* For 'medium' board rows, removing the right border and adding radius to even children and the only child */
+.dashboard-view vaadin-board-row.medium > *:nth-child(even),
+.dashboard-view vaadin-board-row.medium > *:only-child {
+  border-right: none;
+  /* Add border-radius only for specific corners if needed */
+}
+
+/* For 'large' board rows, removing the right border and adding radius to the last child element */
+.dashboard-view vaadin-board-row.large > *:last-child {
+  border-right: none;
+  /* Add border-radius only for specific corners if needed */
+}

@@ -1,0 +1,19 @@
+/* Borders */
+
+.admin-dashboard-view vaadin-board-row > * {
+  border-bottom: 1px solid var(--lumo-contrast-10pct);
+  border-right: 1px solid var(--lumo-contrast-10pct);
+}
+
+.admin-dashboard-view vaadin-board-row.small > * {
+  border-right: none;
+}
+
+.admin-dashboard-view vaadin-board-row.medium > *:nth-child(even),
+.admin-dashboard-view vaadin-board-row.medium > *:only-child {
+  border-right: none;
+}
+
+.admin-dashboard-view vaadin-board-row.large > *:last-child {
+  border-right: none;
+}
