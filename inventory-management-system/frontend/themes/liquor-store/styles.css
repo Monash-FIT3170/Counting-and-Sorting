@@ -1,0 +1,37 @@
+@import url('./main-layout.css');
+@import url('./views/dashboard-view.css');
+@import url('./views/inventory-view.css');
+@import url('./views/shopping-lists-view.css');
+@import url('./views/requests-view.css');
+@import url('./views/admin-dashboard-view.css');
+@import url('./views/suppliers-view.css');
+@import url('./views/admin-stock-view.css');
+@import url('./node_modules/@fontsource/source-code-pro/index.css');    
+
+html {
+      --lumo-primary-color: hsl(214, 61%, 40%);
+      --lumo-primary-color-50pct: hsla(214, 61%, 40%, 0.5);
+      --lumo-primary-color-10pct: hsla(214, 61%, 40%, 0.1);
+      --lumo-base-color: #fafcff;
+      --lumo-font-family: "Open Sans", sans-serif;
+
+    }
+
+    [theme~="dark"] {
+      --lumo-base-color: #111827;
+      --lumo-primary-color: hsl(214, 96%, 51%);
+      --lumo-primary-color-50pct: hsla(214, 96%, 51%, 0.5);
+      --lumo-primary-color-10pct: hsla(214, 96%, 51%, 0.1);
+      --lumo-shade: hsl(359, 69%, 55%);
+      --lumo-shade-5pct: hsla(359, 95%, 49%, 0.05);
+      --lumo-shade-10pct: hsla(359, 95%, 49%, 0.1);
+      --lumo-shade-20pct: hsla(359, 95%, 49%, 0.2);
+      --lumo-shade-30pct: hsla(359, 95%, 49%, 0.3);
+      --lumo-shade-40pct: hsla(359, 95%, 49%, 0.4);
+      --lumo-shade-50pct: hsla(359, 95%, 49%, 0.5);
+      --lumo-shade-60pct: hsla(359, 95%, 49%, 0.6);
+      --lumo-shade-70pct: hsla(359, 95%, 49%, 0.7);
+      --lumo-shade-80pct: hsla(359, 95%, 49%, 0.8);
+      --lumo-shade-90pct: hsla(359, 95%, 49%, 0.9);
+
+    }
