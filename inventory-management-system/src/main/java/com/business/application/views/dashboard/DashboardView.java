@@ -45,7 +45,7 @@ public class DashboardView extends Main {
         addClassName("dashboard-view");
 
         Board board = new Board();
-        board.addRow(createHighlight("Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
+        board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
                 createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
         board.addRow(createViewSales(), createViewStockLevels());
         board.addRow(createLowStockItems(), createResponseTimes());
@@ -145,7 +145,7 @@ public class DashboardView extends Main {
         xAxis.setCategories("Beer", "Wine", "Spirits", "Premix", "Misc."); // Categories as per your image
         conf.addxAxis(xAxis);
     
-        conf.getyAxis().setTitle("Percentage Of Full Capacity");
+        conf.getyAxis().setTitle("Percentage Full Capacity");
     
         // Assuming you have the stock level percentages for each category
         conf.addSeries(new ListSeries("Stock Levels", 30, 70, 60, 80, 50)); // Replace with actual values
