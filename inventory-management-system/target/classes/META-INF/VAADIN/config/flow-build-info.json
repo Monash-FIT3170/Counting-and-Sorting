@@ -1,0 +1,17 @@
+{
+  "productionMode": false,
+  "eagerServerLoad": false,
+  "npmFolder": "/workspaces/Counting-and-Sorting/inventory-management-system",
+  "node.version": "v20.11.1",
+  "node.download.root": "https://nodejs.org/dist/",
+  "frontendFolder": "/workspaces/Counting-and-Sorting/inventory-management-system/frontend",
+  "connect.javaSourceFolder": "/workspaces/Counting-and-Sorting/inventory-management-system/src/main/java",
+  "javaResourceFolder": "/workspaces/Counting-and-Sorting/inventory-management-system/src/main/resources",
+  "connect.applicationProperties": "/workspaces/Counting-and-Sorting/inventory-management-system/src/main/resources/application.properties",
+  "connect.openApiFile": "/workspaces/Counting-and-Sorting/inventory-management-system/target/generated-resources/openapi.json",
+  "project.frontend.generated": "/workspaces/Counting-and-Sorting/inventory-management-system/frontend/generated",
+  "pnpm.enable": false,
+  "bun.enable": false,
+  "require.home.node": false,
+  "build.folder": "target"
+}
