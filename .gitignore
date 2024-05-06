@@ -8,6 +8,7 @@ build/
 !**/src/test/**/build/
 *.class
 inventory-management-system/target/
+inventory-management-system/target
 
 inventory-management-system/frontend/generated/
 
