@@ -6,6 +6,9 @@ build/
 !**/src/test/**/target/
 !**/src/main/**/build/
 !**/src/test/**/build/
+*.class
+inventory-management-system/target/
+inventory-management-system/target
 
 inventory-management-system/frontend/generated/
 
@@ -52,6 +55,8 @@ out/
 
 # VS Code
 .vscode/
+*.js
+*.ts
 
 # Maven wrapper
 .mvn/
