@@ -5,6 +5,7 @@ import com.business.application.security.AuthenticatedUser;
 import com.business.application.views.admindashboard.AdminDashboardView;
 import com.business.application.views.adminstock.AdminStockView;
 import com.business.application.views.dashboard.DashboardView;
+import com.business.application.views.forecast.ForecastView;
 import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
@@ -78,8 +79,14 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Dashboard", DashboardView.class, LineAwesomeIcon.CHART_AREA_SOLID.create()));
 
         }
+
         if (accessChecker.hasAccess(InventoryView.class)) {
             nav.addItem(new SideNavItem("Inventory", InventoryView.class, LineAwesomeIcon.TH_SOLID.create()));
+
+        }
+        if (accessChecker.hasAccess(ForecastView.class)) {
+            nav.addItem(
+                    new SideNavItem("Forecast", ForecastView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
