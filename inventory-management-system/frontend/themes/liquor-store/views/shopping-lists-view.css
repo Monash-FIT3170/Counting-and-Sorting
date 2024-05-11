@@ -42,3 +42,45 @@
 .shopping-lists-view .grid-wrapper {
   width: 100%;
 }
+
+/* styles/shopping-lists-styles.css */
+.shopping-lists-view .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Aligns items to the start to avoid stretching the last row */
+  align-content: flex-start; /* Ensures content is aligned at the start and does not stretch */
+  margin: 0 auto;
+  width: 100%;
+}
+
+.shopping-lists-view .card {
+  background-color: rgb(17, 19, 47);
+  border: 1px solid #363665;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin: 10px;
+  padding: 15px;
+  flex: 0 1 calc(29% - 20px); /* Prevents cards from growing and only taking up their exact space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.shopping-lists-view .name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.shopping-lists-view .date {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 600px) and (max-width: 1023px) { /* Medium screens */
+  .shopping-lists-view .card {
+      flex: 1 1 48%; /* Two columns */
+  }
+}
+
+
