@@ -60,7 +60,7 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   margin: 10px;
   padding: 15px;
-  flex: 0 1 calc(29% - 20px); /* Prevents cards from growing and only taking up their exact space */
+  flex: 0 0 calc(33% - 50px); /* Prevents cards from growing and only taking up their exact space */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -77,9 +77,16 @@
   margin-bottom: 10px;
 }
 
-@media (min-width: 600px) and (max-width: 1023px) { /* Medium screens */
+@media (min-width: 700px) and (max-width: 1400px){ /* Medium screens */
   .shopping-lists-view .card {
-      flex: 1 1 48%; /* Two columns */
+    flex: 0 0 calc(49% - 50px); /* Prevents cards from growing and only taking up their exact space */
+  }
+}
+
+
+@media (max-width: 700px) { /* Small screens */
+  .shopping-lists-view .card {
+      flex: 1 1 99%; 
   }
 }
 
