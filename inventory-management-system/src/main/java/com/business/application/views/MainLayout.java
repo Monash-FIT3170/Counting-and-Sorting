@@ -10,6 +10,7 @@ import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
+import com.business.application.views.team.TeamView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -116,7 +117,10 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.FILTER_SOLID.create()));
 
         }
+        if (accessChecker.hasAccess(TeamView.class)) {
+            nav.addItem(new SideNavItem("Team", TeamView.class, LineAwesomeIcon.USER_FRIENDS_SOLID.create()));
 
+        }
         
 
         return nav;
