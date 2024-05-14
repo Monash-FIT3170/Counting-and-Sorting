@@ -47,6 +47,9 @@
 .shopping-lists-view .container {
   display: flex;
   flex-wrap: wrap;
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   justify-content: flex-start; /* Aligns items to the start to avoid stretching the last row */
   align-content: flex-start; /* Ensures content is aligned at the start and does not stretch */
   margin: 0 auto;
@@ -55,19 +58,9 @@
 
 .shopping-lists-view .card {
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: 1px solid lightgray;
+  box-shadow: 0 6px 6px rgba(0,0,0,0.1);
   padding: 15px;
-  flex: 0 0 calc(33% - 50px); /* Prevents cards from growing and only taking up their exact space */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.shopping-lists-view .card_button {
-  margin: 10px;
-  border: 1px solid #363665;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   flex: 0 0 calc(33% - 50px); /* Prevents cards from growing and only taking up their exact space */
   display: flex;
   flex-direction: column;

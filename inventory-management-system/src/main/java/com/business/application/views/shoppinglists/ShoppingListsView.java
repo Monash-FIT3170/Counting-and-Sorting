@@ -4,6 +4,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -21,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.Anchor;
 import com.business.application.data.Product;
 import com.business.application.data.ShoppingList;
 
@@ -41,6 +41,7 @@ public class ShoppingListsView extends Div {
         container.setWidthFull();
         container.setJustifyContentMode(FlexLayout.JustifyContentMode.START);
         container.addClassName("container");
+        container.getStyle().set("gap", "1em");
         // Set layout to right justify 
         
         addClassName("shopping-lists-view");
@@ -59,14 +60,14 @@ public class ShoppingListsView extends Div {
         // Simulated data fetch
         List<ShoppingList> items = getShoppingListItems();
         for (ShoppingList item : items) {
-            Anchor card = createCard(item);
+            Div card = createCard(item);
             container.add(card);
         }
 
         add(container);
     }
 
-    private Anchor createCard(ShoppingList item) {
+    private Div createCard(ShoppingList item) {
         Div card = new Div();
         card.addClassName("card");
 
@@ -79,13 +80,13 @@ public class ShoppingListsView extends Div {
         Span statusLabel = createStatusLabel(item.getStatus());
         statusLabel.addClassName("status");
 
-        Anchor anchor = new Anchor("Shopping List Items");
-        anchor.addClassName("card_button");
-
         card.add(nameLabel, dateLabel, statusLabel);
-        anchor.add(card);
+        card.getStyle().set("flex", "0 0 calc(30% - 1em)");
+        card.addClickListener(e -> {
+            UI.getCurrent().navigate("Shopping List Items");
+        });
 
-        return anchor;
+        return card;
     }
 
     /**
