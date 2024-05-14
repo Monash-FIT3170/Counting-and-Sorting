@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @NpmPackage(value = "@fontsource/source-code-pro", version = "4.5.0")
-@Theme(value = "liquor-store", variant = Lumo.DARK)
+@Theme(value = "liquor-store")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
