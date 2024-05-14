@@ -14,16 +14,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.business.application.data.Product;
 import com.business.application.data.ShoppingList;
+import java.util.Collections;
 
 @SuppressWarnings("removal")
 @PageTitle("Shopping Lists")
@@ -82,8 +86,12 @@ public class ShoppingListsView extends Div {
 
         card.add(nameLabel, dateLabel, statusLabel);
         card.getStyle().set("flex", "0 0 calc(30% - 1em)");
+        
+        Map<String, List<String>> parametersMap = new HashMap<>();
+        parametersMap.put("param", Collections.singletonList(String.valueOf(item.getListId())));
+        QueryParameters queryParams = new QueryParameters(parametersMap);
         card.addClickListener(e -> {
-            UI.getCurrent().navigate("Shopping List Items");
+            UI.getCurrent().navigate("Shopping List Items", queryParams);
         });
 
         return card;
