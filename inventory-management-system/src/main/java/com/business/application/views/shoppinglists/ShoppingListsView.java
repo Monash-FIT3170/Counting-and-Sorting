@@ -78,7 +78,7 @@ public class ShoppingListsView extends Div {
         Span statusLabel = createStatusLabel(item.getStatus());
         statusLabel.addClassName("status");
 
-        Anchor anchor = new Anchor("https://google.com");
+        Anchor anchor = new Anchor("Shopping List Items");
         anchor.addClassName("card_button");
 
         card.add(nameLabel, dateLabel, statusLabel);
