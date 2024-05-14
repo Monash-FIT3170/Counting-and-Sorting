@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.Anchor;
 
 @SuppressWarnings("removal")
 @PageTitle("Shopping Lists")
@@ -57,14 +58,14 @@ public class ShoppingListsView extends Div {
         // Simulated data fetch
         List<ShoppingListItem> items = getShoppingListItems();
         for (ShoppingListItem item : items) {
-            Div card = createCard(item);
+            Anchor card = createCard(item);
             container.add(card);
         }
 
         add(container);
     }
 
-    private Div createCard(ShoppingListItem item) {
+    private Anchor createCard(ShoppingListItem item) {
         Div card = new Div();
         card.addClassName("card");
 
@@ -77,9 +78,13 @@ public class ShoppingListsView extends Div {
         Span statusLabel = createStatusLabel(item.getStatus());
         statusLabel.addClassName("status");
 
-        card.add(nameLabel, dateLabel, statusLabel);
+        Anchor anchor = new Anchor("https://google.com");
+        anchor.addClassName("card_button");
 
-        return card;
+        card.add(nameLabel, dateLabel, statusLabel);
+        anchor.add(card);
+
+        return anchor;
     }
 
     /**
