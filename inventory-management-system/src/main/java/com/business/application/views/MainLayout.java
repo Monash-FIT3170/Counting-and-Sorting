@@ -10,6 +10,7 @@ import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -25,9 +26,12 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
@@ -50,6 +54,7 @@ public class MainLayout extends AppLayout {
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
+        
     }
 
     private void addHeaderContent() {
@@ -112,7 +117,22 @@ public class MainLayout extends AppLayout {
 
         }
 
+        
+
         return nav;
+    }
+    private void toggleTheme(Icon icon) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+        if (themeList.contains(Lumo.DARK)) {
+            themeList.remove(Lumo.DARK);
+            icon.getElement().setAttribute("icon", "vaadin:sun-o");
+        } else {
+            themeList.add(Lumo.DARK);
+            icon.getElement().setAttribute("icon", "vaadin:moon");
+        }
+        // Immediately reflect the new theme state on the UI without full page refresh
+        UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
+                                            themeList.contains(Lumo.DARK) ? "dark" : "light");
     }
 
     private Footer createFooter() {
@@ -144,6 +164,13 @@ public class MainLayout extends AppLayout {
             userName.getSubMenu().addItem("Sign out", e -> {
                 authenticatedUser.logout();
             });
+                    // Icon for light/dark mode toggle
+            Icon themeIcon = new Icon("vaadin", "moon");
+            themeIcon.addClickListener(e -> {
+                toggleTheme(themeIcon);
+            });
+            
+            layout.add(themeIcon);
 
             layout.add(userMenu);
         } else {
