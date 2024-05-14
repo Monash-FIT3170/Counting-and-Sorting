@@ -35,13 +35,15 @@ import org.apache.commons.lang3.StringUtils;
 @AnonymousAllowed
 public class InventoryView extends Div {
 
-    private GridPro<Client> grid;
-    private GridListDataView<Client> gridListDataView;
+    private GridPro<ProductFrontend> grid;
+    private GridListDataView<ProductFrontend> gridListDataView;
 
-    private Grid.Column<Client> clientColumn;
-    private Grid.Column<Client> amountColumn;
-    private Grid.Column<Client> statusColumn;
-    private Grid.Column<Client> dateColumn;
+    private Grid.Column<ProductFrontend> itemIDColumn;
+    private Grid.Column<ProductFrontend> nameColumn;
+    private Grid.Column<ProductFrontend> categoryColumn;
+    private Grid.Column<ProductFrontend> quantityColumn;
+    private Grid.Column<ProductFrontend> capacityColumn;
+
 
     public InventoryView() {
         addClassName("inventory-view");
@@ -62,142 +64,101 @@ public class InventoryView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
 
-        List<Client> clients = getClients();
-        gridListDataView = grid.setItems(clients);
+        List<ProductFrontend> products = getProducts();
+        gridListDataView = grid.setItems(products);
     }
 
     private void addColumnsToGrid() {
-        createClientColumn();
-        createAmountColumn();
-        createStatusColumn();
-        createDateColumn();
+        createItemIDColumn();
+        createNameColumn();
+        createCategoryColumn();
+        createQuantityColumn();
+        createCapacityColumn();
     }
 
-    private void createClientColumn() {
-        clientColumn = grid.addColumn(new ComponentRenderer<>(client -> {
-            HorizontalLayout hl = new HorizontalLayout();
-            hl.setAlignItems(Alignment.CENTER);
-            Image img = new Image(client.getImg(), "");
-            Span span = new Span();
-            span.setClassName("name");
-            span.setText(client.getClient());
-            hl.add(img, span);
-            return hl;
-        })).setComparator(client -> client.getClient()).setHeader("Client");
+    private void createItemIDColumn() {
+        itemIDColumn = grid
+                .addColumn(ProductFrontend::getItemID)
+                .setHeader("Item ID")
+                .setSortable(true);
     }
 
-    private void createAmountColumn() {
-        amountColumn = grid
-                .addEditColumn(Client::getAmount,
-                        new NumberRenderer<>(client -> client.getAmount(), NumberFormat.getCurrencyInstance(Locale.US)))
-                .text((item, newValue) -> item.setAmount(Double.parseDouble(newValue)))
-                .setComparator(client -> client.getAmount()).setHeader("Amount");
+    private void createNameColumn() {
+        nameColumn = grid
+                .addColumn(ProductFrontend::getName)
+                .setHeader("Item Name")
+                .setSortable(true);
     }
 
-    private void createStatusColumn() {
-        statusColumn = grid.addEditColumn(Client::getClient, new ComponentRenderer<>(client -> {
-            Span span = new Span();
-            span.setText(client.getStatus());
-            span.getElement().setAttribute("theme", "badge " + client.getStatus().toLowerCase());
-            return span;
-        })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pending", "Success", "Error"))
-                .setComparator(client -> client.getStatus()).setHeader("Status");
+    private void createCategoryColumn() {
+        categoryColumn = grid
+                .addColumn(ProductFrontend::getCategory)
+                .setHeader("Category")
+                .setSortable(true);
     }
 
-    private void createDateColumn() {
-        dateColumn = grid
-                .addColumn(new LocalDateRenderer<>(client -> LocalDate.parse(client.getDate()),
-                        () -> DateTimeFormatter.ofPattern("M/d/yyyy")))
-                .setComparator(client -> client.getDate()).setHeader("Date").setWidth("180px").setFlexGrow(0);
+    private void createQuantityColumn() {
+        quantityColumn = grid
+                .addColumn(ProductFrontend::getQuantity)
+                .setHeader("Current Quantity")
+                .setSortable(true);
+    }
+
+    private void createCapacityColumn() {
+        capacityColumn = grid
+                .addColumn(ProductFrontend::getCapacity)
+                .setHeader("Capacity")
+                .setSortable(true);
     }
 
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
-        TextField clientFilter = new TextField();
-        clientFilter.setPlaceholder("Filter");
-        clientFilter.setClearButtonVisible(true);
-        clientFilter.setWidth("100%");
-        clientFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        clientFilter.addValueChangeListener(event -> gridListDataView
-                .addFilter(client -> StringUtils.containsIgnoreCase(client.getClient(), clientFilter.getValue())));
-        filterRow.getCell(clientColumn).setComponent(clientFilter);
+        TextField itemIDFilter = new TextField();
+        itemIDFilter.setPlaceholder("Filter");
+        itemIDFilter.setClearButtonVisible(true);
+        itemIDFilter.setWidth("100%");
+        itemIDFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getItemID()), itemIDFilter.getValue())));
+        filterRow.getCell(itemIDColumn).setComponent(itemIDFilter);
 
-        TextField amountFilter = new TextField();
-        amountFilter.setPlaceholder("Filter");
-        amountFilter.setClearButtonVisible(true);
-        amountFilter.setWidth("100%");
-        amountFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        amountFilter.addValueChangeListener(event -> gridListDataView.addFilter(client -> StringUtils
-                .containsIgnoreCase(Double.toString(client.getAmount()), amountFilter.getValue())));
-        filterRow.getCell(amountColumn).setComponent(amountFilter);
-
-        ComboBox<String> statusFilter = new ComboBox<>();
-        statusFilter.setItems(Arrays.asList("Pending", "Success", "Error"));
-        statusFilter.setPlaceholder("Filter");
-        statusFilter.setClearButtonVisible(true);
-        statusFilter.setWidth("100%");
-        statusFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(client -> areStatusesEqual(client, statusFilter)));
-        filterRow.getCell(statusColumn).setComponent(statusFilter);
-
-        DatePicker dateFilter = new DatePicker();
-        dateFilter.setPlaceholder("Filter");
-        dateFilter.setClearButtonVisible(true);
-        dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(client -> areDatesEqual(client, dateFilter)));
-        filterRow.getCell(dateColumn).setComponent(dateFilter);
+        TextField nameFilter = new TextField();
+        nameFilter.setPlaceholder("Filter");
+        nameFilter.setClearButtonVisible(true);
+        nameFilter.setWidth("100%");
+        nameFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        nameFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue())));
+        filterRow.getCell(nameColumn).setComponent(nameFilter);
+    
+        TextField categoryFilter = new TextField();
+        categoryFilter.setPlaceholder("Filter");
+        categoryFilter.setClearButtonVisible(true);
+        categoryFilter.setWidth("100%");
+        categoryFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getCategory(), categoryFilter.getValue())));
+        filterRow.getCell(categoryColumn).setComponent(categoryFilter);
+    
+        TextField quantityFilter = new TextField();
+        quantityFilter.setPlaceholder("Filter");
+        quantityFilter.setClearButtonVisible(true);
+        quantityFilter.setWidth("100%");
+        quantityFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        quantityFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue())));
+        filterRow.getCell(quantityColumn).setComponent(quantityFilter);
+    
+        TextField capacityFilter = new TextField();
+        capacityFilter.setPlaceholder("Filter");
+        capacityFilter.setClearButtonVisible(true);
+        capacityFilter.setWidth("100%");
+        capacityFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        capacityFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getCapacity()), capacityFilter.getValue())));
+        filterRow.getCell(capacityColumn).setComponent(capacityFilter);
     }
-
-    private boolean areStatusesEqual(Client client, ComboBox<String> statusFilter) {
-        String statusFilterValue = statusFilter.getValue();
-        if (statusFilterValue != null) {
-            return StringUtils.equals(client.getStatus(), statusFilterValue);
-        }
-        return true;
-    }
-
-    private boolean areDatesEqual(Client client, DatePicker dateFilter) {
-        LocalDate dateFilterValue = dateFilter.getValue();
-        if (dateFilterValue != null) {
-            LocalDate clientDate = LocalDate.parse(client.getDate());
-            return dateFilterValue.equals(clientDate);
-        }
-        return true;
-    }
-
-    private List<Client> getClients() {
+    private List<ProductFrontend> getProducts() {
         return Arrays.asList(
-                createClient(4957, "https://randomuser.me/api/portraits/women/42.jpg", "Amarachi Nkechi", 47427.0,
-                        "Success", "2019-05-09"),
-                createClient(675, "https://randomuser.me/api/portraits/women/24.jpg", "Bonelwa Ngqawana", 70503.0,
-                        "Success", "2019-05-09"),
-                createClient(6816, "https://randomuser.me/api/portraits/men/42.jpg", "Debashis Bhuiyan", 58931.0,
-                        "Success", "2019-05-07"),
-                createClient(5144, "https://randomuser.me/api/portraits/women/76.jpg", "Jacqueline Asong", 25053.0,
-                        "Pending", "2019-04-25"),
-                createClient(9800, "https://randomuser.me/api/portraits/men/24.jpg", "Kobus van de Vegte", 7319.0,
-                        "Pending", "2019-04-22"),
-                createClient(3599, "https://randomuser.me/api/portraits/women/94.jpg", "Mattie Blooman", 18441.0,
-                        "Error", "2019-04-17"),
-                createClient(3989, "https://randomuser.me/api/portraits/men/76.jpg", "Oea Romana", 33376.0, "Pending",
-                        "2019-04-17"),
-                createClient(1077, "https://randomuser.me/api/portraits/men/94.jpg", "Stephanus Huggins", 75774.0,
-                        "Success", "2019-02-26"),
-                createClient(8942, "https://randomuser.me/api/portraits/men/16.jpg", "Torsten Paulsson", 82531.0,
-                        "Pending", "2019-02-21"));
-    }
-
-    private Client createClient(int id, String img, String client, double amount, String status, String date) {
-        Client c = new Client();
-        c.setId(id);
-        c.setImg(img);
-        c.setClient(client);
-        c.setAmount(amount);
-        c.setStatus(status);
-        c.setDate(date);
-
-        return c;
+                new ProductFrontend(1, "Product A", "Category A", 10, 100),
+                new ProductFrontend(2, "Product B", "Category B", 20, 200),
+                new ProductFrontend(3, "Product C", "Category C", 30, 300)
+        );
     }
 };
