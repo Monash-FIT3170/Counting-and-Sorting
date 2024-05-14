@@ -16,6 +16,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import jakarta.annotation.security.RolesAllowed;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +29,7 @@ import com.vaadin.flow.component.html.Anchor;
 
 @PageTitle("Shopping List Items")
 @Route(value = "Shopping List Items", layout = MainLayout.class)
-@AnonymousAllowed
+@RolesAllowed("USER")
 public class ShoppingListItemsView extends Div{
 
     public ShoppingListItemsView() {

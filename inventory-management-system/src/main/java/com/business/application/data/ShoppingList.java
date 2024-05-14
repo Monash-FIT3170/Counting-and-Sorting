@@ -1,6 +1,7 @@
 package com.business.application.data;
 
 import java.util.Date;
+import java.util.ArrayList;
 import jakarta.persistence.Entity;
 import java.text.SimpleDateFormat;
 
@@ -12,14 +13,18 @@ public class ShoppingList extends AbstractEntity{
     private int storeId;
     private Date date;
     private String name;
+    private ArrayList<Product> products = new ArrayList<Product>();
+    private String status;
 
-    public ShoppingList(int listId, int managerId, int storeId, String name) {
+    public ShoppingList(int listId, int managerId, int storeId, String name, ArrayList<Product> products, String status) {
 
         setListId(listId);
         setManagerId(managerId);
         setStoreId(storeId);
         setDate(new Date());
         setName(name);
+        setProducts(products);
+        setStatus(status);
 
     }
 
@@ -43,6 +48,10 @@ public class ShoppingList extends AbstractEntity{
         return storeId;
     }
 
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
     public void setStoreId(int storeId) {
         this.storeId = storeId;
     }
@@ -61,12 +70,24 @@ public class ShoppingList extends AbstractEntity{
         this.date = date;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setProducts(ArrayList<Product> products) {
+        this.products = products;
     }
 
 }
