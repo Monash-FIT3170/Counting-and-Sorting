@@ -14,6 +14,8 @@ import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -46,6 +48,7 @@ public class TeamView extends Div {
     private Grid.Column<Member> storeColumn;
     private Grid.Column<Member> emailColumn;
     private final TextField name = new TextField("");
+    
 
     public TeamView() {
         addClassName("suppliers-view");
@@ -115,11 +118,17 @@ public class TeamView extends Div {
     }
 
     private void addFilters() {
+        Icon searchIcon = VaadinIcon.SEARCH.create();
         addClassName("filter-layout");
         addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
                 LumoUtility.BoxSizing.BORDER);
         name.setPlaceholder("Search Members");
-        add(name);
+        name.setSuffixComponent(searchIcon);
+
+        Icon plusIcon = VaadinIcon.PLUS.create();
+        Button inviteButton = new Button("Invite", plusIcon);
+        HorizontalLayout toolbar = new HorizontalLayout(name, inviteButton);
+        add(toolbar);
     }
 
     private boolean areStatusesEqual(Member member, ComboBox<String> statusFilter) {
