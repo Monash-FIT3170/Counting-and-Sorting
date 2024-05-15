@@ -86,12 +86,6 @@ public class InventoryView extends Div {
                 .setSortable(true);
     }
 
-    // private void createCategoryColumn() {
-    //     categoryColumn = grid
-    //             .addColumn(ProductFrontend::getCategory)
-    //             .setHeader("Category")
-    //             .setSortable(true);
-    // }
     private void createCategoryColumn() {
         categoryColumn = grid
                 .addColumn(new ComponentRenderer<>(product -> {
@@ -158,12 +152,18 @@ public class InventoryView extends Div {
         nameFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue())));
         filterRow.getCell(nameColumn).setComponent(nameFilter);
 
-        TextField categoryFilter = new TextField();
+        ComboBox<String> categoryFilter = new ComboBox<>();
+        categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
         categoryFilter.setPlaceholder("Filter");
-        categoryFilter.setClearButtonVisible(true);
+        categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
         categoryFilter.setWidth("100%");
-        categoryFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getCategory(), categoryFilter.getValue())));
+        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
+            String filterValue = categoryFilter.getValue();
+            if (filterValue != null) {
+                return filterValue.equalsIgnoreCase(product.getCategory());
+            }
+            return true;
+        }));
         filterRow.getCell(categoryColumn).setComponent(categoryFilter);
 
         TextField quantityFilter = new TextField();
