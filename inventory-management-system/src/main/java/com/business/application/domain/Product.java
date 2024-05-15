@@ -28,6 +28,16 @@ public class Product extends AbstractEntity {
     @Column
     private String description;
 
+    public Product(Long productId, String name, BigDecimal salePrice, String category, String description){
+        this.productId = productId;
+        this.name = name;
+        this.salePrice = salePrice;
+        this.category = category;
+        this.description = description;
+    
+
+    }
+
     // Standard getters and setters
 
     public Long getProductId() {
