@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @PageTitle("User Management")
@@ -63,6 +64,15 @@ public class UserManagementView extends VerticalLayout {
         grid = new Grid<>(User.class, false);
         grid.addColumn(User::getUsername).setHeader("Username").setAutoWidth(true);
         grid.addColumn(User::getName).setHeader("Name").setAutoWidth(true);
+
+        // Adding a column to display roles
+        grid.addColumn(user -> user.getRoles().stream()
+            .map(Role::name)  // Assuming Role is an enum and you want to display the name of the enum
+            .sorted()
+            .collect(Collectors.joining(", ")))
+            .setHeader("Roles")
+            .setAutoWidth(true);
+
         grid.addComponentColumn(user -> createRemoveButton(grid, user)).setHeader("Actions");
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
