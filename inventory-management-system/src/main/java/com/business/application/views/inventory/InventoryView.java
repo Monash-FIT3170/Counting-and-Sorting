@@ -81,6 +81,7 @@ public class InventoryView extends Div {
     private void createNameColumn() {
         nameColumn = grid
                 .addColumn(ProductFrontend::getName)
+                .setAutoWidth(true)
                 .setHeader("Item Name")
                 .setSortable(true);
     }
