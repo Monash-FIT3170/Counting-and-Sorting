@@ -1,41 +1,21 @@
 package com.business.application.views.shoppinglists;
 
 import com.business.application.views.MainLayout;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasDynamicTitle;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Location;
-import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.Router;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
-
 import jakarta.annotation.security.RolesAllowed;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.Anchor;
 
 @PageTitle("Shopping List")
 @Route(value = "Shopping List Items", layout = MainLayout.class)
@@ -51,8 +31,13 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         container.setWidthFull();
         container.setJustifyContentMode(FlexLayout.JustifyContentMode.START);
         container.addClassName("container");
-        // Set layout to right justify 
 
+        // Add back button
+        Button backButton = new Button("Back", e -> UI.getCurrent().navigate(ShoppingListsView.class));
+        backButton.addClassName("back-button");
+
+        add(backButton);
+        add(container);
     }
 
     @Override
@@ -75,5 +60,4 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
     public void setListId() {
         this.listId = 1;
     }
-    
 }
