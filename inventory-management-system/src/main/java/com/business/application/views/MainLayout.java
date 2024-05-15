@@ -160,9 +160,10 @@ public class MainLayout extends AppLayout {
             icon.getElement().setAttribute("icon", "vaadin:moon");
         }
         // Immediately reflect the new theme state on the UI without full page refresh
-        updateLogo(themeList.contains(Lumo.DARK));
+
         UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
                                             themeList.contains(Lumo.DARK) ? "dark" : "light");
+                                            updateLogo(themeList.contains(Lumo.DARK));
     }
 
     private Footer createFooter() {
