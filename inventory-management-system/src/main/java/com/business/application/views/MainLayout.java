@@ -11,6 +11,7 @@ import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -35,6 +37,9 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -44,6 +49,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 public class MainLayout extends AppLayout {
 
     private H2 viewTitle;
+    private Image logoImage;
 
     private AuthenticatedUser authenticatedUser;
     private AccessAnnotationChecker accessChecker;
@@ -69,13 +75,30 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("Counting & Sorting");
-        appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
-        Header header = new Header(appName);
+        updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
 
         Scroller scroller = new Scroller(createNavigation());
+        addToDrawer(logoImage, scroller, createFooter());
+    }
 
-        addToDrawer(header, scroller, createFooter());
+    private void updateLogo(boolean darkTheme) {
+        String logoPath = darkTheme ? 
+            "inventory-management-system/src/main/resources/META-INF/resources/icons/CSLogoLight.png" : 
+            "inventory-management-system/src/main/resources/META-INF/resources/icons/CSLogoDark.png";
+        StreamResource logoResource = new StreamResource(darkTheme ? "CSLogoLight.png" : "CSLogoDark.png",
+            () -> {
+                try {
+                    return new ByteArrayInputStream(Files.readAllBytes(Paths.get(logoPath)));
+                } catch (IOException e) {
+                    return new ByteArrayInputStream(new byte[0]); // Fallback to empty content on error
+                }
+            });
+
+        if (logoImage == null) {
+            logoImage = new Image(logoResource, "Theme Logo");
+        } else {
+            logoImage.setSrc(logoResource);
+        }
     }
 
     private SideNav createNavigation() {
@@ -137,6 +160,7 @@ public class MainLayout extends AppLayout {
             icon.getElement().setAttribute("icon", "vaadin:moon");
         }
         // Immediately reflect the new theme state on the UI without full page refresh
+        updateLogo(themeList.contains(Lumo.DARK));
         UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
                                             themeList.contains(Lumo.DARK) ? "dark" : "light");
     }
@@ -172,6 +196,7 @@ public class MainLayout extends AppLayout {
             themeIcon.addClickListener(e -> {
                 toggleTheme(themeIcon);
             });
+            
             
             layout.add(themeIcon);
 
