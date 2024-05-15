@@ -8,7 +8,7 @@ public class ProductFrontend {
     private int quantity;
     private int capacity;
 
-    public ProductFrontend(int itemID, String name, String category, int quantity) {
+    public ProductFrontend(int itemID, String name, String category, int quantity, int capacity) {
         this.itemID = itemID;
         this.name = name;
         this.category = category;
@@ -18,7 +18,7 @@ public class ProductFrontend {
 
 
     public int getItemID() {
-        return itemID;
+        return this.itemID;
     }
 
     public void setItemID(int itemID) {
@@ -26,7 +26,7 @@ public class ProductFrontend {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -34,7 +34,7 @@ public class ProductFrontend {
     }
 
     public String getCategory() {
-        return category;
+        return this.category;
     }
 
     public void setCategory(String category) {
@@ -42,7 +42,7 @@ public class ProductFrontend {
     }
 
     public int getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
     public void setQuantity(int quantity) {
@@ -50,7 +50,7 @@ public class ProductFrontend {
     }
 
     public int getCapacity() {
-        return capacity;
+        return this.capacity;
     }
 
     public void setCapacity(int capacity) {
@@ -58,16 +58,19 @@ public class ProductFrontend {
     }
 
     public double getStockPercentage() {
-        return quantity / capacity * 100;
+        // System.out.println(this.quantity);
+        // System.out.println(this.capacity);
+        // System.out.println( (float) this.quantity / this.capacity);
+        return ((float) this.quantity / this.capacity) * 100;
     }
 
     public String getStockStatus() {
-        if (getStockPercentage() < 30) {
-            return "LOW";
-        } else if (getStockPercentage() < 70) {
-            return "MED";
+        if (this.getStockPercentage() < 30) {
+            return "Low";
+        } else if (this.getStockPercentage() < 70) {
+            return "Medium";
         } else {
-            return "HIGH";
+            return "High";
         }
     }
 }
