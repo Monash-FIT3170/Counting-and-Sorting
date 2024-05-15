@@ -15,12 +15,15 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import jakarta.annotation.security.RolesAllowed;
+
 import java.util.Arrays;
 import java.util.List;
 
 @PageTitle("Requests")
 @Route(value = "feed", layout = MainLayout.class)
-@AnonymousAllowed
+@RolesAllowed("ADMIN")
 public class RequestsView extends Div implements AfterNavigationObserver {
 
     Grid<Person> grid = new Grid<>();

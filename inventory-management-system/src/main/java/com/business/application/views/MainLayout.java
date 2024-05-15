@@ -82,39 +82,39 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         if (accessChecker.hasAccess(DashboardView.class)) {
-            nav.addItem(new SideNavItem("Dashboard", DashboardView.class, LineAwesomeIcon.CHART_AREA_SOLID.create()));
+            nav.addItem(new SideNavItem("Dashboard", DashboardView.class, LineAwesomeIcon.HOME_SOLID.create()));
 
         }
 
         if (accessChecker.hasAccess(InventoryView.class)) {
-            nav.addItem(new SideNavItem("Inventory", InventoryView.class, LineAwesomeIcon.TH_SOLID.create()));
+            nav.addItem(new SideNavItem("Inventory", InventoryView.class, LineAwesomeIcon.BOXES_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(ForecastView.class)) {
             nav.addItem(
-                    new SideNavItem("Forecast", ForecastView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+                    new SideNavItem("Forecast", ForecastView.class, LineAwesomeIcon.CHART_LINE_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
             nav.addItem(
-                    new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+                    new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(RequestsView.class)) {
-            nav.addItem(new SideNavItem("Requests", RequestsView.class, LineAwesomeIcon.LIST_SOLID.create()));
+            nav.addItem(new SideNavItem("Requests", RequestsView.class, LineAwesomeIcon.BELL_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
             nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
-                    LineAwesomeIcon.CHART_AREA_SOLID.create()));
+                    LineAwesomeIcon.CHART_PIE_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(SuppliersView.class)) {
-            nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, LineAwesomeIcon.TH_SOLID.create()));
+            nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, LineAwesomeIcon.TRUCK_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(AdminStockView.class)) {
-            nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.FILTER_SOLID.create()));
+            nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.BOXES_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(UserManagementView.class)) {

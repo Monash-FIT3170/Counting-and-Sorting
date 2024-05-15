@@ -26,6 +26,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
@@ -33,12 +35,14 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.context.annotation.Role;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 @PageTitle("Admin Stock")
 @Route(value = "grid-with-filters", layout = MainLayout.class)
-@AnonymousAllowed
+@RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class AdminStockView extends Div {
 
