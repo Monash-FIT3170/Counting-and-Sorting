@@ -17,6 +17,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.icon.Icon;
@@ -36,6 +38,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,76 +135,66 @@ public class UserManagementView extends VerticalLayout {
         toolbar.addClassName("toolbar");
         return toolbar;
     }
+
     private void addUser() {
-        // Create a new dialog
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Add New User");
-    
-        // Form layout to add components
+
         FormLayout formLayout = new FormLayout();
-    
-        // Field for Username
-        TextField usernameField = new TextField("Username");
+
+        // Email field for Username with validation
+        EmailField usernameField = new EmailField("Email (@countingsorting.com)");
         usernameField.setRequiredIndicatorVisible(true);
-    
-        // Field for Name
+        usernameField.setErrorMessage("Invalid email address");
+        usernameField.setPattern(".+@countingsorting\\.com$");  // Regex pattern to ensure @cs.com
+        usernameField.setClearButtonVisible(true);
+        usernameField.addValueChangeListener(event -> {
+            if (!usernameField.isInvalid()) {
+                usernameField.setInvalid(!event.getValue().endsWith("@countingsorting.com"));
+            }
+        });
+
         TextField nameField = new TextField("Name");
         nameField.setRequiredIndicatorVisible(true);
-    
-        // Password field
-        PasswordField passwordDisplayField = new PasswordField("Password");
-        passwordDisplayField.setRequiredIndicatorVisible(true);
-    
-        // Role selector
-        CheckboxGroup<Role> rolesGroup = new CheckboxGroup<>();
-        rolesGroup.setLabel("Roles");
-        rolesGroup.setItems(Role.values()); // Set roles from the Role enum
-    
-        // Save button with click listener to save the new user
+
+        PasswordField passwordField = new PasswordField("Password");
+        passwordField.setRequiredIndicatorVisible(true);
+
+        // Role selector using Radio Buttons
+        RadioButtonGroup<Role> roleGroup = new RadioButtonGroup<>();
+        roleGroup.setLabel("Role");
+        roleGroup.setItems(Role.values());
+        roleGroup.setRequired(true);
+
         Button saveButton = new Button("Save", event -> {
-            if (!usernameField.isEmpty() && !nameField.isEmpty() && !passwordDisplayField.isEmpty() && !rolesGroup.isEmpty()) {
+            if (!usernameField.isInvalid() && !nameField.isEmpty() && !passwordField.isEmpty() && roleGroup.getValue() != null) {
                 User newUser = new User();
                 newUser.setUsername(usernameField.getValue());
                 newUser.setName(nameField.getValue());
-                newUser.setHashedPassword(new BCryptPasswordEncoder().encode(passwordDisplayField.getValue()));
-                newUser.setRoles(new HashSet<>(rolesGroup.getValue())); // Directly use EnumSet
+                newUser.setHashedPassword(new BCryptPasswordEncoder().encode(passwordField.getValue()));
+                newUser.setRoles(new HashSet<>(Arrays.asList(roleGroup.getValue())));
                 userService.update(newUser);
                 updateList();
                 dialog.close();
             } else {
-                Notification.show("Please fill out all required fields", 3000, Notification.Position.BOTTOM_CENTER);
+                Notification.show("Please ensure all fields are correctly filled", 3000, Notification.Position.BOTTOM_CENTER);
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    
-        // Cancel button to close the dialog
+
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-    
-        // Adding components to the form layout
-        formLayout.add(usernameField, nameField, passwordDisplayField, rolesGroup);
-    
-        // Add save and cancel buttons to a horizontal layout
+
+        formLayout.add(usernameField, nameField, passwordField, roleGroup);
         HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
         buttonsLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-    
-        // Add components to the dialog
+
         dialog.add(formLayout, buttonsLayout);
         dialog.setModal(true);
         dialog.setDraggable(true);
         dialog.setResizable(false);
-    
-        // Open the dialog
+
         dialog.open();
     }
-    
 
-
-    private void removeUser() {
-        User selected = grid.asSingleSelect().getValue();
-        if (selected != null) {
-            userService.delete(selected.getId());
-            updateList();
-        }
-    }
 }
