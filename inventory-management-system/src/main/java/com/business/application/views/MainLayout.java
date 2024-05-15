@@ -4,6 +4,7 @@ import com.business.application.data.User;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.views.admindashboard.AdminDashboardView;
 import com.business.application.views.adminstock.AdminStockView;
+import com.business.application.views.adminteam.UserManagementView;
 import com.business.application.views.dashboard.DashboardView;
 import com.business.application.views.forecast.ForecastView;
 import com.business.application.views.inventory.InventoryView;
@@ -116,6 +117,10 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.FILTER_SOLID.create()));
 
         }
+        if (accessChecker.hasAccess(UserManagementView.class)) {
+            nav.addItem(new SideNavItem("Team", UserManagementView.class,
+                    LineAwesomeIcon.USERS_SOLID.create()));
+        }
 
         
 
@@ -143,9 +148,6 @@ public class MainLayout extends AppLayout {
             User user = maybeUser.get();
 
             Avatar avatar = new Avatar(user.getName());
-            StreamResource resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(user.getProfilePicture()));
-            avatar.setImageResource(resource);
             avatar.setThemeName("xsmall");
             avatar.getElement().setAttribute("tabindex", "-1");
 

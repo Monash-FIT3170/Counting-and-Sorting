@@ -8,13 +8,14 @@ public class ProductFrontend {
     private int quantity;
     private int capacity;
 
-    public ProductFrontend(int itemID, String name, String category, int quantity, int capacity) {
+    public ProductFrontend(int itemID, String name, String category, int quantity) {
         this.itemID = itemID;
         this.name = name;
         this.category = category;
         this.quantity = quantity;
         this.capacity = capacity;
     }
+
 
     public int getItemID() {
         return itemID;
