@@ -28,6 +28,15 @@ import com.vaadin.flow.component.html.Span;
 import com.business.application.data.Product;
 import com.business.application.data.ShoppingList;
 import java.util.Collections;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("removal")
 @PageTitle("Shopping Lists")
@@ -143,12 +152,41 @@ public class ShoppingListsView extends Div {
         searchField.addValueChangeListener(e -> gridSearch(e.getValue()));
     }
 
-    private void configureNewButton() {
-        newButton.addClickListener(e -> {
-            // Handle new shopping list creation
-        });
-    }
+private void configureNewButton() {
+    newButton.addClickListener(e -> {
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Create New Shopping List");
 
+        FormLayout formLayout = new FormLayout();
+
+        TextField shoppingListName = new TextField("Shopping List Name");
+        shoppingListName.setRequiredIndicatorVisible(true);
+
+        DatePicker orderDate = new DatePicker("Order Date");
+        orderDate.setRequired(true);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        TextField todaysDate = new TextField("Today's Date");
+        todaysDate.setValue(LocalDate.now().format(formatter));
+        todaysDate.setReadOnly(true);
+
+        formLayout.add(shoppingListName, orderDate, todaysDate);
+
+        Button saveButton = new Button("Save", event -> {
+            // Handle save logic here
+            dialog.close();
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
+        dialog.add(formLayout, buttonLayout);
+
+        dialog.open();
+    });
+}
     private HorizontalLayout getToolbar() {
         HorizontalLayout toolbar = new HorizontalLayout(searchField, newButton);
         toolbar.addClassName("toolbar");
@@ -169,28 +207,4 @@ public class ShoppingListsView extends Div {
         );
     }
 
-    // Inner class representing a shopping list item
-    // public static class ShoppingListItem {
-    //     private Long id;
-    //     private String dateCreated;
-    //     private String status;
-
-    //     public ShoppingListItem(Long id, String dateCreated, String status) {
-    //         this.id = id;
-    //         this.dateCreated = dateCreated;
-    //         this.status = status;
-    //     }
-
-    //     public Long getId() {
-    //         return id;
-    //     }
-
-    //     public String getDateCreated() {
-    //         return dateCreated;
-    //     }
-
-    //     public String getStatus() {
-    //         return status;
-    //     }
-    // }
 }

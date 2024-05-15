@@ -3,6 +3,9 @@ package com.business.application.data;
 
 import java.math.BigDecimal;
 
+import com.vaadin.flow.component.template.Id;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 
@@ -10,10 +13,19 @@ import jakarta.persistence.Entity;
 @Entity
 public class Product extends AbstractEntity {
 
+    @Id
     private Long productId;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(name = "SalePrice", nullable = false)
     private BigDecimal salePrice;
+
+    @Column(nullable = false)
     private String category;
+
+    @Column
     private String description;
 
     // Standard getters and setters
