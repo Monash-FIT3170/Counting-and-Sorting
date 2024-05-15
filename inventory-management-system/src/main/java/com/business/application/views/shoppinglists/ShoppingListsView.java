@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
+import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.Product;
 import com.business.application.domain.ShoppingList;
 import java.util.Collections;
@@ -64,7 +65,7 @@ public class ShoppingListsView extends Div {
         addClassName("shopping-lists-view");
         grid = new Grid<>(ShoppingList.class);
         searchField = new TextField("Search", "Search Lists");
-        newButton = new Button("New");
+        newButton = new Button("Create new Shopping List");
 
         setupGrid();
         configureSearchField();
@@ -87,7 +88,7 @@ public class ShoppingListsView extends Div {
         Div card = new Div();
         card.addClassName("card");
 
-        Label nameLabel = new Label("Shopping List " + item.getListId());
+        Label nameLabel = new Label(item.getName() + item.getListId());
         nameLabel.addClassName("name");
 
         Label dateLabel = new Label(item.getDateString() + " · $" + "32,345"); // Assuming a fixed amount for illustration
@@ -157,6 +158,11 @@ public class ShoppingListsView extends Div {
 
     private void configureNewButton() {
         newButton.addClickListener(e -> {
+            UI.getCurrent().navigate("new-shopping-list");
+        });
+
+        /** 
+        newButton.addClickListener(e -> {
             Dialog dialog = new Dialog();
             dialog.setHeaderTitle("Create New Shopping List");
 
@@ -204,6 +210,7 @@ public class ShoppingListsView extends Div {
 
             dialog.open();
         });
+        */
     }
 
     private HorizontalLayout getToolbar() {
@@ -218,12 +225,15 @@ public class ShoppingListsView extends Div {
 
     private List<ShoppingList> getInitialShoppingListItems() {
         // Hardcoded shopping list items for demonstration
-        ArrayList<Product> products = new ArrayList<Product>();
-        return Arrays.asList(
+        //ArrayList<Product> products = new ArrayList<Product>();
+        ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
+        List<ShoppingList> listofallshoppings = shoppingListInstance.getShoppingLists();
+        return listofallshoppings;
+        /**return Arrays.asList(
                 new ShoppingList(1, 111, 123, "Whiskey Restock", products, "Approved"),
                 new ShoppingList(2, 111, 123, "Wine Restock", products, "Edited"),
                 new ShoppingList(3, 222, 321, "Beer Restock", products, "Declined"),
                 new ShoppingList(4, 222, 321, "Spirits Restock", products,"Pending")
-        );
+        );*/
     }
 }
