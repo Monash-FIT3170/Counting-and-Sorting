@@ -1,7 +1,8 @@
 package com.business.application.services;
 
-import com.business.application.data.SampleAddress;
-import com.business.application.data.SampleAddressRepository;
+import com.business.application.domain.SampleAddress;
+import com.business.application.repository.SampleAddressRepository;
+
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

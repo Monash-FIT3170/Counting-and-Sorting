@@ -1,4 +1,4 @@
-package com.business.application.data;
+package com.business.application.domain;
 
 import jakarta.persistence.Entity;
 

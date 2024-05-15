@@ -1,7 +1,8 @@
 package com.business.application.security;
 
-import com.business.application.data.User;
-import com.business.application.data.UserRepository;
+import com.business.application.domain.User;
+import com.business.application.repository.UserRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;

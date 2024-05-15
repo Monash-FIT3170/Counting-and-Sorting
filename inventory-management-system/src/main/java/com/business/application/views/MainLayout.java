@@ -1,6 +1,6 @@
 package com.business.application.views;
 
-import com.business.application.data.User;
+import com.business.application.domain.User;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.views.admindashboard.AdminDashboardView;
 import com.business.application.views.adminstock.AdminStockView;

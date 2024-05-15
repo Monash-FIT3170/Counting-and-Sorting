@@ -1,4 +1,4 @@
-package com.business.application.data;
+package com.business.application.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

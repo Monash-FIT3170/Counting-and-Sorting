@@ -25,13 +25,12 @@ import java.util.List;
 import java.util.Map;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
-import com.business.application.data.Product;
-import com.business.application.data.ShoppingList;
+import com.business.application.domain.Product;
+import com.business.application.domain.ShoppingList;
 import java.util.Collections;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -47,9 +46,14 @@ public class ShoppingListsView extends Div {
     private Grid<ShoppingList> grid;
     private final TextField searchField;
     private final Button newButton;
+    private final List<ShoppingList> shoppingLists;
+    private final FlexLayout container;
 
     public ShoppingListsView() {
-        FlexLayout container = new FlexLayout();
+        shoppingLists = new ArrayList<>();
+        shoppingLists.addAll(getInitialShoppingListItems());
+
+        container = new FlexLayout();
         container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
         container.setWidthFull();
         container.setJustifyContentMode(FlexLayout.JustifyContentMode.START);
@@ -71,8 +75,7 @@ public class ShoppingListsView extends Div {
         add(getToolbar(), content);
 
         // Simulated data fetch
-        List<ShoppingList> items = getShoppingListItems();
-        for (ShoppingList item : items) {
+        for (ShoppingList item : shoppingLists) {
             Div card = createCard(item);
             container.add(card);
         }
@@ -134,7 +137,7 @@ public class ShoppingListsView extends Div {
     }
 
     private void setupGrid() {
-        grid.setItems(getShoppingListItems());
+        grid.setItems(shoppingLists);
 
         // Adding a component renderer to the grid
         grid.addColumn(new ComponentRenderer<>(item -> {
@@ -152,41 +155,57 @@ public class ShoppingListsView extends Div {
         searchField.addValueChangeListener(e -> gridSearch(e.getValue()));
     }
 
-private void configureNewButton() {
-    newButton.addClickListener(e -> {
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Create New Shopping List");
+    private void configureNewButton() {
+        newButton.addClickListener(e -> {
+            Dialog dialog = new Dialog();
+            dialog.setHeaderTitle("Create New Shopping List");
 
-        FormLayout formLayout = new FormLayout();
+            FormLayout formLayout = new FormLayout();
 
-        TextField shoppingListName = new TextField("Shopping List Name");
-        shoppingListName.setRequiredIndicatorVisible(true);
+            TextField shoppingListName = new TextField("Shopping List Name");
+            shoppingListName.setRequiredIndicatorVisible(true);
 
-        DatePicker orderDate = new DatePicker("Order Date");
-        orderDate.setRequired(true);
+            DatePicker orderDate = new DatePicker("Order Date");
+            orderDate.setRequired(true);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        TextField todaysDate = new TextField("Today's Date");
-        todaysDate.setValue(LocalDate.now().format(formatter));
-        todaysDate.setReadOnly(true);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            TextField todaysDate = new TextField("Today's Date");
+            todaysDate.setValue(LocalDate.now().format(formatter));
+            todaysDate.setReadOnly(true);
 
-        formLayout.add(shoppingListName, orderDate, todaysDate);
+            formLayout.add(shoppingListName, orderDate, todaysDate);
 
-        Button saveButton = new Button("Save", event -> {
-            // Handle save logic here
-            dialog.close();
+            Button saveButton = new Button("Save", event -> {
+                // Handle save logic here
+                String name = shoppingListName.getValue();
+                LocalDate date = orderDate.getValue();
+                if (name != null && !name.isEmpty() && date != null) {
+                    ShoppingList newShoppingList = new ShoppingList(
+                            shoppingLists.size() + 1,
+                            111,  // Replace with actual customer ID
+                            123,  // Replace with actual user ID
+                            name,
+                            new ArrayList<>(),  // Replace with actual products list
+                            "Pending"  // Default status
+                    );
+                    shoppingLists.add(newShoppingList);
+                    grid.setItems(shoppingLists);
+                    container.add(createCard(newShoppingList));
+                    dialog.close();
+                }
+            });
+            saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+            Button cancelButton = new Button("Cancel", event -> dialog.close());
+            cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+            HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
+            dialog.add(formLayout, buttonLayout);
+
+            dialog.open();
         });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    }
 
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
-        dialog.add(formLayout, buttonLayout);
-
-        dialog.open();
-    });
-}
     private HorizontalLayout getToolbar() {
         HorizontalLayout toolbar = new HorizontalLayout(searchField, newButton);
         toolbar.addClassName("toolbar");
@@ -196,7 +215,8 @@ private void configureNewButton() {
     private void gridSearch(String searchTerm) {
         // Implement search functionality
     }
-    private List<ShoppingList> getShoppingListItems() {
+
+    private List<ShoppingList> getInitialShoppingListItems() {
         // Hardcoded shopping list items for demonstration
         ArrayList<Product> products = new ArrayList<Product>();
         return Arrays.asList(
@@ -206,5 +226,4 @@ private void configureNewButton() {
                 new ShoppingList(4, 222, 321, "Spirits Restock", products,"Pending")
         );
     }
-
 }

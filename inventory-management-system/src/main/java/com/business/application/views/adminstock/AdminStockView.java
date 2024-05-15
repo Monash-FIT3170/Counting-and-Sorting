@@ -1,6 +1,6 @@
 package com.business.application.views.adminstock;
 
-import com.business.application.data.SamplePerson;
+import com.business.application.domain.SamplePerson;
 import com.business.application.services.SamplePersonService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;

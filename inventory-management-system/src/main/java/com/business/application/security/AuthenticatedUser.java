@@ -1,7 +1,7 @@
 package com.business.application.security;
 
-import com.business.application.data.User;
-import com.business.application.data.UserRepository;
+import com.business.application.domain.User;
+import com.business.application.repository.UserRepository;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;

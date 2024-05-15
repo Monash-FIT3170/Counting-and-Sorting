@@ -1,7 +1,7 @@
 package com.business.application.views.adminteam;
 
-import com.business.application.data.Role;
-import com.business.application.data.User;
+import com.business.application.domain.Role;
+import com.business.application.domain.User;
 import com.business.application.services.UserService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;

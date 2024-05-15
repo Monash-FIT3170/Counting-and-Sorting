@@ -1,7 +1,8 @@
 package com.business.application.services;
 
-import com.business.application.data.User;
-import com.business.application.data.UserRepository;
+import com.business.application.domain.User;
+import com.business.application.repository.UserRepository;
+
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
