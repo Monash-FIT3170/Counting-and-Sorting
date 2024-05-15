@@ -117,11 +117,11 @@ public class UserManagementView extends VerticalLayout {
     private void updateList() {
         grid.setItems(query -> userService.list(
             PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
-            (Specification<User>) (root, q, criteriaBuilder) -> {
-                if (usernameFilter.isEmpty()) {
-                    return null;
+            (Specification<User>) (root, criteriaQuery, criteriaBuilder) -> {
+                if (usernameFilter.getValue() == null || usernameFilter.getValue().isEmpty()) {
+                    return null; // No filter applied if the input is empty.
                 }
-                String filter = "%" + usernamePattern.getValue().toLowerCase() + "%";
+                String filter = "%" + usernameFilter.getValue().toLowerCase() + "%";
                 return criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), filter);
             }).stream());
     }
