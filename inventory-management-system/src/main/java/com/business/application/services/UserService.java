@@ -1,5 +1,6 @@
 package com.business.application.services;
 
+import com.business.application.domain.Role;
 import com.business.application.domain.User;
 import com.business.application.repository.UserRepository;
 
@@ -7,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,8 +40,19 @@ public class UserService {
         return repository.findAll(filter, pageable);
     }
 
+
     public int count() {
         return (int) repository.count();
+    }
+
+    public Optional<User> validateUserDetails(String name, String username) {
+        return repository.findByNameAndUsername(name, username);
+    }
+
+    public boolean resetPassword(User user, String newPassword) {
+        user.setHashedPassword(new BCryptPasswordEncoder().encode(newPassword));
+        repository.save(user);
+        return true;
     }
 
 }

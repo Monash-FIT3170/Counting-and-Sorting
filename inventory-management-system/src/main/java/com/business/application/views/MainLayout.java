@@ -117,6 +117,7 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.BOXES_SOLID.create()));
 
         }
+
         if (accessChecker.hasAccess(UserManagementView.class)) {
             nav.addItem(new SideNavItem("Team", UserManagementView.class,
                     LineAwesomeIcon.USERS_SOLID.create()));

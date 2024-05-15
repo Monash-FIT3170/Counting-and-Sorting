@@ -30,6 +30,9 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         setI18n(i18n);
 
         setForgotPasswordButtonVisible(true);
+        addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate("forgot-password")));
+
+
         setOpened(true);
     }
 
