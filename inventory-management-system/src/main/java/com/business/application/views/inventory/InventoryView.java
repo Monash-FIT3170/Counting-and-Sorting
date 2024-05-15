@@ -86,11 +86,32 @@ public class InventoryView extends Div {
                 .setSortable(true);
     }
 
+    // private void createCategoryColumn() {
+    //     categoryColumn = grid
+    //             .addColumn(ProductFrontend::getCategory)
+    //             .setHeader("Category")
+    //             .setSortable(true);
+    // }
     private void createCategoryColumn() {
         categoryColumn = grid
-                .addColumn(ProductFrontend::getCategory)
-                .setHeader("Category")
-                .setSortable(true);
+                .addColumn(new ComponentRenderer<>(product -> {
+                    Span categorySpan = new Span();
+                    String category = product.getCategory();
+                    categorySpan.setText(category);
+                    if ("Wine".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-wine");
+                    } else if ("Beer".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-beer");
+                    } else if ("Spirit".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-spirit");
+                    } else if ("Premix".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-premix");
+                    } else {
+                        categorySpan.getElement().setAttribute("class", "badge-misc");
+                    }
+                    return categorySpan;
+                }))
+                .setHeader("Category");
     }
 
     private void createQuantityColumn() {

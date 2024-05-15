@@ -22,3 +22,53 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.badge-premix {
+  text-align: center;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fdecef;
+  color: #d6336c;
+}
+
+.badge-misc {
+  text-align: center;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #e6eaf2; 
+  color: #364a6d; 
+}
+
+.badge-beer {
+  text-align: center;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fef3e6; 
+  color: #ff7f0e; 
+}
+
+.badge-spirit {
+  text-align: center;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #e6f7ff; 
+  color: #0099ff;
+}
+
+.badge-wine {
+  text-align: center;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #e7e1f9;
+  color: #8a4baf;
+}
