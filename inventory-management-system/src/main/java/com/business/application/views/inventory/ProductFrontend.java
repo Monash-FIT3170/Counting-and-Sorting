@@ -58,9 +58,6 @@ public class ProductFrontend {
     }
 
     public double getStockPercentage() {
-        // System.out.println(this.quantity);
-        // System.out.println(this.capacity);
-        // System.out.println( (float) this.quantity / this.capacity);
         return ((float) this.quantity / this.capacity) * 100;
     }
 

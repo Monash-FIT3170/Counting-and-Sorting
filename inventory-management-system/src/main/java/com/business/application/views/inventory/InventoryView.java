@@ -2,6 +2,7 @@ package com.business.application.views.inventory;
 
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -150,6 +151,20 @@ public class InventoryView extends Div {
         quantityFilter.setValueChangeMode(ValueChangeMode.EAGER);
         quantityFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue())));
         filterRow.getCell(quantityColumn).setComponent(quantityFilter);
+
+        ComboBox<String> stockLevelFilter = new ComboBox<>();
+        stockLevelFilter.setItems("Low", "Medium", "High");
+        stockLevelFilter.setPlaceholder("Filter");
+        stockLevelFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        stockLevelFilter.setWidth("100%");
+        stockLevelFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
+            String filterValue = stockLevelFilter.getValue();
+            if (filterValue != null) {
+                return filterValue.equalsIgnoreCase(product.getStockStatus());
+            }
+            return true;
+        }));
+        filterRow.getCell(stockLevelColumn).setComponent(stockLevelFilter);
     }
 
     private HorizontalLayout createToolbar() {
