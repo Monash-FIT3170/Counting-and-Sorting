@@ -30,19 +30,20 @@ import jakarta.annotation.security.RolesAllowed;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
+import com.vaadin.flow.component.notification.Notification;
 
 @PageTitle("Suppliers")
 @Route(value = "data-grid2", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 public class SuppliersView extends Div {
-
+    private List<Supplier> suppliers = new ArrayList<>();
     private GridPro<Supplier> grid;
     private GridListDataView<Supplier> gridListDataView;
-
     private Grid.Column<Supplier> IdColumn;
     private Grid.Column<Supplier> ItemNameColumn;
     private Grid.Column<Supplier> CategoryColumn;
@@ -55,6 +56,7 @@ public class SuppliersView extends Div {
         setSizeFull();
         createGrid();
         add(createToolbar(), grid);
+        suppliers = new ArrayList<>();
     }
 
     private void createGrid() {
@@ -68,8 +70,7 @@ public class SuppliersView extends Div {
         grid.setSelectionMode(SelectionMode.MULTI);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
-
-        List<Supplier> suppliers = getSuppliers();
+        createSuppliers();
         gridListDataView = grid.setItems(suppliers);
     }
 
@@ -147,8 +148,40 @@ public class SuppliersView extends Div {
         searchField.setWidth("300px");
 
         Button filterButton = new Button("Filter", VaadinIcon.FILTER.create());
+        Button addButton = new Button("Add", VaadinIcon.PLUS.create());
+        addButton.addClickListener(event -> {
+            // Add new supplier I need this to create a new page to add a supplier
+            SupplierForm form = new SupplierForm();
+            form.open();
+        // Add a listener to the form's 'save' button
+        form.getSaveButton().addClickListener(e -> {
+            gridListDataView.refreshAll();
+            try {
+                // Get the supplier from the form
+                Supplier supplier = form.getSupplier();
+        
+                // Add the supplier to your data source
+                System.out.println(this.suppliers.size());
+                suppliers.add(supplier);
+                List<ProductFrontend> products = getProducts();
+                suppliers.add(createSupplier("BWS", 375, 600, products.get(7)));
+                System.out.println(suppliers.size());
+                // Update the grid data view
+                 // Update the grid data view
+                gridListDataView.refreshAll();
+                // Close the form
+                form.close();
+            } catch (Exception ex) {
+                // Handle the exception
+                // For example, you could show a notification with the error message
+                Notification.show("An error occurred: " + ex.getMessage());
+            }
+        });
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton);
+        // Open the form
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton, addButton);
         toolbar.setAlignItems(Alignment.BASELINE);
         toolbar.setWidthFull();
         toolbar.setPadding(true);
@@ -215,16 +248,21 @@ public class SuppliersView extends Div {
         filterRow.getCell(SupplierColumn).setComponent(supplierFilter);
     }
 
-    private List<Supplier> getSuppliers() {
+    private void createSuppliers() {
         // iterate through getProducts() and create a Supplier object for each product
         List<ProductFrontend> products = getProducts();
-        return Arrays.asList(
-                createSupplier("Dan Murphy", 375, 600, products.get(0)),
-                createSupplier("Dan Murphy", 24, 42, products.get(1)),
-                createSupplier("Dan Murphy", 24, 42, products.get(2)),
-                createSupplier("Dan Murphy", 24, 42, products.get(3)),
-                createSupplier("Dan Murphy", 24, 42, products.get(4))
-        );
+        // return Arrays.asList(
+        //         createSupplier("Dan Murphy", 375, 600, products.get(0)),
+        //         createSupplier("Dan Murphy", 24, 42, products.get(1)),
+        //         createSupplier("Dan Murphy", 24, 42, products.get(2)),
+        //         createSupplier("Dan Murphy", 24, 42, products.get(3)),
+        //         createSupplier("Dan Murphy", 24, 42, products.get(4))
+        // );
+        suppliers.add(createSupplier("Dan Murphy", 375, 600, products.get(0)));
+        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(1)));
+        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(2)));
+        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(3)));
+        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(4)));
     }
 
     private Supplier createSupplier(String Supplier, int Qty, int SalePrice, ProductFrontend p) {
