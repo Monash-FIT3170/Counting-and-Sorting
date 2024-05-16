@@ -1,0 +1,14 @@
+/*
+ * This file has been created by the Vaadin Theme Editor. Please note that
+ * manual changes to individual CSS properties may be overwritten by the theme editor.
+ */
+h2.admin-dashboard-view-h2-1 {
+  color:#1B2B41B0;
+  font-size:var(--lumo-font-size-s);
+}
+
+vaadin-text-field.admin-dashboard-view-store-search::part(input-field) {
+  background-color:rgba(26,57,96,0.1);
+  border-width:0px;
+  border:none;
+}
