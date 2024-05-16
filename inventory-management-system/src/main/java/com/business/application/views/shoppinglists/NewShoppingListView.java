@@ -13,6 +13,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-@PageTitle("New Shopping List")
+@PageTitle("Create A New Shopping List")
 @Route(value = "new-shopping-list", layout = MainLayout.class)
 @AnonymousAllowed
 public class NewShoppingListView extends Div {
@@ -50,7 +51,7 @@ public class NewShoppingListView extends Div {
         Date sqlDate = java.sql.Date.valueOf(selectedDate);
         this.setChosenDate(sqlDate);});
 
-        add(orderDate);
+        //add(orderDate);
 
         // enter the name of the shopping list    
         TextField ShoppingListName = new TextField();
@@ -63,7 +64,11 @@ public class NewShoppingListView extends Div {
             setShoppingListName(event.getValue());
             
         });
-        add(ShoppingListName);
+
+        HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate,ShoppingListName);
+        dateAndShoppingListName.setSpacing(true);
+        add(dateAndShoppingListName);
+        //add(ShoppingListName);
         
         // setup a grid for all the products
         productDataProvider = new ListDataProvider<>(productList);
