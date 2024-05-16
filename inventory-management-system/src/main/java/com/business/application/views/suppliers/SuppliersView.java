@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import com.vaadin.flow.component.notification.Notification;
+import java.util.Set;
 
 @PageTitle("Suppliers")
 @Route(value = "data-grid2", layout = MainLayout.class)
@@ -55,8 +56,8 @@ public class SuppliersView extends Div {
         addClassName("suppliers-view");
         setSizeFull();
         createGrid();
+        createSuppliers();
         add(createToolbar(), grid);
-        suppliers = new ArrayList<>();
     }
 
     private void createGrid() {
@@ -70,7 +71,6 @@ public class SuppliersView extends Div {
         grid.setSelectionMode(SelectionMode.MULTI);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
-        createSuppliers();
         gridListDataView = grid.setItems(suppliers);
     }
 
@@ -146,27 +146,49 @@ public class SuppliersView extends Div {
         searchField.setPlaceholder("Search Items");
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.setWidth("300px");
+        System.out.println(suppliers.size());
 
         Button filterButton = new Button("Filter", VaadinIcon.FILTER.create());
         Button addButton = new Button("Add", VaadinIcon.PLUS.create());
+        Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
+        Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
+            editButton.addClickListener(event -> {
+                // Get the selected item from the grid
+                Supplier selectedSupplier = grid.asSingleSelect().getValue();
+
+                if (selectedSupplier != null) {
+                    // Open the SupplierForm with the data of the selected supplier
+                    SupplierForm supplierForm = new SupplierForm();
+                    //supplierForm.setSupplier(selectedSupplier);
+                    supplierForm.open();
+                } else {
+                    Notification.show("No supplier selected");
+                }
+            });
+        deleteButton.addClickListener(event -> {
+            // Get the selected items from the grid
+            Set<Supplier> selectedItems = grid.getSelectedItems();
+
+            // Remove the selected items from the suppliers list
+            suppliers.removeAll(selectedItems);
+
+            // Update the grid data view
+            gridListDataView.refreshAll();
+        });
+
         addButton.addClickListener(event -> {
             // Add new supplier I need this to create a new page to add a supplier
             SupplierForm form = new SupplierForm();
             form.open();
         // Add a listener to the form's 'save' button
         form.getSaveButton().addClickListener(e -> {
-            gridListDataView.refreshAll();
+            //gridListDataView.refreshAll();
             try {
                 // Get the supplier from the form
                 Supplier supplier = form.getSupplier();
         
                 // Add the supplier to your data source
-                System.out.println(this.suppliers.size());
                 suppliers.add(supplier);
-                List<ProductFrontend> products = getProducts();
-                suppliers.add(createSupplier("BWS", 375, 600, products.get(7)));
-                System.out.println(suppliers.size());
-                // Update the grid data view
                  // Update the grid data view
                 gridListDataView.refreshAll();
                 // Close the form
@@ -177,11 +199,15 @@ public class SuppliersView extends Div {
                 Notification.show("An error occurred: " + ex.getMessage());
             }
         });
+    });
+            
+           
+        
 
         // Open the form
-        });
+        
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton, addButton);
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton, addButton, deleteButton, editButton);
         toolbar.setAlignItems(Alignment.BASELINE);
         toolbar.setWidthFull();
         toolbar.setPadding(true);
