@@ -102,6 +102,7 @@ public class AdminDashboardView extends Main {
         layout.addClassName(Padding.LARGE);
         layout.setPadding(false);
         layout.setSpacing(false);
+        layout.addClassName("rounded-rectangle");
         return layout;
     }
 
@@ -144,6 +145,7 @@ public class AdminDashboardView extends Main {
         viewEvents.setPadding(false);
         viewEvents.setSpacing(false);
         viewEvents.getElement().getThemeList().add("spacing-l");
+        viewEvents.addClassName("rounded-rectangle");
         return viewEvents;
     }
 
