@@ -4,11 +4,13 @@ import com.business.application.views.MainLayout;
 import com.business.application.views.admindashboard.ServiceHealth.Status;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Main;
@@ -24,6 +26,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
@@ -43,21 +46,35 @@ public class AdminDashboardView extends Main {
         HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         add(storeInfoLayout);
 
-        Board board = new Board();
-        board.addRow(createHighlight("Monthly Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "12,345,340", 0.0));
-        board.addRow(createViewSalesQty());
-        add(board);
+        HorizontalLayout mainLayout = new HorizontalLayout();
+        mainLayout.setWidthFull();
+
+        VerticalLayout leftColumn = new VerticalLayout();
+        leftColumn.setWidth("calc(55% - 16px)");
+        
+
+        HorizontalLayout highlightsLayout = new HorizontalLayout();
+        highlightsLayout.setWidthFull();
+        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "12,345,340", null));
+
+        leftColumn.add(highlightsLayout);
+        leftColumn.add(createViewSalesQty());
+
+        VerticalLayout rightColumn = new VerticalLayout();
+        rightColumn.setWidth("calc(45% - 16px)");
+        rightColumn.add(createLowStockItemsGrid());
+        rightColumn.add(createNotifications());
+
+        mainLayout.add(leftColumn, rightColumn);
+        add(mainLayout);
     }
 
     private HorizontalLayout createStoreInfoLayout() {
-        H1 storeName = new H1("CLAYTON");
-        storeName.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.MEDIUM);
-
         // Search bar
         TextField searchBar = new TextField();
         searchBar.addClassName("admin-dashboard-view-store-search");
         searchBar.setPlaceholder("Select Store");
-        searchBar.setSuffixComponent(new Icon(VaadinIcon.SEARCH));
+        searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
         searchBar.setWidth("300px");
 
         // Layout for store info and search bar
@@ -68,37 +85,43 @@ public class AdminDashboardView extends Main {
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
         layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         layout.addClassName(Padding.LARGE);
+        layout.addClassName("search-top-section");
         return layout;
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
-        VaadinIcon icon = VaadinIcon.ARROW_UP;
-        String prefix = "";
-        String theme = "badge";
+        
 
-        if (percentage == 0) {
-            prefix = "±";
-        } else if (percentage > 0) {
-            prefix = "+";
-            theme += " success";
-        } else if (percentage < 0) {
-            icon = VaadinIcon.ARROW_DOWN;
-            theme += " error";
-        }
-
-        H2 h2 = new H2(title);
-        h2.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.XSMALL);
+        HorizontalLayout head = createHeader(title.toUpperCase(), "");
 
         Span span = new Span(value);
-        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXXLARGE);
+        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXLARGE);
 
-        Icon i = icon.create();
-        i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
+        
+        if (percentage == null) {
+            head.add(LumoIcon.UNORDERED_LIST.create());
+        }
+        else {
+            VaadinIcon icon = VaadinIcon.ARROW_UP;
+            String prefix = "";
+            String theme = "badge";
 
-        Span badge = new Span(i, new Span(prefix + percentage.toString()));
-        badge.getElement().getThemeList().add(theme);
-
-        VerticalLayout layout = new VerticalLayout(h2, span, badge);
+            if (percentage == 0) {
+                prefix = "±";
+            } else if (percentage > 0) {
+                prefix = "+";
+                theme += " success";
+            } else if (percentage < 0) {
+                icon = VaadinIcon.ARROW_DOWN;
+                theme += " error";
+            }
+            Icon i = icon.create();
+            i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
+            Span badge = new Span(i, new Span(prefix + percentage.toString()));
+            badge.getElement().getThemeList().add(theme);
+            head.add(badge);
+        }
+        VerticalLayout layout = new VerticalLayout(head, span);
         layout.addClassName(Padding.LARGE);
         layout.setPadding(false);
         layout.setSpacing(false);
@@ -149,6 +172,55 @@ public class AdminDashboardView extends Main {
         return viewEvents;
     }
 
+    private Component createLowStockItemsGrid() {
+        Grid<StockItem> grid = new Grid<>(StockItem.class, false);
+        //<theme-editor-local-classname>
+        grid.addClassName("admin-dashboard-view-grid-1");
+        grid.addColumn(StockItem::getStatus).setHeader("Status");
+        grid.addColumn(StockItem::getItemName).setHeader("Item Name");
+        grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
+
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.setItems(
+                new StockItem(" ", "Smirnoff: Ice Double Black", 296),
+                new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
+                new StockItem(" ", "Suntory: -196 Double Lemon", 156),
+                new StockItem(" ", "Good Day: Watermelon", 46),
+                new StockItem(" ", "Absolut: Vodka 1L", 9),
+                new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
+                new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
+                new StockItem(" ", "Moët & Chandon: Impérial", 250),
+                new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
+                new StockItem(" ", "Vodka Cruiser: Lush Guava", 32));
+
+        HorizontalLayout head = createHeader("LOW STOCK ITEMS", "");
+        head.add(LumoIcon.UNORDERED_LIST.create());
+        VerticalLayout layout = new VerticalLayout(head, grid);
+        layout.addClassName(Padding.LARGE);
+        layout.setPadding(false);
+        layout.addClassName("rounded-rectangle");
+        return layout;
+    }
+
+    private Component createNotifications() {
+        VerticalLayout notificationsLayout = new VerticalLayout();
+        notificationsLayout.addClassName(Padding.LARGE);
+        notificationsLayout.setPadding(false);
+        notificationsLayout.setSpacing(false);
+        notificationsLayout.addClassName("rounded-rectangle");
+
+        for (String notification : new String[] { "Request #219 Edited", "Request #224 Approved",
+                "Request #256 Declined", "Request #214 Approved" }) {
+            HorizontalLayout notificationItem = new HorizontalLayout();
+            Span notificationText = new Span(notification);
+            Button viewButton = new Button("View");
+            notificationItem.add(notificationText, viewButton);
+            notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
+            notificationsLayout.add(notificationItem);
+        }
+        return notificationsLayout;
+    }
+
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
         h2.addClassName("admin-dashboard-view-h2-1");
@@ -166,5 +238,29 @@ public class AdminDashboardView extends Main {
         header.setSpacing(false);
         header.setWidthFull();
         return header;
+    }
+
+    public static class StockItem {
+        private String status;
+        private String itemName;
+        private int qtyRemaining;
+
+        public StockItem(String status, String itemName, int qtyRemaining) {
+            this.status = status;
+            this.itemName = itemName;
+            this.qtyRemaining = qtyRemaining;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getItemName() {
+            return itemName;
+        }
+
+        public int getQtyRemaining() {
+            return qtyRemaining;
+        }
     }
 }
