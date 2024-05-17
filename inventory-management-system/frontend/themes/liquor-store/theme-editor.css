@@ -11,4 +11,17 @@ vaadin-text-field.admin-dashboard-view-store-search::part(input-field) {
   background-color:rgba(26,57,96,0.1);
   border-width:0px;
   border:none;
+  box-shadow: none;
+}
+
+html {
+    -lumo-shade-30pct: none;
+}
+
+.admin-dashboard-view-h2-1 {
+    margin: 0;
+}
+
+.admin-dashboard-view-year-1 input {
+    border: none;
 }

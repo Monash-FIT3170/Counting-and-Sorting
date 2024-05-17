@@ -1,6 +1,5 @@
 package com.business.application.views.admindashboard;
 
-
 import com.business.application.views.MainLayout;
 import com.business.application.views.admindashboard.ServiceHealth.Status;
 import com.vaadin.flow.component.Component;
@@ -45,19 +44,17 @@ public class AdminDashboardView extends Main {
         add(storeInfoLayout);
 
         Board board = new Board();
-        board.addRow(createHighlight("Current users", "745", 33.7), createHighlight("View events", "54.6k", -112.45),
-                createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
+        board.addRow(createHighlight("Monthly Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "12,345,340", 0.0));
         board.addRow(createViewSalesQty());
         add(board);
     }
-    
-    private HorizontalLayout createStoreInfoLayout()  {
+
+    private HorizontalLayout createStoreInfoLayout() {
         H1 storeName = new H1("CLAYTON");
         storeName.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.MEDIUM);
 
         // Search bar
         TextField searchBar = new TextField();
-        //<theme-editor-local-classname>
         searchBar.addClassName("admin-dashboard-view-store-search");
         searchBar.setPlaceholder("Select Store");
         searchBar.setSuffixComponent(new Icon(VaadinIcon.SEARCH));
@@ -111,7 +108,6 @@ public class AdminDashboardView extends Main {
     private Component createViewSalesQty() {
         // Header
         IntegerField year = new IntegerField();
-        //<theme-editor-local-classname>
         year.addClassName("admin-dashboard-view-year-1");
         year.setValue(2024);
         year.setStepButtonsVisible(true);
@@ -121,6 +117,7 @@ public class AdminDashboardView extends Main {
         HorizontalLayout header = createHeader("VIEW SALES QTY", "");
         header.add(year);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
+
         // Chart
         Chart chart = new Chart(ChartType.AREASPLINE);
         Configuration conf = chart.getConfiguration();
@@ -137,10 +134,9 @@ public class AdminDashboardView extends Main {
         plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
 
-        conf.addSeries(new ListSeries("Berlin", 189, 191, 291, 396, 501, 403, 609, 712, 729, 942, 1044, 1247));
-        conf.addSeries(new ListSeries("London", 138, 246, 248, 348, 352, 353, 463, 573, 778, 779, 885, 887));
-        conf.addSeries(new ListSeries("New York", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
-        conf.addSeries(new ListSeries("Tokyo", 0, 11, 17, 123, 130, 142, 248, 349, 452, 454, 458, 462));
+        conf.addSeries(new ListSeries("Beer", 189, 191, 291, 396, 501, 403, 609, 712, 729, 942, 1044, 1247));
+        conf.addSeries(new ListSeries("Wine", 138, 246, 248, 348, 352, 353, 463, 573, 778, 779, 885, 887));
+        conf.addSeries(new ListSeries("Spirits", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
 
         // Add it all together
         VerticalLayout viewEvents = new VerticalLayout(header, chart);
@@ -153,7 +149,6 @@ public class AdminDashboardView extends Main {
 
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
-        //<theme-editor-local-classname>
         h2.addClassName("admin-dashboard-view-h2-1");
         h2.addClassNames(FontSize.XLARGE, Margin.NONE);
 
@@ -170,5 +165,4 @@ public class AdminDashboardView extends Main {
         header.setWidthFull();
         return header;
     }
-
 }
