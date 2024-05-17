@@ -1,29 +1,24 @@
 package com.business.application.views.admindashboard;
 
-import com.business.application.views.MainLayout;
-import com.business.application.views.admindashboard.ServiceHealth.Status;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Span;
+import com.business.application.views.MainLayout;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -51,11 +46,11 @@ public class AdminDashboardView extends Main {
 
         VerticalLayout leftColumn = new VerticalLayout();
         leftColumn.setWidth("calc(55% - 16px)");
-        
 
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "12,345,340", null));
+        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
+                createHighlight("Total Inventory Count", "12,345,340", null));
 
         leftColumn.add(highlightsLayout);
         leftColumn.add(createViewSalesQty());
@@ -90,18 +85,15 @@ public class AdminDashboardView extends Main {
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
-        
 
         HorizontalLayout head = createHeader(title.toUpperCase(), "");
 
         Span span = new Span(value);
         span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXLARGE);
 
-        
         if (percentage == null) {
             head.add(LumoIcon.UNORDERED_LIST.create());
-        }
-        else {
+        } else {
             VaadinIcon icon = VaadinIcon.ARROW_UP;
             String prefix = "";
             String theme = "badge";
@@ -174,7 +166,7 @@ public class AdminDashboardView extends Main {
 
     private Component createLowStockItemsGrid() {
         Grid<StockItem> grid = new Grid<>(StockItem.class, false);
-        //<theme-editor-local-classname>
+        // <theme-editor-local-classname>
         grid.addClassName("admin-dashboard-view-grid-1");
         grid.addColumn(StockItem::getStatus).setHeader("Status");
         grid.addColumn(StockItem::getItemName).setHeader("Item Name");
@@ -203,18 +195,32 @@ public class AdminDashboardView extends Main {
     }
 
     private Component createNotifications() {
-        VerticalLayout notificationsLayout = new VerticalLayout();
+        HorizontalLayout head = createHeader("NOTIFICATIONS", "");
+        head.add(LumoIcon.BELL.create());
+        VerticalLayout notificationsLayout = new VerticalLayout(head);
         notificationsLayout.addClassName(Padding.LARGE);
         notificationsLayout.setPadding(false);
         notificationsLayout.setSpacing(false);
         notificationsLayout.addClassName("rounded-rectangle");
-
-        for (String notification : new String[] { "Request #219 Edited", "Request #224 Approved",
-                "Request #256 Declined", "Request #214 Approved" }) {
-            HorizontalLayout notificationItem = new HorizontalLayout();
-            Span notificationText = new Span(notification);
+    
+        for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
+                "Request #256 Declined", "Request #214 Approved"}) {
+    
             Button viewButton = new Button("View");
-            notificationItem.add(notificationText, viewButton);
+            viewButton.addClickListener(clickEvent -> {
+                Notification notification = new Notification();
+                notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                notification.setText(notificationText);
+    
+                Button closeButton = new Button("Close", e -> notification.close());
+                notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
+                notification.setDuration(5000);
+                notification.open();
+            });
+    
+            HorizontalLayout notificationItem = new HorizontalLayout(new Span(notificationText), viewButton);
+            notificationItem.addClassName("notification-item");
+            notificationItem.setWidthFull();
             notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
             notificationsLayout.add(notificationItem);
         }
