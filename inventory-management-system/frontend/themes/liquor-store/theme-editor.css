@@ -12,3 +12,16 @@ vaadin-text-field.admin-dashboard-view-store-search::part(input-field) {
   border-width:0px;
   border:none;
 }
+
+.notification-item {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    border: 1px solid #1a38601f;
+    padding: 4px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+}
