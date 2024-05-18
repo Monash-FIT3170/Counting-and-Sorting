@@ -1,0 +1,6 @@
+.dynamic-style {
+    padding: var(--lumo-space-m);
+    border: 1px solid var(--lumo-contrast-20pct);
+    border-radius: var(--lumo-border-radius);
+    background-color: var(--lumo-base-color);
+}

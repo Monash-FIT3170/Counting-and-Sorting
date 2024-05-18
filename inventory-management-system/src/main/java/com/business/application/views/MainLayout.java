@@ -16,6 +16,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -25,7 +27,11 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
@@ -65,20 +71,84 @@ public class MainLayout extends AppLayout {
     }
 
     private void addHeaderContent() {
+        HorizontalLayout mainLayout = new HorizontalLayout();
+        mainLayout.setWidthFull();
+        mainLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        mainLayout.setAlignItems(Alignment.CENTER);
+    
+        // Left-aligned components
+        HorizontalLayout leftLayout = new HorizontalLayout();
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
-
-        viewTitle = new H2();
+    
+        viewTitle = new H2();  // Set a title or leave it dynamic as needed
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+        leftLayout.add(toggle, viewTitle);
+        leftLayout.setAlignItems(Alignment.CENTER);
+    
+        // Right-aligned components
+        HorizontalLayout rightLayout = new HorizontalLayout();
+        rightLayout.add(createThemeToggleButton(), createUserMenu());
+        rightLayout.setSpacing(true);
+        rightLayout.getStyle().set("padding-right", "40px"); 
 
-        addToNavbar(true, toggle, viewTitle);
+    
+        mainLayout.add(leftLayout, rightLayout);
+        mainLayout.expand(leftLayout);  
+
+        addToNavbar(mainLayout);
     }
+
+    private Component createUserMenu() {
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setSpacing(true);
+        layout.setAlignItems(Alignment.CENTER);
+
+        Optional<User> maybeUser = authenticatedUser.get();
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            Avatar avatar = new Avatar(user.getName());
+            avatar.setThemeName("xsmall");
+
+            MenuBar userMenu = new MenuBar();
+            userMenu.setThemeName("tertiary-inline");
+
+            MenuItem userDetails = userMenu.addItem(user.getName(), e -> {});
+            userDetails.getSubMenu().addItem("Sign out", e -> authenticatedUser.logout());
+
+            layout.add(avatar, userMenu);
+        } else {
+            Button loginButton = new Button("Sign in", VaadinIcon.SIGN_IN.create());
+            loginButton.addClickListener(e -> UI.getCurrent().navigate("login"));
+            loginButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            layout.add(loginButton);
+        }
+
+        return layout;
+}
+
+    private Component createThemeToggleButton() {
+        Icon themeIcon = new Icon("vaadin", "moon");
+        themeIcon.getStyle().set("cursor", "pointer");
+
+        Button themeToggleButton = new Button();
+        themeToggleButton.setIcon(themeIcon);
+        themeToggleButton.addClickListener(e -> toggleTheme(themeIcon));
+        themeToggleButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        // Set button margin to align with user menu
+        // Set button size to be 40 pixels to match the user menu
+        themeToggleButton.getElement().getStyle().set("width", "40px").set("height", "40px");
+        themeToggleButton.getElement().getStyle().set("margin-right", "20px");
+
+        return themeToggleButton;
+    }
+
 
     private void addDrawerContent() {
         updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
 
         Scroller scroller = new Scroller(createNavigation());
-        addToDrawer(logoImage, scroller, createFooter());
+        addToDrawer(logoImage, scroller);
     }
 
     private void updateLogo(boolean darkTheme) {
@@ -165,49 +235,6 @@ public class MainLayout extends AppLayout {
                                             updateLogo(themeList.contains(Lumo.DARK));
     }
 
-    private Footer createFooter() {
-        Footer layout = new Footer();
-
-        Optional<User> maybeUser = authenticatedUser.get();
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-
-            Avatar avatar = new Avatar(user.getName());
-            avatar.setThemeName("xsmall");
-            avatar.getElement().setAttribute("tabindex", "-1");
-
-            MenuBar userMenu = new MenuBar();
-            userMenu.setThemeName("tertiary-inline contrast");
-
-            MenuItem userName = userMenu.addItem("");
-            Div div = new Div();
-            div.add(avatar);
-            div.add(user.getName());
-            div.add(new Icon("lumo", "dropdown"));
-            div.getElement().getStyle().set("display", "flex");
-            div.getElement().getStyle().set("align-items", "center");
-            div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
-            userName.add(div);
-            userName.getSubMenu().addItem("Sign out", e -> {
-                authenticatedUser.logout();
-            });
-                    // Icon for light/dark mode toggle
-            Icon themeIcon = new Icon("vaadin", "moon");
-            themeIcon.addClickListener(e -> {
-                toggleTheme(themeIcon);
-            });
-            
-            
-            layout.add(themeIcon);
-
-            layout.add(userMenu);
-        } else {
-            Anchor loginLink = new Anchor("login", "Sign in");
-            layout.add(loginLink);
-        }
-
-        return layout;
-    }
 
     @Override
     protected void afterNavigation() {
