@@ -1,10 +1,16 @@
 package com.business.application.views.admindashboard;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.business.application.domain.ListOfShoppingList;
+import com.business.application.domain.ShoppingList;
 import com.business.application.views.MainLayout;
 import com.business.application.views.admindashboard.ServiceHealth.Status;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
@@ -15,6 +21,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -43,7 +50,7 @@ public class AdminDashboardView extends Main {
         board.addRow(createHighlight("Current users", "745", 33.7), createHighlight("View events", "54.6k", -112.45),
                 createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
         board.addRow(createViewEvents());
-        board.addRow(createServiceHealth(), createResponseTimes());
+        board.addRow(createShoppingListRequests(), createResponseTimes());
         add(board);
     }
 
@@ -121,31 +128,27 @@ public class AdminDashboardView extends Main {
         return viewEvents;
     }
 
-    private Component createServiceHealth() {
+    private Component createShoppingListRequests() {
         // Header
-        HorizontalLayout header = createHeader("Service health", "Input / output");
+        HorizontalLayout header = createHeader("Pending Shopping List Requests", "Approve or Deny Requests");
 
         // Grid
-        Grid<ServiceHealth> grid = new Grid();
+        Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setAllRowsVisible(true);
 
-        grid.addColumn(new ComponentRenderer<>(serviceHealth -> {
-            Span status = new Span();
-            String statusText = getStatusDisplayName(serviceHealth);
-            status.getElement().setAttribute("aria-label", "Status: " + statusText);
-            status.getElement().setAttribute("title", "Status: " + statusText);
-            status.getElement().getThemeList().add(getStatusTheme(serviceHealth));
-            return status;
-        })).setHeader("").setFlexGrow(0).setAutoWidth(true);
-        grid.addColumn(ServiceHealth::getCity).setHeader("City").setFlexGrow(1);
-        grid.addColumn(ServiceHealth::getInput).setHeader("Input").setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
-        grid.addColumn(ServiceHealth::getOutput).setHeader("Output").setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.END);
+        grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
+        grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
+        grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
 
-        grid.setItems(new ServiceHealth(Status.EXCELLENT, "Münster", 324, 1540),
-                new ServiceHealth(Status.OK, "Cluj-Napoca", 311, 1320),
-                new ServiceHealth(Status.FAILING, "Ciudad Victoria", 300, 1219));
+        List<ShoppingList> pendingShoppingLists = getPendingShoppingLists();
+        grid.setItems(pendingShoppingLists);
+
+        // Add click listener to navigate to requests tab
+        grid.addItemClickListener(event -> {
+            // Navigate to requests tab
+            getUI().ifPresent(ui -> ui.navigate("requests"));
+        });
 
         // Add it all together
         VerticalLayout serviceHealth = new VerticalLayout(header, grid);
@@ -156,32 +159,52 @@ public class AdminDashboardView extends Main {
         return serviceHealth;
     }
 
-    private Component createResponseTimes() {
-        HorizontalLayout header = createHeader("Response times", "Average across all systems");
+    private List<ShoppingList> getPendingShoppingLists() {
+        return ListOfShoppingList.getInstance().getShoppingLists().stream()
+            .filter(list -> "Pending".equals(list.getStatus()))
+            .collect(Collectors.toList());
+    }
 
+
+    private Component createResponseTimes() {
+        HorizontalLayout header = createHeader("Request Status Distribution", "Number of each type of request");
+    
         // Chart
         Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
         chart.setThemeName("gradient");
-
+    
         DataSeries series = new DataSeries();
-        series.add(new DataSeriesItem("System 1", 12.5));
-        series.add(new DataSeriesItem("System 2", 12.5));
-        series.add(new DataSeriesItem("System 3", 12.5));
-        series.add(new DataSeriesItem("System 4", 12.5));
-        series.add(new DataSeriesItem("System 5", 12.5));
-        series.add(new DataSeriesItem("System 6", 12.5));
+    
+        int approvedCount = getRequestCountByStatus("Approved");
+        int pendingCount = getRequestCountByStatus("Pending");
+        int declinedCount = getRequestCountByStatus("Declined");
+        int inProgressCount = getRequestCountByStatus("In Progress");
+    
+        series.add(new DataSeriesItem("Approved", approvedCount));
+        series.add(new DataSeriesItem("Pending", pendingCount));
+        series.add(new DataSeriesItem("Declined", declinedCount));
+        series.add(new DataSeriesItem("In Progress", inProgressCount));
+    
         conf.addSeries(series);
-
+    
         // Add it all together
-        VerticalLayout serviceHealth = new VerticalLayout(header, chart);
-        serviceHealth.addClassName(Padding.LARGE);
-        serviceHealth.setPadding(false);
-        serviceHealth.setSpacing(false);
-        serviceHealth.getElement().getThemeList().add("spacing-l");
-        return serviceHealth;
+        VerticalLayout responseTimes = new VerticalLayout(header, chart);
+        responseTimes.addClassName(Padding.LARGE);
+        responseTimes.setPadding(false);
+        responseTimes.setSpacing(false);
+        responseTimes.getElement().getThemeList().add("spacing-l");
+        return responseTimes;
     }
+    
+    private int getRequestCountByStatus(String status) {
+        ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
+        return (int) shoppingListInstance.getShoppingLists().stream()
+                .filter(list -> status.equals(list.getStatus()))
+                .count();
+    }
+    
 
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
