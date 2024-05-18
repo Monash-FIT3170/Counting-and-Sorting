@@ -68,7 +68,7 @@ public class SuppliersView extends Div {
 
     private void createGridComponent() {
         grid = new GridPro<>();
-        grid.setSelectionMode(SelectionMode.MULTI);
+        grid.setSelectionMode(SelectionMode.SINGLE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
         gridListDataView = grid.setItems(suppliers);
@@ -146,25 +146,44 @@ public class SuppliersView extends Div {
         searchField.setPlaceholder("Search Items");
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.setWidth("300px");
-        System.out.println(suppliers.size());
 
         Button filterButton = new Button("Filter", VaadinIcon.FILTER.create());
         Button addButton = new Button("Add", VaadinIcon.PLUS.create());
         Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
         Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
-            editButton.addClickListener(event -> {
-                // Get the selected item from the grid
-                Supplier selectedSupplier = grid.asSingleSelect().getValue();
+editButton.addClickListener(event -> {
+    // Get the selected item from the grid
+    Supplier selectedSupplier = grid.asSingleSelect().getValue();
 
-                if (selectedSupplier != null) {
-                    // Open the SupplierForm with the data of the selected supplier
-                    SupplierForm supplierForm = new SupplierForm();
-                    //supplierForm.setSupplier(selectedSupplier);
-                    supplierForm.open();
-                } else {
-                    Notification.show("No supplier selected");
-                }
-            });
+    if (selectedSupplier != null) {
+        // Open the SupplierForm with the data of the selected supplier
+        SupplierForm supplierForm = new SupplierForm();
+        supplierForm.setSupplier(selectedSupplier);
+        supplierForm.open();
+
+        // Add a click listener to the save button in the SupplierForm
+        supplierForm.getSaveButton().addClickListener(e -> {
+            // Get the updated supplier from the form
+            Supplier updatedSupplier = supplierForm.getSupplier();
+
+            // Update the supplier in your data source
+            // This depends on how your data source is implemented
+            // For example, if your data source is a List<Supplier>, you could do:
+            int index = suppliers.indexOf(selectedSupplier);
+            if (index != -1) {
+                suppliers.set(index, updatedSupplier);
+            }
+
+            // Update the grid
+            grid.getDataProvider().refreshAll();
+
+            // Close the form
+            supplierForm.close();
+        });
+    } else {
+        Notification.show("No supplier selected");
+    }
+});
         deleteButton.addClickListener(event -> {
             // Get the selected items from the grid
             Set<Supplier> selectedItems = grid.getSelectedItems();
