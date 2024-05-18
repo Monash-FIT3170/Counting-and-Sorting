@@ -8,7 +8,10 @@ import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -18,6 +21,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -43,8 +47,8 @@ public class ForecastView extends Main {
         addClassName("forecast-view");
 
         Board board = new Board();
-       // board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
-                // createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
+        board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
+                 createHighlight("Conversion rate", "18%", 3.9));
         board.addRow(createViewStockForecast());
         // board.addRow( createResponseTimes());
         add(board);
@@ -88,12 +92,46 @@ public class ForecastView extends Main {
         // Header
         HorizontalLayout header = createHeader("Forecasting view", "");
 
-        // Selector for Alcohol Types
-        Select<String> alcoholTypeSelect = new Select<>();
-        alcoholTypeSelect.setItems("Smirnoff Vodka 700ml", "Gordons Gin 700ml", "Jack Daniels 700ml");
-        alcoholTypeSelect.setLabel("Select Alcohol Type");
-        alcoholTypeSelect.setValue("Smirnoff Vodka 700ml"); // Default selected value
-        alcoholTypeSelect.setWidth("200px");
+        Button allCategoriesBtn = new Button("All Categories");
+        Button beerBtn = new Button("Beer");
+        Button wineBtn = new Button("Wine");
+        Button spiritsBtn = new Button("Spirits");
+        Button premixBtn = new Button("Premix");
+        Button miscBtn = new Button("Misc");
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
+        buttonLayout.setAlignItems(FlexComponent.Alignment.START);
+
+        // ComboBox for search
+    ComboBox<String> searchComboBox = new ComboBox<>();
+    searchComboBox.setItems("Smirnoff Vodka 700ml", "Gordons Gin 700ml", "Jack Daniels 700ml");
+    searchComboBox.setLabel("Search Alcohol Type");
+    searchComboBox.setPlaceholder("Type to search...");
+
+    // MultiSelectListBox for multi-selector
+    MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
+    multiSelectListBox.setItems("Smirnoff Vodka 700ml", "Gordons Gin 700ml", "Jack Daniels 700ml");
+    multiSelectListBox.setHeight("150px");
+
+    // Layout for ComboBox and MultiSelectListBox
+    VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
+    selectLayout.setPadding(false);
+    selectLayout.setSpacing(false);
+    selectLayout.setAlignItems(FlexComponent.Alignment.START);
+
+
+        // // Selector for Alcohol Types
+        // Select<String> alcoholTypeSelect = new Select<>();
+        // alcoholTypeSelect.setItems("Smirnoff Vodka 700ml", "Gordons Gin 700ml", "Jack Daniels 700ml");
+        // alcoholTypeSelect.setLabel("Select Alcohol Type");
+        // alcoholTypeSelect.setValue("Smirnoff Vodka 700ml"); // Default selected value
+        // alcoholTypeSelect.setWidth("200px");
+
+        // // Layout for buttons and selector
+        // HorizontalLayout controlLayout = new HorizontalLayout(buttonLayout, alcoholTypeSelect);
+        // controlLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        // controlLayout.setSpacing(true);
+        // controlLayout.setWidthFull();
 
         // Chart configuration
         Chart chart = new Chart(ChartType.LINE);
@@ -115,8 +153,23 @@ public class ForecastView extends Main {
         // Adding series data
         updateChartData(conf, "Smirnoff Vodka 700ml");
 
-        // Change listener for select
-        alcoholTypeSelect.addValueChangeListener(event -> updateChartData(conf, event.getValue()));
+        // Change listener for ComboBox
+    searchComboBox.addValueChangeListener(event -> {
+        if (event.getValue() != null && !event.getValue().isEmpty()) {
+            multiSelectListBox.select(event.getValue());
+        }
+    });
+
+    // Change listener for MultiSelectListBox
+    multiSelectListBox.addSelectionListener(event -> {
+        if (!event.getValue().isEmpty()) {
+            // Update chart based on selected value (for simplicity, take the first selected item)
+            updateChartData(conf, event.getValue().iterator().next());
+        }
+    });
+
+        // // Change listener for select
+        // alcoholTypeSelect.addValueChangeListener(event -> updateChartData(conf, event.getValue()));
 
         // Legend Configuration
         Legend legend = new Legend();
@@ -127,14 +180,48 @@ public class ForecastView extends Main {
         legend.setItemMarginBottom(5);
         conf.setLegend(legend);
 
-        // Layout for select and chart
-        VerticalLayout chartAndSelectLayout = new VerticalLayout(alcoholTypeSelect, chart);
-        chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        chartAndSelectLayout.setSizeFull();
-        chartAndSelectLayout.setPadding(false);
-        chartAndSelectLayout.setSpacing(false);
+        // Layout for chart and controls
+        HorizontalLayout chartAndControlLayout = new HorizontalLayout(chart, selectLayout);
+        chartAndControlLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        chartAndControlLayout.setSizeFull();
+        chartAndControlLayout.setPadding(false);
+        chartAndControlLayout.setSpacing(true);
+        chartAndControlLayout.expand(chart); // Ensures the chart takes up remaining space
+    
+        // Main layout combining everything
+        VerticalLayout mainLayout = new VerticalLayout(header, buttonLayout, chartAndControlLayout);
+        mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        mainLayout.setSizeFull();
+        mainLayout.setPadding(false);
+        mainLayout.setSpacing(true);
+    
+        return mainLayout;
 
-        return chartAndSelectLayout;
+        // // Layout for select and chart
+        // HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, alcoholTypeSelect);
+        // chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        // chartAndSelectLayout.setSizeFull();
+        // chartAndSelectLayout.setPadding(false);
+        // chartAndSelectLayout.setSpacing(true); // Adds some space between the chart and the selector
+        // chartAndSelectLayout.expand(chart); // Ensures the chart takes up remaining space
+    
+        // // Main layout combining everything
+        // VerticalLayout mainLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
+        // mainLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        // mainLayout.setSizeFull();
+        // mainLayout.setPadding(false);
+        // mainLayout.setSpacing(true);
+    
+        // return mainLayout;
+
+        // // Layout for select and chart
+        // VerticalLayout chartAndSelectLayout = new VerticalLayout(alcoholTypeSelect, chart);
+        // chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        // chartAndSelectLayout.setSizeFull();
+        // chartAndSelectLayout.setPadding(false);
+        // chartAndSelectLayout.setSpacing(false);
+
+        // return chartAndSelectLayout;
     }
 
     // Method to update chart data based on selected alcohol type
