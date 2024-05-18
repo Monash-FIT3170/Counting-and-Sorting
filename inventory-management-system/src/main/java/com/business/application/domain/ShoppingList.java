@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import jakarta.persistence.Entity;
+
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 
 @Entity
@@ -17,8 +19,9 @@ public class ShoppingList extends AbstractEntity{
     private ArrayList<ShoppingListItem> products;
     private String status;
     static int listIdCounter = 0;
+    private BigDecimal totalPrice;
 
-    public ShoppingList(int managerId,int i, Date date ,int storeId, String name, ArrayList<ShoppingListItem> products, String status) {
+    public ShoppingList(int managerId,int i, Date date ,int storeId, String name, ArrayList<ShoppingListItem> products, String status,BigDecimal totalPrice) {
         listIdCounter ++;
         setListId(listIdCounter);
         setManagerId(managerId);
@@ -27,6 +30,7 @@ public class ShoppingList extends AbstractEntity{
         setName(name);
         setProducts(products);
         setStatus(status);
+        setTotalPrice(totalPrice);
 
     }
 
@@ -90,6 +94,14 @@ public class ShoppingList extends AbstractEntity{
 
     public void setProducts(ArrayList<ShoppingListItem> products) {
         this.products = products;
+    }
+
+    public BigDecimal getTotalPrice(){
+        return this.totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal amount){
+        this.totalPrice = amount;
     }
 
 }
