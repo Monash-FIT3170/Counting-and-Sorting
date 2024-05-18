@@ -56,6 +56,7 @@ public class AdminDashboardView extends Main {
         highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
                 createHighlight("Total Inventory Count", "12,345,340", null));
 
+
         leftColumn.add(highlightsLayout);
         leftColumn.add(createViewSalesQty());
         leftColumn.add(createStockLevelsByCategory());
@@ -97,7 +98,10 @@ public class AdminDashboardView extends Main {
         span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXLARGE);
 
         if (percentage == null) {
-            head.add(LumoIcon.UNORDERED_LIST.create());
+            Icon icon = LumoIcon.UNORDERED_LIST.create();
+            icon.getElement().getThemeList().add("badge pill cir");
+            head.add(icon);
+
         } else {
             VaadinIcon icon = VaadinIcon.ARROW_UP;
             String prefix = "";
@@ -175,10 +179,10 @@ public class AdminDashboardView extends Main {
         Configuration configuration = chart.getConfiguration();
         configuration.setTitle("Stock Levels by Category");
         configuration.getChart().setStyledMode(true);
-        configuration.addSeries(new ListSeries("Beer", 52));
-        configuration.addSeries(new ListSeries("Wine", 52));
-        configuration.addSeries(new ListSeries("Spirits", 52));
-        configuration.addSeries(new ListSeries("Premix", 52));
+        configuration.addSeries(new ListSeries("Beer", 5));
+        configuration.addSeries(new ListSeries("Wine", 85));
+        configuration.addSeries(new ListSeries("Spirits", 25));
+        configuration.addSeries(new ListSeries("Premix", 99));
         configuration.addSeries(new ListSeries("Misc", 52));
 
         XAxis x = new XAxis();
@@ -187,6 +191,7 @@ public class AdminDashboardView extends Main {
 
         YAxis y = new YAxis();
         y.setMin(0);
+        y.setMax(100);
         AxisTitle yTitle = new AxisTitle();
         yTitle.setText("Percentage of Stock Remaining");
         yTitle.setAlign(VerticalAlign.HIGH);
@@ -235,7 +240,11 @@ public class AdminDashboardView extends Main {
                 new StockItem(" ", "Vodka Cruiser: Lush Guava", 32));
 
         HorizontalLayout head = createHeader("LOW STOCK ITEMS", "");
-        head.add(LumoIcon.UNORDERED_LIST.create());
+        Icon icon = LumoIcon.UNORDERED_LIST.create();
+        icon.getElement().getThemeList().add("badge pill cir");
+        
+        head.add(icon);
+        head.setAlignItems(FlexComponent.Alignment.CENTER);
         VerticalLayout layout = new VerticalLayout(head, grid);
         layout.addClassName(Padding.LARGE);
         layout.setPadding(false);
@@ -245,7 +254,9 @@ public class AdminDashboardView extends Main {
 
     private Component createNotifications() {
         HorizontalLayout head = createHeader("NOTIFICATIONS", "");
-        head.add(LumoIcon.BELL.create());
+        Icon icon = LumoIcon.BELL.create();
+        icon.getElement().getThemeList().add("badge pill cir");
+        head.add(icon);
         
         VerticalLayout notificationsLayout = new VerticalLayout(head);
         notificationsLayout.addClassName(Padding.LARGE);
@@ -258,7 +269,7 @@ public class AdminDashboardView extends Main {
                 "Request #256 Declined", "Request #214 Approved"}) {
     
             Button viewButton = new Button("View");
-            
+            viewButton.addClassName("special");
             viewButton.addClickListener(clickEvent -> {
                 Notification notification = new Notification();
                 notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);

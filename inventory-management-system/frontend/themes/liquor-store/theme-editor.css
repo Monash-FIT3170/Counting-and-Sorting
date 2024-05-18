@@ -45,3 +45,8 @@ vaadin-text-field.admin-dashboard-view-store-search::part(input-field) {
     margin-bottom: 4px;
     box-sizing: border-box;
 }
+
+.special {
+    color: rgb(0, 81, 255); 
+    
+    }
