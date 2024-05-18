@@ -30,12 +30,24 @@ public class ShoppingListItem extends AbstractEntity{
         return this.quantity;
     }
 
+    public int getRequestedQuantity(){
+        return this.requestedQuantity;
+    }
+
+    public void setRequestedQuantity(int requestedQuantity){
+        this.requestedQuantity = requestedQuantity;
+    }
+
     public String getQuantityStr() {
         return String.valueOf(this.quantity);
     }
 
     public String getRequestedQuantityStr() {
         return String.valueOf(this.requestedQuantity);
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
 

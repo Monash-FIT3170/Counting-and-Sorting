@@ -65,7 +65,7 @@ public class NewShoppingListView extends Div {
         ShoppingListName.setLabel("Shopping List Name");
         ShoppingListName.setValue("");
         ShoppingListName.setClearButtonVisible(true);
-        ShoppingListName.setPrefixComponent(VaadinIcon.USER.create());
+        ShoppingListName.setPrefixComponent(VaadinIcon.CART.create());
         ShoppingListName.addValueChangeListener(event -> setShoppingListName(event.getValue()));
 
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName);
@@ -132,7 +132,7 @@ public class NewShoppingListView extends Div {
         VerticalLayout productLayout = new VerticalLayout(new H3("Products"), productGrid);
         productLayout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
 
-        VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping list items"), shoppingListGrid);
+        VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping List Items"), shoppingListGrid);
         shoppingListLayout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
 
         HorizontalLayout gridsLayout = new HorizontalLayout(productLayout, shoppingListLayout);
@@ -166,10 +166,20 @@ public class NewShoppingListView extends Div {
         return this.ShoppingListNameEntered;
     }
 
-    private void addItemToShoppingList(ShoppingListItem item) {
-        shoppingListItems.add(item);
+    private void addItemToShoppingList(ShoppingListItem newItem) {
+        for (ShoppingListItem item : shoppingListItems) {
+            if (item.getProductId().equals(newItem.getProductId())) {
+                newItem.setRequestedQuantity(newItem.getRequestedQuantity() + item.getRequestedQuantity());
+                shoppingListItems.remove(item);
+                break;
+            }
+        }
+
+        shoppingListItems.add(newItem);
+
         shoppingListDataProvider.refreshAll();
     }
+    
 
     private void saveShoppingList() {
         ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
