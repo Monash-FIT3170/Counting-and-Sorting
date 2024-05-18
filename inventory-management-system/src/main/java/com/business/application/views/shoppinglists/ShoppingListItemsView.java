@@ -68,9 +68,10 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
             List<String> paramValues = parametersMap.get("listId");
             if (!paramValues.isEmpty()) {
                 int listId = Integer.parseInt(paramValues.get(0));
-                header.setText("Shopping List " + listId);
                 ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
                 ShoppingList shoppingList = shoppingListInstance.getShoppingList(listId - 1);
+                String listName = shoppingList.getName();
+                header.setText("Shopping List " + listId + " - " + listName);
                 // grid.setItems(getShoppingListItems(listId));
                 ArrayList<ShoppingListItem> products = shoppingList.getProducts();
                 ListDataProvider<ShoppingListItem> shoppingListDataProvider = new ListDataProvider<>(products);

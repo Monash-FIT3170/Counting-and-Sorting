@@ -2,12 +2,12 @@ package com.business.application.domain;
 
 public class ShoppingListItem extends AbstractEntity{
     private Product product;
-    private int quantity;
+    private int quantity = 0;
     private int requestedQuantity;
 
     public ShoppingListItem(Product product, int quantity) {
         this.product = product;
-        this.quantity = quantity;
+        this.requestedQuantity = quantity;
         
     }
 
