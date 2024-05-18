@@ -18,7 +18,7 @@ public class ShoppingList extends AbstractEntity{
     private String status;
     static int listIdCounter = 0;
 
-    public ShoppingList(int managerId,Date date ,int storeId, String name, ArrayList<ShoppingListItem> products, String status) {
+    public ShoppingList(int managerId,int i, Date date ,int storeId, String name, ArrayList<ShoppingListItem> products, String status) {
         listIdCounter ++;
         setListId(listIdCounter);
         setManagerId(managerId);

@@ -23,12 +23,16 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.Icon;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 @PageTitle("Create A New Shopping List")
 @Route(value = "new-shopping-list", layout = MainLayout.class)
@@ -58,10 +62,10 @@ public class NewShoppingListView extends Div {
 
         // Create text field for shopping list name
         TextField ShoppingListName = new TextField();
-        ShoppingListName.setLabel("ShoppingList Name");
+        ShoppingListName.setLabel("Shopping List Name");
         ShoppingListName.setValue("");
         ShoppingListName.setClearButtonVisible(true);
-        ShoppingListName.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
+        ShoppingListName.setPrefixComponent(VaadinIcon.USER.create());
         ShoppingListName.addValueChangeListener(event -> setShoppingListName(event.getValue()));
 
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName);
@@ -79,7 +83,17 @@ public class NewShoppingListView extends Div {
         shoppingListGrid.addThemeVariants(GridProVariant.LUMO_HIGHLIGHT_EDITABLE_CELLS);
         shoppingListGrid.addColumn(ShoppingListItem::getProductId).setHeader("Product Id");
         shoppingListGrid.addColumn(ShoppingListItem::getProductName).setHeader("Product Name");
-        shoppingListGrid.addColumn(ShoppingListItem::getQuantity).setHeader("Quantity");
+        shoppingListGrid.addColumn(ShoppingListItem::getRequestedQuantityStr).setHeader("Requested Quantity");
+        shoppingListGrid.addComponentColumn(item -> {
+            Button deleteButton = new Button(new Icon(VaadinIcon.TRASH));
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.addClickListener(click -> {
+                shoppingListItems.remove(item);
+                shoppingListDataProvider.refreshAll();
+            });
+            return deleteButton;
+        }).setHeader("Delete");
+        
 
         TextField quantityField = new TextField("Quantity");
 
@@ -89,7 +103,6 @@ public class NewShoppingListView extends Div {
                 try {
                     int quantity = Integer.parseInt(quantityField.getValue());
                     addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));
-                    quantityField.clear();
                 } catch (NumberFormatException e) {
                     Notification.show("Please enter a valid quantity");
                 }
@@ -160,16 +173,36 @@ public class NewShoppingListView extends Div {
 
     private void saveShoppingList() {
         ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
-        shoppingListInstance.addShoppingList(new ShoppingList(5, getChosenDate(), 5, getShoppingListName(), shoppingListItems, "Pending"));
+       
+        shoppingListInstance.addShoppingList(new ShoppingList( 5, currentList, getChosenDate() ,5,getShoppingListName(),shoppingListItems,"Pending"));
 
+        // save shopping list
         Notification.show("Shopping List saved successfully");
+        
     }
 
     private List<Product> getProductList() {
         List<Product> products = new ArrayList<>();
-        products.add(new Product(1427816L, "Product 1", new BigDecimal(10), "Category 1", "Description 1"));
-        products.add(new Product(127323816L, "Product 2", new BigDecimal(20), "Category 2", "Description 2"));
-        products.add(new Product(982178216L, "Product 3", new BigDecimal(30), "Category 3", "Description 3"));
+        products.add(new Product(174926328L, "Vodka Cruiser: Wild Raspberry 275mL", new BigDecimal(375), "Premix", "600"));
+        products.add(new Product(174036988L, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", new BigDecimal(802), "Wine", "1000"));
+        products.add(new Product(846302592L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(3079296), "Premix", "5000000"));
+        products.add(new Product(769035037L, "Good Day: Watermelon Soju", new BigDecimal(3514346), "Misc", "5000000"));
+        products.add(new Product(185035836L, "Absolut: Vodka 1L", new BigDecimal(542669), "Beer", "1000000"));
+        products.add(new Product(562784657L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(458), "Spirit", "2000"));
+        products.add(new Product(186538594L, "Brookvale Union: Vodka Lemon Squash Cans 330mL", new BigDecimal(997), "Premix", "1000"));
+        products.add(new Product(879467856L, "Moët & Chandon: Impérial Brut", new BigDecimal(1700250), "Wine", "2000000"));
+        products.add(new Product(108767894L, "Moët & Chandon: Rosé Impérial", new BigDecimal(1429048), "Wine", "2000000"));
+        products.add(new Product(265743940L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(472648), "Premix", "5000000"));
+        products.add(new Product(123454352L, "Vodka Cruiser: Juicy Watermelon 275mL", new BigDecimal(833), "Misc", "1500"));
+        products.add(new Product(456374567L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(222), "Spirit", "1000"));
+        products.add(new Product(867584756L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(438), "Premix", "1000"));
+        products.add(new Product(347453482L, "Absolut: Vodka 1L", new BigDecimal(1913750), "Beer", "2000000"));
+        products.add(new Product(956836417L, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", new BigDecimal(528950), "Wine", "600000"));
+        products.add(new Product(958403584L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(3750), "Spirit", "8000"));
+        products.add(new Product(239563895L, "Good Day: Watermelon Soju", new BigDecimal(290600), "Spirit", "500000"));
+        products.add(new Product(375845219L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(4933400), "Misc", "5000000"));
+        products.add(new Product(384926414L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(2266200), "Premix", "3000000"));
+        products.add(new Product(194637894L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(1563450), "Beer", "2000000"));
 
         return products;
     }
