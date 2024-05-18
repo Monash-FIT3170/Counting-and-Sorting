@@ -28,12 +28,15 @@ public class Product extends AbstractEntity {
     @Column
     private String description;
 
-    public Product(Long productId, String name, BigDecimal salePrice, String category, String description){
+    private int quantity;
+
+    public Product(Long productId, String name, BigDecimal salePrice, String category, String description, int quantity){
         this.productId = productId;
         this.name = name;
         this.salePrice = salePrice;
         this.category = category;
         this.description = description;
+        this.quantity = quantity;
     
 
     }
@@ -70,4 +73,12 @@ public class Product extends AbstractEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+    public int getQuantity(){
+        return quantity;
+    }
+    public void setQuantity(int amount){
+        this.quantity = amount;
+    }
+
+
 }
