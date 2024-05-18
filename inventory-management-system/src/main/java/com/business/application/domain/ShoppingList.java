@@ -1,9 +1,7 @@
 package com.business.application.domain;
 
 import java.util.Date;
-
-
-
+import java.util.List;
 import java.util.ArrayList;
 import jakarta.persistence.Entity;
 import java.text.SimpleDateFormat;

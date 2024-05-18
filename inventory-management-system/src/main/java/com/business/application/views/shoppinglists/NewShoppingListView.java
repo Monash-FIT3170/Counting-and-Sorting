@@ -40,6 +40,8 @@ public class NewShoppingListView extends Div {
     private ListDataProvider<ShoppingListItem> shoppingListDataProvider;
     private Date chosenDate;
     private String ShoppingListNameEntered;
+    ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
+    int currentList = shoppingListInstance.getShoppingListLength() + 1;
 
     public NewShoppingListView() {
         // select date of shopping list
@@ -89,6 +91,7 @@ public class NewShoppingListView extends Div {
                 try {
                     int quantity = Integer.parseInt(quantityField.getValue());
                     addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));
+
                     quantityField.clear();
                 } catch (NumberFormatException e) {
                     Notification.show("Please enter a valid quantity");

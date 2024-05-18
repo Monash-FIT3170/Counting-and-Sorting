@@ -23,6 +23,10 @@ public class ListOfShoppingList {
         return shoppingLists;
     }
 
+    public ShoppingList getShoppingList(int index) {
+        return shoppingLists.get(index);
+    }
+
     public int getShoppingListLength() {
         return shoppingLists.size();
     }
