@@ -203,7 +203,7 @@ public class ShoppingListsView extends Div {
         if (shoppingListInstance.getShoppingLists().isEmpty()) {
             List<Product> products = getProductList();
 
-            // Create sample shopping list items
+            // Create sample shopping list 1 
             List<ShoppingListItem> sampleItems = Arrays.asList(
                 new ShoppingListItem(products.get(0), 5),
                 new ShoppingListItem(products.get(1), 10),
@@ -221,6 +221,26 @@ public class ShoppingListsView extends Div {
                 "Approved"
             );
             shoppingListInstance.addShoppingList(sampleShoppingList);
+
+            // Create sample shopping list 2
+            List<ShoppingListItem> sampleItems2 = Arrays.asList(
+                new ShoppingListItem(products.get(3), 5),
+                new ShoppingListItem(products.get(4), 10),
+                new ShoppingListItem(products.get(5), 12),
+                new ShoppingListItem(products.get(6), 15)
+            );
+            
+            ShoppingList sampleShoppingList2 = new ShoppingList(
+                2,
+                111,
+                Date.from(new Date().toInstant()),
+                123,
+                "Sample Shopping List 2",
+                new ArrayList<>(sampleItems2),
+                "Pending"
+            );
+            shoppingListInstance.addShoppingList(sampleShoppingList2);
+
         }
 
         return shoppingListInstance.getShoppingLists();
