@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -33,7 +34,7 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
 
     private Grid<ShoppingListItem> grid = new Grid<>(ShoppingListItem.class, false);;
     private H1 header;
-    private int listId;
+    //private int listId;
 
     public ShoppingListItemsView() {
 
@@ -63,10 +64,10 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         QueryParameters queryParams = event.getLocation().getQueryParameters();
         Map<String, List<String>> parametersMap = queryParams.getParameters();
-        if (parametersMap.containsKey("param")) {
-            List<String> paramValues = parametersMap.get("param");
+        if (parametersMap.containsKey("listId")) {
+            List<String> paramValues = parametersMap.get("listId");
             if (!paramValues.isEmpty()) {
-                listId = Integer.parseInt(paramValues.get(0));
+                int listId = Integer.parseInt(paramValues.get(0));
                 header.setText("Shopping List " + listId);
                 ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
                 ShoppingList shoppingList = shoppingListInstance.getShoppingList(listId - 1);
@@ -125,3 +126,4 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
 //         }
 //     }
 }
+

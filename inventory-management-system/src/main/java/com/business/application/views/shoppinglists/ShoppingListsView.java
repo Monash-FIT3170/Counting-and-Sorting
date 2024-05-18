@@ -101,7 +101,7 @@ public class ShoppingListsView extends Div {
         card.getStyle().set("flex", "0 0 calc(30% - 1em)");
         
         Map<String, List<String>> parametersMap = new HashMap<>();
-        parametersMap.put("param", Collections.singletonList(String.valueOf(item.getListId())));
+        parametersMap.put("listId", Collections.singletonList(String.valueOf(item.getListId())));
         QueryParameters queryParams = new QueryParameters(parametersMap);
         card.addClickListener(e -> {
             UI.getCurrent().navigate("Shopping List Items", queryParams);

@@ -102,8 +102,22 @@ public class NewShoppingListView extends Div {
         });
 
         Button saveButton = new Button("Save Shopping List", event -> {
-            saveShoppingList();
-            UI.getCurrent().navigate("master-detail");
+            if(ShoppingListName.isEmpty()){
+                Notification.show("Enter A ShoppingList Name");
+            }
+
+            if(orderDate.isEmpty()){
+                Notification.show("Enter A Date");
+            }
+            if(shoppingListItems.isEmpty()){
+                Notification.show("No Products Ordered");
+            }
+
+            if (ShoppingListName.isEmpty() == false && orderDate.isEmpty() == false && shoppingListItems.isEmpty() ==false ){
+                saveShoppingList();
+                UI.getCurrent().navigate("master-detail");
+            }
+
 
         });
 
@@ -136,14 +150,12 @@ public class NewShoppingListView extends Div {
 
     private void saveShoppingList() {
         ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
-        int listID = shoppingListInstance.getShoppingListLength() + 1;
        
-        shoppingListInstance.addShoppingList(new ShoppingList(listID, 5, getChosenDate() ,5,getShoppingListName(),shoppingListItems,"Pending"));
+        shoppingListInstance.addShoppingList(new ShoppingList( 5, getChosenDate() ,5,getShoppingListName(),shoppingListItems,"Pending"));
 
         // save shopping list
         Notification.show("Shopping List saved successfully");
-        shoppingListItems.clear();
-        shoppingListDataProvider.refreshAll();
+        
     }
 
     private List<Product> getProductList() {
@@ -156,4 +168,4 @@ public class NewShoppingListView extends Div {
         
         return products;
     }
-}   
+}    
