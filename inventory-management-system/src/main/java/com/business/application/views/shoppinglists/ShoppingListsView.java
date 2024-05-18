@@ -88,7 +88,7 @@ public class ShoppingListsView extends Div {
         Div card = new Div();
         card.addClassName("card");
 
-        Label nameLabel = new Label(item.getName() + item.getListId());
+        Label nameLabel = new Label("Shopping List " + item.getListId() + " - " + item.getName());
         nameLabel.addClassName("name");
 
         Label dateLabel = new Label(item.getDateString() + " · $" + "32,345"); // Assuming a fixed amount for illustration
