@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 
 
 @PageTitle("Create A New Shopping List")
@@ -101,11 +102,13 @@ public class NewShoppingListView extends Div {
             Product selectedProduct = productGrid.asSingleSelect().getValue();
             if (selectedProduct != null) {
                 try {
-                    int quantity = Integer.parseInt(quantityField.getValue());
-                    if (quantity <= 0 ){
+                    String quantityValue = quantityField.getValue();
+                    int quantity = evaluateExpression(quantityValue);
+                    if (quantity <= 0) {
                         Notification.show("Please enter a valid quantity");
-                    }else{
-                    addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));}
+                    } else {
+                        addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));
+                    }
                 } catch (NumberFormatException e) {
                     Notification.show("Please enter a valid quantity");
                 }
@@ -191,6 +194,48 @@ public class NewShoppingListView extends Div {
         // save shopping list
         Notification.show("Shopping List saved successfully");
         
+    }
+    public static int evaluateExpression(String expression) {
+        // Validate the expression using a regular expression
+        if (!expression.matches("[0-9\\+\\-\\*]+")) {
+            return 0;
+        }
+
+        // Stack to hold numbers and operators, considering higher precedence of '*'
+        Stack<Integer> numbers = new Stack<>();
+        int length = expression.length();
+        int currentNumber = 0;
+        char operation = '+';
+
+        for (int i = 0; i < length; i++) {
+            char currentChar = expression.charAt(i);
+
+            if (Character.isDigit(currentChar)) {
+                currentNumber = currentNumber * 10 + (currentChar - '0');
+            }
+
+            if (!Character.isDigit(currentChar) && currentChar != ' ' || i == length - 1) {
+                if (operation == '+') {
+                    numbers.push(currentNumber);
+                } else if (operation == '-') {
+                    numbers.push(-currentNumber);
+                } else if (operation == '*') {
+                    numbers.push(numbers.pop() * currentNumber);
+                }
+
+                operation = currentChar;
+                currentNumber = 0;
+            }
+        }
+
+        // Sum up all values in the stack to get the final result
+        int result = 0;
+        while (!numbers.isEmpty()) {
+            result += numbers.pop();
+        }
+
+        // Return 0 if the result is not positive
+        return Math.max(result, 0);
     }
 
     private List<Product> getProductList() {
