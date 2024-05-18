@@ -20,9 +20,7 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
 import jakarta.annotation.security.RolesAllowed;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,29 +49,33 @@ public class RequestsView extends Div implements AfterNavigationObserver {
         grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
         grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
 
-        grid.addColumn(new ComponentRenderer<>(this::createItemsLayout)).setHeader("Items");
-
         grid.addColumn(new ComponentRenderer<>(this::createActionButtons)).setHeader("Actions");
 
         grid.setItems(pendingShoppingLists);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(this::createDetailsLayout));
+        grid.setDetailsVisibleOnClick(false);  // Disable auto opening details on click
+        grid.addItemClickListener(event -> {
+            grid.setDetailsVisible(event.getItem(), !grid.isDetailsVisible(event.getItem()));
+        });
     }
 
-    private VerticalLayout createItemsLayout(ShoppingList shoppingList) {
-        VerticalLayout itemsLayout = new VerticalLayout();
-        for (ShoppingListItem item : shoppingList.getProducts()) {
-            Label itemLabel = new Label(item.getProductName() + " - Qty: " + item.getRequestedQuantityStr());
-            itemsLayout.add(itemLabel);
-        }
-        return itemsLayout;
+    private VerticalLayout createDetailsLayout(ShoppingList shoppingList) {
+        VerticalLayout layout = new VerticalLayout();
+        layout.add(new Label("Items:"));
+        shoppingList.getProducts().forEach(item -> {
+            layout.add(new Label(item.getProductName() + " - Qty: " + item.getRequestedQuantityStr()));
+        });
+        return layout;
     }
 
     private HorizontalLayout createActionButtons(ShoppingList shoppingList) {
         Button approveButton = new Button("Approve", VaadinIcon.CHECK.create(), e -> handleApprove(shoppingList));
-        Button denyButton = new Button("Deny", VaadinIcon.CLOSE.create(), e -> handleDeny(shoppingList));
+        Button denyButton = new Button("Decline", VaadinIcon.CLOSE.create(), e -> handleDeny(shoppingList));
 
-        HorizontalLayout actionsLayout = new HorizontalLayout(approveButton, denyButton);
-        return actionsLayout;
+
+        return new HorizontalLayout(approveButton, denyButton);
     }
 
     private void handleApprove(ShoppingList shoppingList) {
@@ -94,10 +96,9 @@ public class RequestsView extends Div implements AfterNavigationObserver {
     }
 
     private List<ShoppingList> getPendingShoppingLists() {
-        ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
-        return shoppingListInstance.getShoppingLists().stream()
-                .filter(list -> "Pending".equals(list.getStatus()))
-                .collect(Collectors.toList());
+        return ListOfShoppingList.getInstance().getShoppingLists().stream()
+            .filter(list -> "Pending".equals(list.getStatus()))
+            .collect(Collectors.toList());
     }
 
     @Override
