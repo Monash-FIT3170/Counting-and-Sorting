@@ -102,7 +102,10 @@ public class NewShoppingListView extends Div {
             if (selectedProduct != null) {
                 try {
                     int quantity = Integer.parseInt(quantityField.getValue());
-                    addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));
+                    if (quantity <= 0 ){
+                        Notification.show("Please enter a valid quantity");
+                    }else{
+                    addItemToShoppingList(new ShoppingListItem(selectedProduct, quantity));}
                 } catch (NumberFormatException e) {
                     Notification.show("Please enter a valid quantity");
                 }
