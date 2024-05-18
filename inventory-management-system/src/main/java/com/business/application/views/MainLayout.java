@@ -145,7 +145,6 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Team", UserManagementView.class,
                     LineAwesomeIcon.USERS_SOLID.create()));
         }
-
         
 
         return nav;

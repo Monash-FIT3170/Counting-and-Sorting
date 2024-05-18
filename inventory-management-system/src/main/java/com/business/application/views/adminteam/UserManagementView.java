@@ -15,16 +15,20 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -60,13 +64,37 @@ public class UserManagementView extends VerticalLayout {
         setSizeFull();
         configureGrid();
         configureFilter();
-        add(createToolbar(), usernameFilter, grid);
+        add(createToolbar(), grid);
     }
 
     private void configureGrid() {
         grid = new Grid<>(User.class, false);
-        grid.addColumn(User::getUsername).setHeader("Username").setAutoWidth(true);
-        grid.addColumn(User::getName).setHeader("Name").setAutoWidth(true);
+
+        grid.addColumn(new ComponentRenderer<>(user -> {
+            HorizontalLayout hl = new HorizontalLayout();
+            Icon profileIcon;
+
+            if (user.getRoles().contains(Role.ADMIN)){
+            profileIcon = new Icon(VaadinIcon.USER_STAR);
+            }
+            else {profileIcon = new Icon(VaadinIcon.USER);}
+            profileIcon.setSize("20px");
+
+            Span span = new Span(user.getName());
+
+            hl.add(profileIcon, span);
+            return hl;
+        }))
+            .setHeader("User")
+            .setSortable(true)
+            .setComparator(User::getName);
+
+        grid.addColumn(User::getUsername)
+            .setHeader("Username")
+            .setAutoWidth(true)
+            .setSortable(true)
+            .setComparator(User::getUsername);
+
 
         // Adding a column to display roles
         grid.addColumn(user -> user.getRoles().stream()
@@ -109,7 +137,9 @@ public class UserManagementView extends VerticalLayout {
     }
 
     private void configureFilter() {
-        usernameFilter.setPlaceholder("Filter by username");
+        Icon searchIcon = VaadinIcon.SEARCH.create();
+        usernameFilter.setSuffixComponent(searchIcon);
+        usernameFilter.setPlaceholder("Search Members");
         usernameFilter.addValueChangeListener(e -> updateList());
         usernameFilter.setClearButtonVisible(true);
     }
@@ -131,8 +161,9 @@ public class UserManagementView extends VerticalLayout {
         addButton.setIcon(new Icon("lumo", "plus"));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout toolbar = new HorizontalLayout(addButton);
+        HorizontalLayout toolbar = new HorizontalLayout(usernameFilter, addButton);
         toolbar.addClassName("toolbar");
+        toolbar.setAlignItems(FlexComponent.Alignment.END);
         return toolbar;
     }
 
