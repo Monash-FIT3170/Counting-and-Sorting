@@ -7,11 +7,14 @@ import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -22,22 +25,19 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import com.vaadin.flow.component.html.H1;
 
 @PageTitle("Shopping List Items")
 @Route(value = "Shopping List Items", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
 
-    private Grid<ShoppingListItem> grid = new Grid<>(ShoppingListItem.class, false);;
+    private Grid<ShoppingListItem> grid = new Grid<>(ShoppingListItem.class, false);
     private H1 header;
-    //private int listId;
+    private ShoppingList shoppingList;
 
     public ShoppingListItemsView() {
-
         // Back button
         Button backButton = new Button("Back", e -> UI.getCurrent().navigate(ShoppingListsView.class));
         backButton.addClassName("back-button");
@@ -47,7 +47,6 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         header.addClassName("header");
 
         // Configure Grid
-        // grid = new Grid<>(ShoppingListItem.class, false);
         grid.addColumn(ShoppingListItem::getProductId).setHeader("Item ID").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductName).setHeader("Item Name").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductCategory).setHeader("Category").setSortable(true);
@@ -60,6 +59,50 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         add(layout);
     }
 
+    private void openConfirmationDialog() {
+        Dialog dialog = new Dialog();
+
+        VerticalLayout dialogLayout = new VerticalLayout();
+        dialogLayout.add(new Span("Are you sure you want to place this order?"));
+
+        // Summary of items
+        StringBuilder summary = new StringBuilder();
+        for (ShoppingListItem item : shoppingList.getProducts()) {
+            summary.append(item.getProductName())
+                   .append(" - Qty: ")
+                   .append(item.getRequestedQuantityStr())
+                   .append("\n");
+        }
+        Text summaryText = new Text(summary.toString());
+        dialogLayout.add(summaryText);
+
+        // Confirm and Cancel buttons
+        Button confirmButton = new Button("Confirm", e -> {
+            updateShoppingListStatusToPending();
+            dialog.close();
+            returnToShoppingListsView();
+        });
+        Button cancelButton = new Button("Cancel", e -> dialog.close());
+        HorizontalLayout buttonsLayout = new HorizontalLayout(confirmButton, cancelButton);
+        dialogLayout.add(buttonsLayout);
+
+        dialog.add(dialogLayout);
+        dialog.open();
+    }
+
+    private void updateShoppingListStatusToPending() {
+        // Update the shopping list status to pending
+        shoppingList.setStatus("Pending");
+    }
+    
+
+    private void returnToShoppingListsView() {
+        // Notify the user that the order has been placed successfully
+        Notification.show("Order placed successfully");
+        // Redirect to the shopping lists view
+        UI.getCurrent().navigate(ShoppingListsView.class);
+    }
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         QueryParameters queryParams = event.getLocation().getQueryParameters();
@@ -69,62 +112,25 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
             if (!paramValues.isEmpty()) {
                 int listId = Integer.parseInt(paramValues.get(0));
                 ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
-                ShoppingList shoppingList = shoppingListInstance.getShoppingList(listId - 1);
+                shoppingList = shoppingListInstance.getShoppingList(listId - 1);
                 String listName = shoppingList.getName();
                 header.setText("Shopping List " + listId + " - " + listName);
-                // grid.setItems(getShoppingListItems(listId));
                 ArrayList<ShoppingListItem> products = shoppingList.getProducts();
                 ListDataProvider<ShoppingListItem> shoppingListDataProvider = new ListDataProvider<>(products);
                 grid.setDataProvider(shoppingListDataProvider);
                 grid.setItems(products);
+
+                // Add order button if the status is "In Progress"
+                if ("In Progress".equals(shoppingList.getStatus())) {
+                    Button orderButton = new Button("Order", e -> openConfirmationDialog());
+                    orderButton.addClassName("order-button");
+                    ((VerticalLayout) getContent()).add(orderButton);
+                }
             }
         }
     }
 
-    // private List<ShoppingListItem> getShoppingListItems(int listId) {
-    //     // Dummy data for illustration purposes. Replace this with actual data fetching logic.
-    //     return Arrays.asList(
-    //         new ShoppingListItem("174926328", "Vodka Cruiser: Wild Raspberry 275mL", "Premix", "3,331,296", "1,296"),
-    //         new ShoppingListItem("174036988", "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", "1,012,997", "2,997"),
-    //         new ShoppingListItem("846302592", "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", "3,079,296", "9,296")
-    //         // Add more items as needed
-    //     );
-    // }
-
-//     public static class ShoppingListItem {
-//         private String itemId;
-//         private String itemName;
-//         private String category;
-//         private String currentQty;
-//         private String requestedQty;
-
-//         public ShoppingListItem(String itemId, String itemName, String category, String currentQty, String requestedQty) {
-//             this.itemId = itemId;
-//             this.itemName = itemName;
-//             this.category = category;
-//             this.currentQty = currentQty;
-//             this.requestedQty = requestedQty;
-//         }
-
-//         public String getItemId() {
-//             return itemId;
-//         }
-
-//         public String getItemName() {
-//             return itemName;
-//         }
-
-//         public String getCategory() {
-//             return category;
-//         }
-
-//         public String getCurrentQty() {
-//             return currentQty;
-//         }
-
-//         public String getRequestedQty() {
-//             return requestedQty;
-//         }
-//     }
+    private VerticalLayout getContent() {
+        return (VerticalLayout) this.getChildren().filter(component -> component instanceof VerticalLayout).findFirst().orElse(null);
+    }
 }
-

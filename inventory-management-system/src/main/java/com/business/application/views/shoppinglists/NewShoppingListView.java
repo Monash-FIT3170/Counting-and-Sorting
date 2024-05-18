@@ -183,7 +183,7 @@ public class NewShoppingListView extends Div {
     private void saveShoppingList() {
         ListOfShoppingList shoppingListInstance = ListOfShoppingList.getInstance();
        
-        shoppingListInstance.addShoppingList(new ShoppingList( 5, currentList, getChosenDate() ,5,getShoppingListName(),shoppingListItems,"Pending"));
+        shoppingListInstance.addShoppingList(new ShoppingList( 5, currentList, getChosenDate() ,5,getShoppingListName(),shoppingListItems,"In Progress"));
 
         // save shopping list
         Notification.show("Shopping List saved successfully");
