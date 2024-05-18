@@ -43,10 +43,10 @@ public class ForecastView extends Main {
         addClassName("forecast-view");
 
         Board board = new Board();
-        board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
-                createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
+       // board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
+                // createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
         board.addRow(createViewStockForecast());
-        board.addRow( createResponseTimes());
+        // board.addRow( createResponseTimes());
         add(board);
     }
 
@@ -186,32 +186,32 @@ public class ForecastView extends Main {
 
 
 
-    private Component createResponseTimes() {
-        HorizontalLayout header = createHeader("Response times", "Average across all systems");
+    // private Component createResponseTimes() {
+    //     HorizontalLayout header = createHeader("Response times", "Average across all systems");
 
-        // Chart
-        Chart chart = new Chart(ChartType.PIE);
-        Configuration conf = chart.getConfiguration();
-        conf.getChart().setStyledMode(true);
-        chart.setThemeName("gradient");
+    //     // Chart
+    //     Chart chart = new Chart(ChartType.PIE);
+    //     Configuration conf = chart.getConfiguration();
+    //     conf.getChart().setStyledMode(true);
+    //     chart.setThemeName("gradient");
 
-        DataSeries series = new DataSeries();
-        series.add(new DataSeriesItem("System 1", 12.5));
-        series.add(new DataSeriesItem("System 2", 12.5));
-        series.add(new DataSeriesItem("System 3", 12.5));
-        series.add(new DataSeriesItem("System 4", 12.5));
-        series.add(new DataSeriesItem("System 5", 12.5));
-        series.add(new DataSeriesItem("System 6", 12.5));
-        conf.addSeries(series);
+    //     DataSeries series = new DataSeries();
+    //     series.add(new DataSeriesItem("System 1", 12.5));
+    //     series.add(new DataSeriesItem("System 2", 12.5));
+    //     series.add(new DataSeriesItem("System 3", 12.5));
+    //     series.add(new DataSeriesItem("System 4", 12.5));
+    //     series.add(new DataSeriesItem("System 5", 12.5));
+    //     series.add(new DataSeriesItem("System 6", 12.5));
+    //     conf.addSeries(series);
 
-        // Add it all together
-        VerticalLayout serviceHealth = new VerticalLayout(header, chart);
-        serviceHealth.addClassName(Padding.LARGE);
-        serviceHealth.setPadding(false);
-        serviceHealth.setSpacing(false);
-        serviceHealth.getElement().getThemeList().add("spacing-l");
-        return serviceHealth;
-    }
+    //     // Add it all together
+    //     VerticalLayout serviceHealth = new VerticalLayout(header, chart);
+    //     serviceHealth.addClassName(Padding.LARGE);
+    //     serviceHealth.setPadding(false);
+    //     serviceHealth.setSpacing(false);
+    //     serviceHealth.getElement().getThemeList().add("spacing-l");
+    //     return serviceHealth;
+    // }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
