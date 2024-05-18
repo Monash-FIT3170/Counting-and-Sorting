@@ -56,6 +56,8 @@ public class Product extends AbstractEntity {
         this.name = name;
     }
     public BigDecimal getSalePrice() {
+        // Round to 2 decimal places
+        salePrice = salePrice.setScale(2, BigDecimal.ROUND_HALF_UP);
         return salePrice;
     }
     public void setSalePrice(BigDecimal salePrice) {
