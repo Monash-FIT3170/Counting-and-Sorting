@@ -70,7 +70,7 @@ public class NewShoppingListView extends Div {
 
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName);
         dateAndShoppingListName.setSpacing(true);
-        dateAndShoppingListName.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
+        dateAndShoppingListName.addClassName("dynamic-style");
 
         // Create a grid for all the products
         productDataProvider = new ListDataProvider<>(productList);
@@ -130,10 +130,10 @@ public class NewShoppingListView extends Div {
         });
 
         VerticalLayout productLayout = new VerticalLayout(new H3("Products"), productGrid);
-        productLayout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
+        productLayout.addClassName("dynamic-style");
 
         VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping List Items"), shoppingListGrid);
-        shoppingListLayout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
+        shoppingListLayout.addClassName("dynamic-style");
 
         HorizontalLayout gridsLayout = new HorizontalLayout(productLayout, shoppingListLayout);
         gridsLayout.setSpacing(true);
@@ -141,12 +141,11 @@ public class NewShoppingListView extends Div {
 
         VerticalLayout quantityAndButtonLayout = new VerticalLayout(quantityField, addButton);
         quantityAndButtonLayout.setSpacing(true);
-        quantityAndButtonLayout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
-
+        quantityAndButtonLayout.addClassName("dynamic-style");
         VerticalLayout layout = new VerticalLayout(dateAndShoppingListName, gridsLayout, quantityAndButtonLayout, saveButton);
         layout.setSpacing(true);
-        layout.getStyle().set("padding", "10px").set("border", "1px solid #ccc").set("border-radius", "5px").set("background-color", "#f9f9f9");
-
+        layout.addClassName("dynamic-style");
+        
         add(layout);
     }
 
