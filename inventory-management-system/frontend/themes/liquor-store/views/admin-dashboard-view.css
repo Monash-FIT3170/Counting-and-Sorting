@@ -17,3 +17,8 @@
 .admin-dashboard-view vaadin-board-row.large > *:last-child {
   border-right: none;
 }
+
+.special{
+  --lumo-primary-text-color:cyan;
+}
+

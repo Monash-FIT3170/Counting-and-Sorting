@@ -10,6 +10,8 @@ import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.charts.model.style.Color;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H2;
@@ -21,6 +23,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
@@ -33,6 +36,7 @@ import jakarta.annotation.security.RolesAllowed;
 @PageTitle("Admin Dashboard")
 @Route(value = "dashboard2", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
+
 public class AdminDashboardView extends Main {
 
     public AdminDashboardView() {
@@ -54,6 +58,7 @@ public class AdminDashboardView extends Main {
 
         leftColumn.add(highlightsLayout);
         leftColumn.add(createViewSalesQty());
+        leftColumn.add(createStockLevelsByCategory());
 
         VerticalLayout rightColumn = new VerticalLayout();
         rightColumn.setWidth("calc(45% - 16px)");
@@ -164,6 +169,50 @@ public class AdminDashboardView extends Main {
         return viewEvents;
     }
 
+    private Component createStockLevelsByCategory(){
+        Chart chart = new Chart(ChartType.BAR);
+
+        Configuration configuration = chart.getConfiguration();
+        configuration.setTitle("Stock Levels by Category");
+        configuration.getChart().setStyledMode(true);
+        configuration.addSeries(new ListSeries("Beer", 52));
+        configuration.addSeries(new ListSeries("Wine", 52));
+        configuration.addSeries(new ListSeries("Spirits", 52));
+        configuration.addSeries(new ListSeries("Premix", 52));
+        configuration.addSeries(new ListSeries("Misc", 52));
+
+        XAxis x = new XAxis();
+        x.setCategories("Stock Levels");
+        configuration.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        AxisTitle yTitle = new AxisTitle();
+        yTitle.setText("Percentage of Stock Remaining");
+        yTitle.setAlign(VerticalAlign.HIGH);
+        y.setTitle(yTitle);
+        configuration.addyAxis(y);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueSuffix(" %");
+        configuration.setTooltip(tooltip);
+        
+        
+        PlotOptionsBar plotOptions = new PlotOptionsBar();
+        DataLabels dataLabels = new DataLabels();
+        dataLabels.setEnabled(true);
+        plotOptions.setDataLabels(dataLabels);
+        configuration.setPlotOptions(plotOptions);
+
+        VerticalLayout layout = new VerticalLayout(chart);
+        layout.addClassName(Padding.LARGE);
+        layout.setPadding(false);
+        layout.addClassName("rounded-rectangle");
+        layout.setHeight("30%");
+        layout.setWidth("100%");
+        return layout;
+
+    }
     private Component createLowStockItemsGrid() {
         Grid<StockItem> grid = new Grid<>(StockItem.class, false);
         // <theme-editor-local-classname>
@@ -197,16 +246,19 @@ public class AdminDashboardView extends Main {
     private Component createNotifications() {
         HorizontalLayout head = createHeader("NOTIFICATIONS", "");
         head.add(LumoIcon.BELL.create());
+        
         VerticalLayout notificationsLayout = new VerticalLayout(head);
         notificationsLayout.addClassName(Padding.LARGE);
         notificationsLayout.setPadding(false);
         notificationsLayout.setSpacing(false);
         notificationsLayout.addClassName("rounded-rectangle");
+        
     
         for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
                 "Request #256 Declined", "Request #214 Approved"}) {
     
             Button viewButton = new Button("View");
+            
             viewButton.addClickListener(clickEvent -> {
                 Notification notification = new Notification();
                 notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
