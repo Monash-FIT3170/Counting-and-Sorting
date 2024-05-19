@@ -24,6 +24,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -66,7 +67,6 @@ public class AdminDashboardView extends Main {
         VerticalLayout rightColumn = new VerticalLayout();
         rightColumn.setWidth("calc(45% - 16px)");
         rightColumn.add(createLowStockItemsGrid());
-        rightColumn.add(createNotifications());
         rightColumn.add(createShoppingListRequests());
 
         mainLayout.add(leftColumn, rightColumn);
@@ -258,76 +258,59 @@ public class AdminDashboardView extends Main {
         return layout;
 
     }
+
     private Component createLowStockItemsGrid() {
-        Grid<StockItem> grid = new Grid<>(StockItem.class, false);
-        // <theme-editor-local-classname>
-        grid.addClassName("admin-dashboard-view-grid-1");
-        grid.addColumn(StockItem::getStatus).setHeader("Status");
-        grid.addColumn(StockItem::getItemName).setHeader("Item Name");
-        grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
+    Grid<StockItem> grid = new Grid<>(StockItem.class, false);
+    // <theme-editor-local-classname>
+    grid.addClassName("admin-dashboard-view-grid-1");
 
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
-        grid.setItems(
-                new StockItem(" ", "Smirnoff: Ice Double Black", 296),
-                new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
-                new StockItem(" ", "Suntory: -196 Double Lemon", 156),
-                new StockItem(" ", "Good Day: Watermelon", 46),
-                new StockItem(" ", "Absolut: Vodka 1L", 9),
-                new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
-                new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
-                new StockItem(" ", "Moët & Chandon: Impérial", 250),
-                new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
-                new StockItem(" ", "Vodka Cruiser: Lush Guava", 32));
-
-        HorizontalLayout head = createHeader("LOW STOCK ITEMS", "");
-        Icon icon = LumoIcon.UNORDERED_LIST.create();
-        icon.getElement().getThemeList().add("badge pill cir");
+    // Custom renderer for status column
+    grid.addColumn(new ComponentRenderer<>(stockItem -> {
+        Span statusCircle = new Span();
+        statusCircle.getElement().getStyle().set("display", "inline-block");
+        statusCircle.getElement().getStyle().set("width", "10px");
+        statusCircle.getElement().getStyle().set("height", "10px");
+        statusCircle.getElement().getStyle().set("border-radius", "50%");
         
-        head.add(icon);
-        head.setAlignItems(FlexComponent.Alignment.CENTER);
-        VerticalLayout layout = new VerticalLayout(head, grid);
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.addClassName("rounded-rectangle");
-        return layout;
-    }
-
-    private Component createNotifications() {
-        HorizontalLayout head = createHeader("NOTIFICATIONS", "");
-        Icon icon = LumoIcon.BELL.create();
-        icon.getElement().getThemeList().add("badge pill cir");
-        head.add(icon);
-        
-        VerticalLayout notificationsLayout = new VerticalLayout(head);
-        notificationsLayout.addClassName(Padding.LARGE);
-        notificationsLayout.setPadding(false);
-        notificationsLayout.setSpacing(false);
-        notificationsLayout.addClassName("rounded-rectangle");
-        
-    
-        for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
-                "Request #256 Declined", "Request #214 Approved"}) {
-    
-            Button viewButton = new Button("View");
-            viewButton.addClassName("special");
-            viewButton.addClickListener(clickEvent -> {
-                Notification notification = new Notification();
-                notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
-                notification.setText(notificationText);
-    
-                Button closeButton = new Button("Close", e -> notification.close());
-                notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
-                notification.setDuration(5000);
-                notification.open();
-            });
-    
-            HorizontalLayout notificationItem = new HorizontalLayout(new Span(notificationText), viewButton);
-            notificationItem.addClassName("notification-item");
-            notificationItem.setWidthFull();
-            notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
-            notificationsLayout.add(notificationItem);
+        if (stockItem.getQtyRemaining() > 100) {
+            statusCircle.getElement().getStyle().set("background-color", "green");
+        } else if (stockItem.getQtyRemaining() > 50) {
+            statusCircle.getElement().getStyle().set("background-color", "yellow");
+        } else {
+            statusCircle.getElement().getStyle().set("background-color", "red");
         }
-        return notificationsLayout;
+
+        return statusCircle;
+    })).setHeader("Status");
+
+    grid.addColumn(StockItem::getItemName).setHeader("Item Name");
+    grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
+
+    grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+    grid.setItems(
+            new StockItem(" ", "Smirnoff: Ice Double Black", 296),
+            new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
+            new StockItem(" ", "Suntory: -196 Double Lemon", 156),
+            new StockItem(" ", "Good Day: Watermelon", 46),
+            new StockItem(" ", "Absolut: Vodka 1L", 9),
+            new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
+            new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
+            new StockItem(" ", "Moët & Chandon: Impérial", 250),
+            new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
+            new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
+    );
+
+    HorizontalLayout head = createHeader("LOW STOCK ITEMS", "");
+    Icon icon = LumoIcon.UNORDERED_LIST.create();
+    icon.getElement().getThemeList().add("badge pill cir");
+    
+    head.add(icon);
+    head.setAlignItems(FlexComponent.Alignment.CENTER);
+    VerticalLayout layout = new VerticalLayout(head, grid);
+    layout.addClassName(Padding.LARGE);
+    layout.setPadding(false);
+    layout.addClassName("rounded-rectangle");
+    return layout;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
