@@ -173,7 +173,7 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
-
+        // User
         if (accessChecker.hasAccess(DashboardView.class)) {
             nav.addItem(new SideNavItem("Dashboard", DashboardView.class, LineAwesomeIcon.HOME_SOLID.create()));
 
@@ -194,16 +194,18 @@ public class MainLayout extends AppLayout {
 
         }
 
+
+        // Admin
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
             nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
                     LineAwesomeIcon.CHART_PIE_SOLID.create()));
+        }
 
         if (accessChecker.hasAccess(RequestsView.class)) {
             nav.addItem(new SideNavItem("Requests", RequestsView.class, LineAwesomeIcon.BELL_SOLID.create()));
 
         }
 
-        }
         if (accessChecker.hasAccess(SuppliersView.class)) {
             nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, LineAwesomeIcon.TRUCK_SOLID.create()));
 

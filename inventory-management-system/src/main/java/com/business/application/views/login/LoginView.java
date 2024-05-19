@@ -2,8 +2,10 @@ package com.business.application.views.login;
 
 import com.business.application.domain.Role;
 import com.business.application.security.AuthenticatedUser;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -12,6 +14,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 @AnonymousAllowed
 @PageTitle("Login")
@@ -41,11 +44,14 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
         if (authenticatedUser.get().isPresent()) {
             // Already logged in
             setOpened(false);
             // If user is ADMIN, navigate to admin page
             if (authenticatedUser.get().get().getRoles().contains(Role.ADMIN)) {
+                // Set dark theme for admin
+                themeList.add(Lumo.DARK);
                 event.forwardTo("admin-dashboard");
             } else {
                 event.forwardTo("dashboard");
