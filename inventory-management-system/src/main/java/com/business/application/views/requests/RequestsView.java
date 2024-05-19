@@ -35,14 +35,35 @@ public class RequestsView extends Div implements AfterNavigationObserver {
     public RequestsView() {
         setSizeFull();
         pendingShoppingLists = getPendingShoppingLists();
-
+    
         grid = new Grid<>(ShoppingList.class, false);
         configureGrid();
-
+    
         VerticalLayout layout = new VerticalLayout(grid);
         layout.setSizeFull();
         add(layout);
+    
+        // Set up polling 
+        UI.getCurrent().setPollInterval(1000);
+        UI.getCurrent().addPollListener(e -> updateShoppingLists());
     }
+
+    private List<ShoppingList> lastKnownShoppingLists = null;
+        private void updateShoppingLists() {
+                List<ShoppingList> currentShoppingLists = getPendingShoppingLists();
+                if (lastKnownShoppingLists == null) {
+                lastKnownShoppingLists = currentShoppingLists;
+                return;
+                }
+                if (currentShoppingLists.size() > lastKnownShoppingLists.size()) {
+                Notification.show("New shopping list request received.");
+                }
+                lastKnownShoppingLists = currentShoppingLists;
+                refreshGrid();
+        }
+
+
+
 
     private void configureGrid() {
         grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);

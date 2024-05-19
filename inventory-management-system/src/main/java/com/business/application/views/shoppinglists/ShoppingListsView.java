@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.Product;
 import com.business.application.domain.ShoppingList;
@@ -91,6 +92,9 @@ public class ShoppingListsView extends Div {
         updateDisplayedCards(shoppingLists);
 
         add(container);
+        // Set up polling every 5 seconds
+        UI.getCurrent().setPollInterval(1000);
+        UI.getCurrent().addPollListener(e -> updateShoppingLists());
     }
 
     private Div createCard(ShoppingList item) {
@@ -120,6 +124,18 @@ public class ShoppingListsView extends Div {
         });
 
         return card;
+    }
+
+    private void updateShoppingLists() {
+        List<ShoppingList> currentShoppingLists = getInitialShoppingListItems();
+        // If number of Pending shopping lists has decreased, show a notification
+        if (currentShoppingLists.size() < shoppingLists.size()) {
+            Notification.show("A shopping list has been approved or declined.");
+        }
+        shoppingLists.clear();
+        shoppingLists.addAll(currentShoppingLists);
+        grid.setItems(shoppingLists);
+        gridSearch(searchField.getValue());
     }
 
     /**
