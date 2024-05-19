@@ -203,8 +203,7 @@ public class DashboardView extends Main {
         Grid<ServiceStockItem> grid = new Grid<>(ServiceStockItem.class, false);
         grid.addClassName("dashboard-view-grid-1");
         // grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        // grid.setAllRowsVisible(true);
-    
+        
         // Customize the 'Status' column to show a colored circle based on status
 
         grid.addColumn(new ComponentRenderer<>(serviceStockItem -> {
@@ -215,7 +214,6 @@ public class DashboardView extends Main {
             status.getElement().getStyle().set("width", "10px");
             status.getElement().getStyle().set("height", "10px");
             status.getElement().getStyle().set("border-radius", "50%");
-            // status.getElement().getThemeList().add(getStatusTheme(serviceStockItem));
 
             if (serviceStockItem.getQtyRemaining() > 100) {
                 status.getElement().getStyle().set("background-color", "green");
@@ -259,40 +257,6 @@ public class DashboardView extends Main {
         layout.addClassName("rounded-rectangle");
         return layout;
     }
-
-    //     private Component createNotifications() {
-
-    //     HorizontalLayout head = createHeader("NOTIFICATIONS", "");
-    //     head.add(LumoIcon.BELL.create());
-    //     VerticalLayout notificationsLayout = new VerticalLayout(head);
-    //     notificationsLayout.addClassName(Padding.LARGE);
-    //     notificationsLayout.setPadding(false);
-    //     notificationsLayout.setSpacing(false);
-    //     notificationsLayout.addClassName("rounded-rectangle");
-    
-    //     for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
-    //             "Request #256 Declined", "Request #214 Approved"}) {
-    
-    //         Button viewButton = new Button("View");
-    //         viewButton.addClickListener(clickEvent -> {
-    //             Notification notification = new Notification();
-    //             notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
-    //             notification.setText(notificationText);
-    
-    //             Button closeButton = new Button("Close", e -> notification.close());
-    //             notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
-    //             notification.setDuration(5000);
-    //             notification.open();
-    //         });
-    
-    //         HorizontalLayout notificationItem = new HorizontalLayout(new Span(notificationText), viewButton);
-    //         notificationItem.addClassName("notification-item");
-    //         notificationItem.setWidthFull();
-    //         notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
-    //         notificationsLayout.add(notificationItem);
-    //     }
-    //     return notificationsLayout;
-    // }
 
         private Component createShoppingListRequests() {
         // Header
