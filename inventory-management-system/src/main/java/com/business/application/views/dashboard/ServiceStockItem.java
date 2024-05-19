@@ -2,7 +2,7 @@ package com.business.application.views.dashboard;
 
 public class ServiceStockItem {
 
-    private Status status;
+    private String status;
     private String stockName;
     private int qtyRemaining;
 
@@ -12,18 +12,18 @@ public class ServiceStockItem {
         VERYLOW;   // Represent items with very low stock
     }
 
-    public ServiceStockItem(Status status, String stockName, int qtyRemaining) {
+    public ServiceStockItem(String status, String stockName, int qtyRemaining) {
         this.status = status;
         this.stockName = stockName;
         this.qtyRemaining = qtyRemaining;
     }
 
     // Getters and setters
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
