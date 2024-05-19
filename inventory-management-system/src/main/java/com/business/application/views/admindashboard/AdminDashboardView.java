@@ -37,7 +37,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Admin Dashboard")
-@Route(value = "dashboard2", layout = MainLayout.class)
+@Route(value = "admin-dashboard", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 
 public class AdminDashboardView extends Main {

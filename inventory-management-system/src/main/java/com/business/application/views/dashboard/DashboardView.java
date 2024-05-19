@@ -37,8 +37,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
-@RolesAllowed({"USER", "ADMIN"})  // Allow both USER and ADMIN roles
+@RolesAllowed("USER") // Keep only for the user role
 public class DashboardView extends Main {
 
     public DashboardView() {

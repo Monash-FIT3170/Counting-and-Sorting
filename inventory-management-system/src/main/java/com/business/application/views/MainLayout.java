@@ -193,13 +193,15 @@ public class MainLayout extends AppLayout {
                     new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
+
+        if (accessChecker.hasAccess(AdminDashboardView.class)) {
+            nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
+                    LineAwesomeIcon.CHART_PIE_SOLID.create()));
+
         if (accessChecker.hasAccess(RequestsView.class)) {
             nav.addItem(new SideNavItem("Requests", RequestsView.class, LineAwesomeIcon.BELL_SOLID.create()));
 
         }
-        if (accessChecker.hasAccess(AdminDashboardView.class)) {
-            nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
-                    LineAwesomeIcon.CHART_PIE_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(SuppliersView.class)) {
