@@ -1,6 +1,5 @@
 package com.business.application.views.admindashboard;
 
-<<<<<<< HEAD
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,12 +10,10 @@ import com.business.application.views.MainLayout;
 import com.business.application.views.admindashboard.ServiceHealth.Status;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
-=======
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.business.application.views.MainLayout;
@@ -36,6 +33,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
@@ -55,14 +53,12 @@ public class AdminDashboardView extends Main {
         HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         add(storeInfoLayout);
 
-<<<<<<< HEAD
         Board board = new Board();
         board.addRow(createHighlight("Current users", "745", 33.7), createHighlight("View events", "54.6k", -112.45),
                 createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
         board.addRow(createViewEvents());
         board.addRow(createShoppingListRequests(), createResponseTimes());
         add(board);
-=======
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setWidthFull();
 
@@ -84,7 +80,6 @@ public class AdminDashboardView extends Main {
 
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
     }
     
     private HorizontalLayout createStoreInfoLayout()  {
@@ -111,12 +106,6 @@ public class AdminDashboardView extends Main {
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
-<<<<<<< HEAD
-        VaadinIcon icon = VaadinIcon.ARROW_UP;
-        String prefix = "";
-        String theme = "badge";
-=======
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
 
         if (percentage == 0) {
             prefix = "±";
@@ -134,17 +123,14 @@ public class AdminDashboardView extends Main {
         Span span = new Span(value);
         span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXXLARGE);
 
-<<<<<<< HEAD
-        Icon i = icon.create();
-        i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
-=======
+        
+
         if (percentage == null) {
             head.add(LumoIcon.UNORDERED_LIST.create());
         } else {
             VaadinIcon icon = VaadinIcon.ARROW_UP;
             String prefix = "";
             String theme = "badge";
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
 
         Span badge = new Span(i, new Span(prefix + percentage.toString()));
         badge.getElement().getThemeList().add(theme);
@@ -199,11 +185,9 @@ public class AdminDashboardView extends Main {
         return viewEvents;
     }
 
-<<<<<<< HEAD
     private Component createShoppingListRequests() {
         // Header
         HorizontalLayout header = createHeader("Pending Shopping List Requests", "Approve or Deny Requests");
-=======
     private Component createLowStockItemsGrid() {
         Grid<StockItem> grid = new Grid<>(StockItem.class, false);
         // <theme-editor-local-classname>
@@ -211,7 +195,6 @@ public class AdminDashboardView extends Main {
         grid.addColumn(StockItem::getStatus).setHeader("Status");
         grid.addColumn(StockItem::getItemName).setHeader("Item Name");
         grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
 
         // Grid
         Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
@@ -240,12 +223,10 @@ public class AdminDashboardView extends Main {
         return serviceHealth;
     }
 
-<<<<<<< HEAD
     private List<ShoppingList> getPendingShoppingLists() {
         return ListOfShoppingList.getInstance().getShoppingLists().stream()
             .filter(list -> "Pending".equals(list.getStatus()))
             .collect(Collectors.toList());
-=======
     private Component createNotifications() {
         HorizontalLayout head = createHeader("NOTIFICATIONS", "");
         head.add(LumoIcon.BELL.create());
@@ -277,7 +258,6 @@ public class AdminDashboardView extends Main {
             notificationsLayout.add(notificationItem);
         }
         return notificationsLayout;
->>>>>>> f99c7b9a (Feature, Admin Dashboard, Update Notifications)
     }
 
 
