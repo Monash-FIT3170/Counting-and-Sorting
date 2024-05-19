@@ -8,6 +8,7 @@ import com.business.application.views.admindashboard.ServiceHealth;
 import com.business.application.views.dashboard.ServiceStockItem.Status;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
@@ -19,6 +20,8 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,6 +30,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
@@ -45,10 +49,9 @@ public class DashboardView extends Main {
         addClassName("dashboard-view");
 
         Board board = new Board();
-        board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
-                createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
-        board.addRow(createViewSales(), createViewStockLevels());
-        board.addRow(createLowStockItems(), createResponseTimes());
+        board.addRow(createHighlight("Monthly Revenue", "$213,434.40", 11.0), createHighlight("Total Inventory Count", "12,345,340", 0.0));
+        board.addRow(createViewSales(), createLowStockItems());
+        board.addRow(createViewStockLevels(), createNotifications());
         add(board);
     }
 
@@ -93,7 +96,7 @@ public class DashboardView extends Main {
         year.setValue("2021");
         year.setWidth("100px");
 
-        HorizontalLayout header = createHeader("View sales", "City/month");
+        HorizontalLayout header = createHeader("View Sales Qty", "City/month");
         header.add(year);
 
         // Chart
@@ -105,17 +108,18 @@ public class DashboardView extends Main {
         xAxis.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         conf.addxAxis(xAxis);
 
-        conf.getyAxis().setTitle("Values");
+        conf.getyAxis().setTitle("Qty (thousand pcs.)");
 
         PlotOptionsAreaspline plotOptions = new PlotOptionsAreaspline();
         plotOptions.setPointPlacement(PointPlacement.ON);
         plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
 
-        conf.addSeries(new ListSeries("Berlin", 189, 191, 291, 396, 501, 403, 609, 712, 729, 942, 1044, 1247));
-        conf.addSeries(new ListSeries("London", 138, 246, 248, 348, 352, 353, 463, 573, 778, 779, 885, 887));
-        conf.addSeries(new ListSeries("New York", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
-        conf.addSeries(new ListSeries("Tokyo", 0, 11, 17, 123, 130, 142, 248, 349, 452, 454, 458, 462));
+        conf.addSeries(new ListSeries("Beer", 189, 191, 291, 396, 501, 403, 609, 712, 729, 942, 1044, 1247));
+        conf.addSeries(new ListSeries("Wine", 138, 246, 248, 348, 352, 353, 463, 573, 778, 779, 885, 887));
+        conf.addSeries(new ListSeries("Spirits", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
+        conf.addSeries(new ListSeries("Premix", 0, 11, 17, 123, 130, 142, 248, 349, 452, 454, 458, 462));
+        conf.addSeries(new ListSeries("Misc", 15, 50, 17, 100, 110, 142, 200, 273, 230, 260, 300, 390));
 
         // Add it all together
         VerticalLayout viewEvents = new VerticalLayout(header, chart);
@@ -187,6 +191,10 @@ public class DashboardView extends Main {
             new ServiceStockItem(ServiceStockItem.Status.VERYLOW, "Bacardi White Rum 700ml", 26),
             new ServiceStockItem(ServiceStockItem.Status.VERYLOW, "Captain Morgan Dark Rum 700ml", 54),
             new ServiceStockItem(ServiceStockItem.Status.LOW, "Bells Whiskey 700ml", 26),
+            new ServiceStockItem(ServiceStockItem.Status.LOW, "Jack Daniels 700ml", 26),
+            new ServiceStockItem(ServiceStockItem.Status.VERYLOW, "Bacardi White Rum 700ml", 26),
+            new ServiceStockItem(ServiceStockItem.Status.VERYLOW, "Captain Morgan Dark Rum 700ml", 54),
+            new ServiceStockItem(ServiceStockItem.Status.LOW, "Bells Whiskey 700ml", 26),
         };
         grid.setItems(Arrays.asList(stockItems));
 
@@ -212,31 +220,37 @@ public class DashboardView extends Main {
         return statusText;
     }
 
-    private Component createResponseTimes() {
-        HorizontalLayout header = createHeader("Response times", "Average across all systems");
-
-        // Chart
-        Chart chart = new Chart(ChartType.PIE);
-        Configuration conf = chart.getConfiguration();
-        conf.getChart().setStyledMode(true);
-        chart.setThemeName("gradient");
-
-        DataSeries series = new DataSeries();
-        series.add(new DataSeriesItem("System 1", 12.5));
-        series.add(new DataSeriesItem("System 2", 12.5));
-        series.add(new DataSeriesItem("System 3", 12.5));
-        series.add(new DataSeriesItem("System 4", 12.5));
-        series.add(new DataSeriesItem("System 5", 12.5));
-        series.add(new DataSeriesItem("System 6", 12.5));
-        conf.addSeries(series);
-
-        // Add it all together
-        VerticalLayout serviceHealth = new VerticalLayout(header, chart);
-        serviceHealth.addClassName(Padding.LARGE);
-        serviceHealth.setPadding(false);
-        serviceHealth.setSpacing(false);
-        serviceHealth.getElement().getThemeList().add("spacing-l");
-        return serviceHealth;
+        private Component createNotifications() {
+        HorizontalLayout head = createHeader("NOTIFICATIONS", "");
+        head.add(LumoIcon.BELL.create());
+        VerticalLayout notificationsLayout = new VerticalLayout(head);
+        notificationsLayout.addClassName(Padding.LARGE);
+        notificationsLayout.setPadding(false);
+        notificationsLayout.setSpacing(false);
+        notificationsLayout.addClassName("rounded-rectangle");
+    
+        for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
+                "Request #256 Declined", "Request #214 Approved"}) {
+    
+            Button viewButton = new Button("View");
+            viewButton.addClickListener(clickEvent -> {
+                Notification notification = new Notification();
+                notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                notification.setText(notificationText);
+    
+                Button closeButton = new Button("Close", e -> notification.close());
+                notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
+                notification.setDuration(5000);
+                notification.open();
+            });
+    
+            HorizontalLayout notificationItem = new HorizontalLayout(new Span(notificationText), viewButton);
+            notificationItem.addClassName("notification-item");
+            notificationItem.setWidthFull();
+            notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
+            notificationsLayout.add(notificationItem);
+        }
+        return notificationsLayout;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
