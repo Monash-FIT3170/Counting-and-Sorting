@@ -57,8 +57,7 @@ public class AdminDashboardView extends Main {
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
         highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
-                createHighlight("Total Inventory Count", "12,345,340", null));
-
+                createHighlight("Total Inventory Count", "12,345,340", 11.0));
 
         leftColumn.add(highlightsLayout);
         leftColumn.add(createViewSalesQty());
@@ -131,42 +130,37 @@ public class AdminDashboardView extends Main {
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
+        VaadinIcon icon = VaadinIcon.ARROW_UP;
+        String prefix = "";
+        String theme = "badge";
 
-        HorizontalLayout head = createHeader(title.toUpperCase(), "");
+        if (percentage == 0) {
+            prefix = "±";
+        } else if (percentage > 0) {
+            prefix = "+";
+            theme += " success";
+        } else if (percentage < 0) {
+            icon = VaadinIcon.ARROW_DOWN;
+            theme += " error";
+        }
+
+        H2 h2 = new H2(title);
+        h2.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.XSMALL);
 
         Span span = new Span(value);
-        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXLARGE);
+        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXXLARGE);
 
-        if (percentage == null) {
-            Icon icon = LumoIcon.UNORDERED_LIST.create();
-            icon.getElement().getThemeList().add("badge pill cir");
-            head.add(icon);
+        Icon i = icon.create();
+        i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
 
-        } else {
-            VaadinIcon icon = VaadinIcon.ARROW_UP;
-            String prefix = "";
-            String theme = "badge";
+        Span badge = new Span(i, new Span(prefix + percentage.toString()));
+        badge.getElement().getThemeList().add(theme);
 
-            if (percentage == 0) {
-                prefix = "±";
-            } else if (percentage > 0) {
-                prefix = "+";
-                theme += " success";
-            } else if (percentage < 0) {
-                icon = VaadinIcon.ARROW_DOWN;
-                theme += " error";
-            }
-            Icon i = icon.create();
-            i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
-            Span badge = new Span(i, new Span(prefix + percentage.toString()));
-            badge.getElement().getThemeList().add(theme);
-            head.add(badge);
-        }
-        VerticalLayout layout = new VerticalLayout(head, span);
+        VerticalLayout layout = new VerticalLayout(h2, span, badge);
+        layout.addClassName("rounded-rectangle");
         layout.addClassName(Padding.LARGE);
         layout.setPadding(false);
         layout.setSpacing(false);
-        layout.addClassName("rounded-rectangle");
         return layout;
     }
 
@@ -179,7 +173,7 @@ public class AdminDashboardView extends Main {
         year.setMin(1970);
         year.setMax(2024);
 
-        HorizontalLayout header = createHeader("VIEW SALES QTY", "");
+        HorizontalLayout header = createHeader("View Sales Qty", "");
         header.add(year);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
 
@@ -300,7 +294,7 @@ public class AdminDashboardView extends Main {
             new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
     );
 
-    HorizontalLayout head = createHeader("LOW STOCK ITEMS", "");
+    HorizontalLayout head = createHeader("Low Stock Items", "");
     Icon icon = LumoIcon.UNORDERED_LIST.create();
     icon.getElement().getThemeList().add("badge pill cir");
     
