@@ -27,7 +27,7 @@ public class ShoppingListItem extends AbstractEntity{
     }
 
     public int getQuantity(){
-        return this.quantity;
+        return this.product.getQuantity();
     }
 
     public int getRequestedQuantity(){

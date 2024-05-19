@@ -86,7 +86,11 @@ public class NewShoppingListView extends Div {
         // Create a grid for all the products
         productDataProvider = new ListDataProvider<>(productList);
         productGrid.setDataProvider(productDataProvider);
-        productGrid.setColumns("productId", "name", "salePrice", "category", "description");
+        //productGrid.setColumns("productId", "name", "salePrice", "category", "description");
+        productGrid.removeAllColumns();
+        productGrid.addColumn(Product::getName).setHeader("Product Name").setSortable(true);
+        productGrid.addColumn(Product::getSalePrice).setHeader("Product Sale Price").setSortable(true);
+        productGrid.addColumn(Product::getQuantity).setHeader("Current Stock").setSortable(true);
         // Round sale price to 2 decimal places
 
 
@@ -94,7 +98,7 @@ public class NewShoppingListView extends Div {
         shoppingListDataProvider = new ListDataProvider<>(shoppingListItems);
         shoppingListGrid.setDataProvider(shoppingListDataProvider);
         shoppingListGrid.addThemeVariants(GridProVariant.LUMO_HIGHLIGHT_EDITABLE_CELLS);
-        shoppingListGrid.addColumn(ShoppingListItem::getProductId).setHeader("Product Id");
+        //shoppingListGrid.addColumn(ShoppingListItem::getProductId).setHeader("Product Id");
         shoppingListGrid.addColumn(ShoppingListItem::getProductName).setHeader("Product Name");
         shoppingListGrid.addColumn(ShoppingListItem::getRequestedQuantityStr).setHeader("Requested Quantity");
         shoppingListGrid.addComponentColumn(item -> {
@@ -102,6 +106,8 @@ public class NewShoppingListView extends Div {
             deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
             deleteButton.addClickListener(click -> {
                 shoppingListItems.remove(item);
+                // deleting price from total price
+                updateTotalPrice(item.getProduct(), -1*item.getRequestedQuantity());
                 shoppingListDataProvider.refreshAll();
             });
             return deleteButton;

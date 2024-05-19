@@ -11,6 +11,8 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -36,7 +38,9 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
     private Grid<ShoppingListItem> grid = new Grid<>(ShoppingListItem.class, false);
     private H1 header;
     private ShoppingList shoppingList;
+    private H2 totalPrice;
 
+    
     public ShoppingListItemsView() {
         // Back button
         Button backButton = new Button("Back", e -> UI.getCurrent().navigate(ShoppingListsView.class));
@@ -45,16 +49,19 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         // Header
         header = new H1();
         header.addClassName("header");
+        
+        totalPrice = new H2();
+        totalPrice.addClassName("Header2");
 
         // Configure Grid
         grid.addColumn(ShoppingListItem::getProductId).setHeader("Item ID").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductName).setHeader("Item Name").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductCategory).setHeader("Category").setSortable(true);
-        grid.addColumn(ShoppingListItem::getQuantityStr).setHeader("Current Qty").setSortable(true);
+        grid.addColumn(ShoppingListItem::getQuantity).setHeader("Current Qty").setSortable(true);
         grid.addColumn(ShoppingListItem::getRequestedQuantityStr).setHeader("Requested Qty").setSortable(true);
 
         // Layout setup
-        VerticalLayout layout = new VerticalLayout(backButton, header, grid);
+        VerticalLayout layout = new VerticalLayout(backButton, header,totalPrice ,grid);
         layout.setSizeFull();
         add(layout);
     }
@@ -115,6 +122,7 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
                 shoppingList = shoppingListInstance.getShoppingList(listId - 1);
                 String listName = shoppingList.getName();
                 header.setText("Shopping List " + listId + " - " + listName);
+                totalPrice.setText("Shopping List Price :$" + shoppingList.getTotalPrice());
                 ArrayList<ShoppingListItem> products = shoppingList.getProducts();
                 ListDataProvider<ShoppingListItem> shoppingListDataProvider = new ListDataProvider<>(products);
                 grid.setDataProvider(shoppingListDataProvider);
