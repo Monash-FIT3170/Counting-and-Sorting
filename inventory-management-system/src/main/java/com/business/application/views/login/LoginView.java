@@ -2,10 +2,8 @@ package com.business.application.views.login;
 
 import com.business.application.domain.Role;
 import com.business.application.security.AuthenticatedUser;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
-import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -40,6 +38,35 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
 
         setOpened(true);
+
+        // Add forgot password listener to show email prompt dialog
+        addForgotPasswordListener(e -> openForgotPasswordDialog());
+    }
+
+    private void openForgotPasswordDialog() {
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+
+        EmailField emailField = new EmailField("Enter your email");
+        Button submitButton = new Button("Submit", event -> {
+            String email = emailField.getValue();
+            if (email.isEmpty()) {
+                Notification.show("Please enter a valid email address");
+            } else {
+                // Implement your password reset logic here
+                // For example, send a password reset email
+                dialog.close();
+                Notification.show("You have been sent an email, please check your inbox to reset your password");
+            }
+        });
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        VerticalLayout dialogLayout = new VerticalLayout(emailField, submitButton, cancelButton);
+        dialog.add(dialogLayout);
+
+        dialog.open();
     }
 
     @Override
