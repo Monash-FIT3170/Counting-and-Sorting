@@ -6,12 +6,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import com.business.application.domain.ListOfShoppingList;
+import com.business.application.domain.ShoppingList;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.charts.model.style.Color;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H2;
@@ -23,7 +26,6 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
@@ -65,9 +67,47 @@ public class AdminDashboardView extends Main {
         rightColumn.setWidth("calc(45% - 16px)");
         rightColumn.add(createLowStockItemsGrid());
         rightColumn.add(createNotifications());
+        rightColumn.add(createShoppingListRequests());
 
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
+    }
+
+    private Component createShoppingListRequests() {
+        // Header
+        HorizontalLayout header = createHeader("PENDING SHOPPING LIST REQUESTS", "Approve or Deny Requests");
+
+        // Grid
+        Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        grid.setAllRowsVisible(true);
+
+        grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
+        grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
+        grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
+
+        List<ShoppingList> pendingShoppingLists = getPendingShoppingLists();
+        grid.setItems(pendingShoppingLists);
+
+        // Add click listener to navigate to requests tab
+        grid.addItemClickListener(event -> {
+            // Navigate to requests tab
+            getUI().ifPresent(ui -> ui.navigate("requests"));
+        });
+
+        // Add it all together
+        VerticalLayout layout = new VerticalLayout(header, grid);
+        layout.addClassName(Padding.LARGE);
+        layout.setPadding(false);
+        layout.setSpacing(false);
+        layout.addClassName("rounded-rectangle");
+        return layout;
+    }
+
+    private List<ShoppingList> getPendingShoppingLists() {
+        return ListOfShoppingList.getInstance().getShoppingLists().stream()
+            .filter(list -> "Pending".equals(list.getStatus()))
+            .collect(Collectors.toList());
     }
 
     private HorizontalLayout createStoreInfoLayout() {
