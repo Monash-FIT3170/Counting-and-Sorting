@@ -45,8 +45,8 @@ public class ForecastView extends Main {
     public ForecastView() {
         addClassName("forecast-view");
         Board board = new Board();
-        board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
-                 createHighlight("Conversion rate", "18%", 3.9));
+        // board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
+        //          createHighlight("Conversion rate", "18%", 3.9));
         board.addRow(createViewStockForecast());
         // board.addRow( createResponseTimes());
         add(board);
@@ -81,8 +81,8 @@ public class ForecastView extends Main {
 
     private Component createViewStockForecast() {
         // Header
-        HorizontalLayout header = createHeader("Forecasting view", "");
-
+        // HorizontalLayout header = createHeader("Forecasting view", "");
+        HorizontalLayout header = createHeader("", "");
 
         // Create buttons
         Button allCategoriesBtn = new Button("All Categories");
@@ -91,7 +91,6 @@ public class ForecastView extends Main {
         Button spiritsBtn = new Button("Spirits");
         Button premixBtn = new Button("Premix");
         Button miscBtn = new Button("Misc");
-
 
         // Add buttons to a HorizontalLayout
         HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
@@ -110,7 +109,6 @@ String[] premixItems = {"Premix 1", "Premix 2", "Premix 3"};
 String[] miscItems = {"Misc 1", "Misc 2", "Misc 3"};
 
 String[] allCategoriesItems = Stream.of(beerItems, wineItems, spiritsItems, premixItems, miscItems).flatMap(Stream::of).toArray(String[]::new);
-
 
 // Set initial items for the search ComboBox
 searchComboBox.setItems(allCategoriesItems);
