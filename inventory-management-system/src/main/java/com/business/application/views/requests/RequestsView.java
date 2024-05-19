@@ -68,6 +68,7 @@ public class RequestsView extends Div implements AfterNavigationObserver {
     private void configureGrid() {
         grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
         grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
+        grid.addColumn(ShoppingList::getTotalPrice).setHeader("Cost");
         grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
 
         grid.addColumn(new ComponentRenderer<>(this::createActionButtons)).setHeader("Actions");

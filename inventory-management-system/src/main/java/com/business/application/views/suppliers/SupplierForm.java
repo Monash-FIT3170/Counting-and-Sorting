@@ -4,12 +4,16 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.business.application.views.inventory.ProductFrontend;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+
+import java.util.UUID;
+import static java.lang.Math.abs;
 
 
 
@@ -30,31 +34,40 @@ public class SupplierForm extends Dialog {
     // ...
 
     public SupplierForm() {
-        categoryField.setItems("Beer", "Wine", "Premix", "Spirit", "Misc");
-        setWidth("20%");
-        setHeight("80%");
-        
-        // Create a HorizontalLayout for the fields
-        VerticalLayout fieldsLayout = new VerticalLayout();
-        fieldsLayout.add(itemIdField, nameField, categoryField, salePriceField, qtyField, quantityField, capacityField, supplierField);
-        fieldsLayout.setFlexGrow(1, supplierField, salePriceField, qtyField, itemIdField, nameField, categoryField, quantityField, capacityField);
-        fieldsLayout.setAlignItems(Alignment.CENTER);
+        // Set up the FormLayout
+        FormLayout formLayout = new FormLayout();
 
+        itemIdField.setValue(generateItemId());
+        itemIdField.setReadOnly(true);
+        categoryField.setItems("Beer", "Wine", "Premix", "Spirit", "Misc");
+
+        // Add fields to the form layout
+        formLayout.addFormItem(itemIdField, "Item ID");
+        formLayout.addFormItem(nameField, "Name");
+        formLayout.addFormItem(quantityField, "Quantity");
+        formLayout.addFormItem(categoryField, "Category");
         
+        formLayout.addFormItem(salePriceField, "Sale Price");
+        formLayout.addFormItem(qtyField, "Quantity Per Order");
+        formLayout.addFormItem(capacityField, "Capacity");
+        formLayout.addFormItem(supplierField, "Supplier");
+
         // Create a HorizontalLayout for the save button and center it
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setWidth("100%");
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton);
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        buttonLayout.add(saveButton);
-        
-        // Create a VerticalLayout for the entire form
-        VerticalLayout layout = new VerticalLayout();
-        layout.add(fieldsLayout, buttonLayout);
-        
-        add(layout);
+
+        // Set the form layout to not be too wide
+        formLayout.setMaxWidth("900px");
+        this.add(formLayout);
+
+    
+        // Add FormLayout and button layout to the dialog
+        this.add(formLayout, buttonLayout);
     }
 
-    // ...
+    private int generateItemId() {
+        return abs(UUID.randomUUID().hashCode());
+    }
 
 
     public Button getSaveButton() {
