@@ -144,7 +144,7 @@ public class AdminDashboardView extends Main {
         header.setAlignItems(FlexComponent.Alignment.CENTER);
 
         // Chart
-        Chart chart = new Chart(ChartType.AREASPLINE);
+        Chart chart = new Chart(ChartType.SPLINE);
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
 
@@ -154,7 +154,7 @@ public class AdminDashboardView extends Main {
 
         conf.getyAxis().setTitle("Values");
 
-        PlotOptionsAreaspline plotOptions = new PlotOptionsAreaspline();
+        PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
         plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
