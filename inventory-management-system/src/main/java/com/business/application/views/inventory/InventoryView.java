@@ -49,7 +49,7 @@ public class InventoryView extends Div {
         addClassName("inventory-view");
         setSizeFull();
         createGrid();
-        add(createToolbar(), grid);
+        add(grid);
     }
 
     private void createGrid() {
@@ -192,23 +192,6 @@ public class InventoryView extends Div {
             return true;
         }));
         filterRow.getCell(stockLevelColumn).setComponent(stockLevelFilter);
-    }
-
-    private HorizontalLayout createToolbar() {
-        TextField searchField = new TextField();
-        searchField.setPlaceholder("Search Items");
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.setWidth("300px");
-
-        Button filterButton = new Button("Filter", VaadinIcon.FILTER.create());
-
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton);
-        toolbar.setAlignItems(Alignment.BASELINE);
-        toolbar.setWidthFull();
-        toolbar.setPadding(true);
-        toolbar.setSpacing(true);
-
-        return toolbar;
     }
 
     private List<ProductFrontend> getProducts() {
