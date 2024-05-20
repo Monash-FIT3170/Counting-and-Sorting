@@ -10,6 +10,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
@@ -62,7 +65,7 @@ public class DashboardView extends Main {
         VerticalLayout rightColumn = new VerticalLayout();
         rightColumn.setWidth("calc(45% - 16px)");
         rightColumn.add(createLowStockItems());
-        rightColumn.add(createShoppingListRequests());
+        rightColumn.add(createNotifications());
 
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
@@ -258,41 +261,37 @@ public class DashboardView extends Main {
         return layout;
     }
 
-        private Component createShoppingListRequests() {
-        // Header
-        HorizontalLayout header = createHeader("PENDING SHOPPING LIST REQUESTS", "Approve or Deny Requests");
+    private Component createNotifications() {
+        HorizontalLayout head = createHeader("NOTIFICATIONS", "");
+        head.add(LumoIcon.BELL.create());
+        VerticalLayout notificationsLayout = new VerticalLayout(head);
+        notificationsLayout.addClassName(Padding.LARGE);
+        notificationsLayout.setPadding(false);
+        notificationsLayout.setSpacing(false);
+        notificationsLayout.addClassName("rounded-rectangle");
 
-        // Grid
-        Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.setAllRowsVisible(true);
+        for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
+                "Request #256 Declined", "Request #214 Approved"}) {
 
-        grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
-        grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
-        grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
+            Button viewButton = new Button("View");
+            viewButton.addClickListener(clickEvent -> {
+                Notification notification = new Notification();
+                notification.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                notification.setText(notificationText);
 
-        List<ShoppingList> pendingShoppingLists = getPendingShoppingLists();
-        grid.setItems(pendingShoppingLists);
+                Button closeButton = new Button("Close", e -> notification.close());
+                notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
+                notification.setDuration(5000);
+                notification.open();
+            });
 
-        // Add click listener to navigate to requests tab
-        grid.addItemClickListener(event -> {
-            // Navigate to requests tab
-            getUI().ifPresent(ui -> ui.navigate("requests"));
-        });
-
-        // Add it all together
-        VerticalLayout layout = new VerticalLayout(header, grid);
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        layout.addClassName("rounded-rectangle");
-        return layout;
-    }
-
-    private List<ShoppingList> getPendingShoppingLists() {
-        return ListOfShoppingList.getInstance().getShoppingLists().stream()
-            .filter(list -> "Pending".equals(list.getStatus()))
-            .collect(Collectors.toList());
+            HorizontalLayout notificationItem = new HorizontalLayout(new Span(notificationText), viewButton);
+            notificationItem.addClassName("notification-item");
+            notificationItem.setWidthFull();
+            notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
+            notificationsLayout.add(notificationItem);
+        }
+        return notificationsLayout;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
