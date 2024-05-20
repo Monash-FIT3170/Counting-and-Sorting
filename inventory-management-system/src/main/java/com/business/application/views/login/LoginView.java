@@ -44,11 +44,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         setForgotPasswordButtonVisible(true);
         addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate("forgot-password")));
 
-
         setOpened(true);
-
-        // Add forgot password listener to show email prompt dialog
-        addForgotPasswordListener(e -> openForgotPasswordDialog());
     }
 
     private void openForgotPasswordDialog() {

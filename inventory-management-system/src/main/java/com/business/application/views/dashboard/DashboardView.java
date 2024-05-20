@@ -45,9 +45,9 @@ public class DashboardView extends Main {
 
         Board board = new Board();
         board.addRow(createHighlight("Revenue", "$513,434.40", 11.0), createHighlight("Total Inventory Count", "54.6k", -112.45),
-                createHighlight("Conversion rate", "18%", 3.9), createHighlight("Custom metric", "-123.45", 0.0));
+                createHighlight("Conversion rate", "18%", 3.9), createHighlight("Pending orders", "$1923.45", 1.2));
         board.addRow(createViewSales(), createViewStockLevels());
-        board.addRow(createLowStockItems(), createResponseTimes());
+        board.addRow(createLowStockItems());
         add(board);
     }
 
@@ -84,6 +84,7 @@ public class DashboardView extends Main {
         layout.setSpacing(false);
         return layout;
     }
+
 
     private Component createViewSales() {
         // Header

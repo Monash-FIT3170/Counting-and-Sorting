@@ -42,6 +42,10 @@ public class ShoppingListItem extends AbstractEntity{
         return String.valueOf(this.quantity);
     }
 
+    public String getProductPrice() {
+        return this.product.getSalePrice().toString();
+    }
+
     public String getRequestedQuantityStr() {
         return String.valueOf(this.requestedQuantity);
     }

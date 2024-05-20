@@ -57,6 +57,7 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         grid.addColumn(ShoppingListItem::getProductId).setHeader("Item ID").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductName).setHeader("Item Name").setSortable(true);
         grid.addColumn(ShoppingListItem::getProductCategory).setHeader("Category").setSortable(true);
+        grid.addColumn(ShoppingListItem::getProductPrice).setHeader("Price Per Item ($)").setSortable(true);
         grid.addColumn(ShoppingListItem::getQuantity).setHeader("Current Qty").setSortable(true);
         grid.addColumn(ShoppingListItem::getRequestedQuantityStr).setHeader("Requested Qty").setSortable(true);
 
@@ -122,7 +123,7 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
                 shoppingList = shoppingListInstance.getShoppingList(listId - 1);
                 String listName = shoppingList.getName();
                 header.setText("Shopping List " + listId + " - " + listName);
-                totalPrice.setText("Shopping List Price :$" + shoppingList.getTotalPrice());
+                totalPrice.setText("Shopping List Cost: $" + shoppingList.getTotalPrice());
                 ArrayList<ShoppingListItem> products = shoppingList.getProducts();
                 ListDataProvider<ShoppingListItem> shoppingListDataProvider = new ListDataProvider<>(products);
                 grid.setDataProvider(shoppingListDataProvider);
