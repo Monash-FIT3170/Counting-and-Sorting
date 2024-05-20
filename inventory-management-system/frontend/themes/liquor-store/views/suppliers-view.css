@@ -73,3 +73,29 @@
   background-color: #e7e1f9;
   color: #8a4baf;
 }
+
+/* Dark mode adjustments */
+[theme~='dark'] .badge-premix {
+  background-color: #52222c; 
+  color: #fdecef; 
+}
+
+[theme~='dark'] .badge-misc {
+  background-color: #2c3342; 
+  color: #e6eaf2; 
+}
+
+[theme~='dark'] .badge-beer {
+  background-color: #4a341a; 
+  color: #fef3e6; 
+}
+
+[theme~='dark'] .badge-spirit {
+  background-color: #1c3c4a;
+  color: #e6f7ff;
+}
+
+[theme~='dark'] .badge-wine {
+  background-color: #39284c; 
+  color: #e7e1f9; 
+}
