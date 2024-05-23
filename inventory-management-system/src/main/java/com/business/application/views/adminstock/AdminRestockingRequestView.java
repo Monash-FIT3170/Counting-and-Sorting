@@ -46,9 +46,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         grid1 = new Grid<Product>(Product.class, false);
         grid1.addColumn("productId").setAutoWidth(true);
         grid1.addColumn("name").setAutoWidth(true);
-        grid1.addColumn("salePrice").setAutoWidth(true);
         grid1.addColumn("category").setAutoWidth(true);
-        grid1.addColumn("description").setAutoWidth(true);
+        grid1.addColumn("currentQuantity").setAutoWidth(true);
+        grid1.addColumn("requestedQuantity").setAutoWidth(true);
         setProductGridSampleData(grid1);
         layoutColumn2.add(grid1);
 
@@ -91,9 +91,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         Product product1 = new Product();
         product1.setProductId(1902L);
         product1.setName("Sample Product 1");
-        product1.setSalePrice(new BigDecimal("10.00"));
         product1.setCategory("Category 1");
-        product1.setDescription("This is a sample product 1");
+        product1.setCurrentQuantity(200);
+        product1.setRequestedQuantity(100);
         sampleProducts.add(product1);
 
         // Set the sample products to the grid
