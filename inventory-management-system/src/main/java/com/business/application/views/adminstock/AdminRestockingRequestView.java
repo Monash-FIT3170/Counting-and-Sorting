@@ -117,9 +117,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         sampleProducts.add(product1);
 
         Product product2 = new Product();
-        product2.setProductId(1902L);
-        product2.setName("Brandy");
-        product2.setCategory("Alcahol");
+        product2.setProductId(19802L);
+        product2.setName("Red Wine");
+        product2.setCategory("Wine");
         product2.setCurrentQuantity(100);
         product2.setRequestedQuantity(50);
         sampleProducts.add(product2);
