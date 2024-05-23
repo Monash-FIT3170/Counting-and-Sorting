@@ -15,6 +15,8 @@ public class Product extends AbstractEntity {
     private BigDecimal salePrice;
     private String category;
     private String description;
+    private int currentQuantity;
+    private int requestedQuantity;
 
     // Standard getters and setters
 
@@ -47,5 +49,18 @@ public class Product extends AbstractEntity {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+     public int getCurrentQuantity() {
+        return currentQuantity;
+    }
+    public void setCurrentQuantity(int currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
+    public int getRequestedQuantity() {
+        return requestedQuantity;
+    }
+    public void setRequestedQuantity(int requestedQuantity) {
+        this.requestedQuantity = requestedQuantity;
     }
 }
