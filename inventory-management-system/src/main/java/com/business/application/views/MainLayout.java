@@ -4,6 +4,7 @@ import com.business.application.data.User;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.views.admindashboard.AdminDashboardView;
 import com.business.application.views.adminstock.AdminStockView;
+import com.business.application.views.adminstock.AdminRestockingRequestView;
 import com.business.application.views.dashboard.DashboardView;
 import com.business.application.views.forecast.ForecastView;
 import com.business.application.views.inventory.InventoryView;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -116,7 +118,10 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Admin Stock", AdminStockView.class, LineAwesomeIcon.FILTER_SOLID.create()));
 
         }
+        if (accessChecker.hasAccess(AdminRestockingRequestView.class)) {
+            nav.addItem(new SideNavItem("Admin Restock Request", AdminRestockingRequestView.class, LineAwesomeIcon.INBOX_SOLID.create()));
 
+        }
         
 
         return nav;
