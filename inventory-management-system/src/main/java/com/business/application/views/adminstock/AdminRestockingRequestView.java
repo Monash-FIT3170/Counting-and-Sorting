@@ -1,5 +1,5 @@
 package com.business.application.views.adminstock;
-
+import java.math.BigDecimal;
 import com.business.application.components.avataritem.AvatarItem;
 import com.business.application.data.SamplePerson;
 import com.business.application.services.SamplePersonService;
@@ -22,6 +22,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import com.business.application.data.Product;
+import com.business.application.services.ProductService;
 
 @PageTitle("Admin Restocking Request")
 @Route(value = "admin-restock-request", layout = MainLayout.class)
@@ -78,6 +80,15 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
+    }
+
+      private void createProduct(String name, BigDecimal salePrice, String category, String description) {
+        // Create a new product instance
+        Product product = new Product();
+        product.setName(name);
+        product.setSalePrice(salePrice);
+        product.setCategory(category);
+        product.setDescription(description);
     }
 
     @Autowired()
