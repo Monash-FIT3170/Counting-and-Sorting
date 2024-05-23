@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import com.business.application.data.Product;
 import com.business.application.services.ProductService;
+import java.util.ArrayList;
 
 @PageTitle("Admin Restocking Request")
 @Route(value = "admin-restock-request", layout = MainLayout.class)
@@ -82,6 +83,19 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
                 .stream());
     }
 
+     private void setProductGridSampleData(Grid<Product> grid) {
+        // Create sample products
+        List<Product> sampleProducts = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Sample Product 1");
+        product1.setSalePrice(new BigDecimal("10.00"));
+        product1.setCategory("Category 1");
+        product1.setDescription("This is a sample product 1");
+
+        // Set the sample products to the grid
+        grid.setItems(sampleProducts);
+    }
+
       private void createProduct(String name, BigDecimal salePrice, String category, String description) {
         // Create a new product instance
         Product product = new Product();
@@ -93,4 +107,7 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
 
     @Autowired()
     private SamplePersonService samplePersonService;
+
+     @Autowired()
+    private ProductService productService;
 }
