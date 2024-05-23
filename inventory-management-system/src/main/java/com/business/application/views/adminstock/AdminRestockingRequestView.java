@@ -32,34 +32,36 @@ import java.util.ArrayList;
 @AnonymousAllowed
 @Uses(Icon.class)
 public class AdminRestockingRequestView extends Composite<VerticalLayout> {
+   
+    private Grid<Product> grid1;
 
     public AdminRestockingRequestView() {
-        HorizontalLayout layoutRow = new HorizontalLayout();
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
+        mainLayout.setPadding(true);
+        mainLayout.setSpacing(true);
         VerticalLayout layoutColumn2 = new VerticalLayout();
-        MultiSelectListBox avatarItems = new MultiSelectListBox();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        Grid basicGrid = new Grid(SamplePerson.class);
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
         layoutColumn2.getStyle().set("flex-grow", "1");
+        
+        grid1 = new Grid<Product>(Product.class, false);
+        grid1.addColumn("productId").setAutoWidth(true);
+        grid1.addColumn("name").setAutoWidth(true);
+        grid1.addColumn("salePrice").setAutoWidth(true);
+        grid1.addColumn("category").setAutoWidth(true);
+        grid1.addColumn("description").setAutoWidth(true);
+        setProductGridSampleData(grid1);
+        layoutColumn2.add(grid1);
+
+        VerticalLayout layoutColumn1 = new VerticalLayout();
+        layoutColumn1.getStyle().set("flex-grow", "1");
+        MultiSelectListBox avatarItems = new MultiSelectListBox();
         avatarItems.setWidth("min-content");
         avatarItems.getStyle().set("flex-grow", "1");
         setAvatarItemsSampleData(avatarItems);
-        layoutColumn3.setHeightFull();
-        layoutRow.setFlexGrow(1.0, layoutColumn3);
-        layoutColumn3.setWidth("100%");
-        layoutColumn3.getStyle().set("flex-grow", "1");
-        basicGrid.setWidth("100%");
-        basicGrid.setHeight("100%");
-        setGridSampleData(basicGrid);
-        getContent().add(layoutRow);
-        layoutRow.add(layoutColumn2);
-        layoutColumn2.add(avatarItems);
-        layoutRow.add(layoutColumn3);
-        layoutColumn3.add(basicGrid);
+        layoutColumn1.add(avatarItems);
+        mainLayout.add(layoutColumn1);
+        mainLayout.add(layoutColumn2);
+        getContent().add(mainLayout);
     }
 
     private void setAvatarItemsSampleData(MultiSelectListBox multiSelectListBox) {
@@ -87,10 +89,12 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         // Create sample products
         List<Product> sampleProducts = new ArrayList<>();
         Product product1 = new Product();
+        product1.setProductId(1902L);
         product1.setName("Sample Product 1");
         product1.setSalePrice(new BigDecimal("10.00"));
         product1.setCategory("Category 1");
         product1.setDescription("This is a sample product 1");
+        sampleProducts.add(product1);
 
         // Set the sample products to the grid
         grid.setItems(sampleProducts);
