@@ -116,6 +116,14 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         product1.setRequestedQuantity(100);
         sampleProducts.add(product1);
 
+        Product product2 = new Product();
+        product2.setProductId(1902L);
+        product2.setName("Brandy");
+        product2.setCategory("Alcahol");
+        product2.setCurrentQuantity(100);
+        product2.setRequestedQuantity(50);
+        sampleProducts.add(product2);
+
         // Set the sample products to the grid
         grid.setItems(sampleProducts);
     }
@@ -138,6 +146,14 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         product1.setCurrentQuantity(200);
         product1.setRequestedQuantity(100);
         sampleProducts.add(product1);
+
+        Product product2 = new Product();
+        product2.setProductId(19802L);
+        product2.setName("Red Wine");
+        product2.setCategory("Wine");
+        product2.setCurrentQuantity(100);
+        product2.setRequestedQuantity(50);
+        sampleProducts.add(product2);
 
         List<Product> allProducts = sampleProducts; // Replace with actual data retrieval logic
 
