@@ -26,6 +26,9 @@ import com.business.application.data.Product;
 import com.business.application.services.ProductService;
 import java.util.ArrayList;
 import com.vaadin.flow.component.textfield.TextField;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import com.vaadin.flow.component.combobox.ComboBox;
 
 @PageTitle("Admin Restocking Request")
 @Route(value = "admin-restock-request", layout = MainLayout.class)
@@ -35,6 +38,8 @@ import com.vaadin.flow.component.textfield.TextField;
 public class AdminRestockingRequestView extends Composite<VerticalLayout> {
    
     private Grid<Product> grid1;
+    private final ComboBox<String> sortField;
+    private final TextField searchField = new TextField();
 
     public AdminRestockingRequestView() {
         VerticalLayout mainLayout = new VerticalLayout();
@@ -45,10 +50,15 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         layoutColumn2.getStyle().set("flex-grow", "1");
         
 
-        TextField searchField = new TextField();
-        searchField.setPlaceholder("Search...");
+        
         searchField.setPlaceholder("Enter product name...");
+        searchField.addValueChangeListener(e -> updateGrid());
         layoutColumn2.add(searchField);
+
+        sortField = new ComboBox<>("Sort By");
+        sortField.setItems("Name", "Category", "Current Quantity", "Requested Quantity");
+        sortField.addValueChangeListener(e -> updateGrid());
+        layoutColumn2.add(sortField);
         
         grid1 = new Grid<Product>(Product.class, false);
         grid1.addColumn("productId").setAutoWidth(true);
@@ -117,6 +127,52 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         product.setSalePrice(salePrice);
         product.setCategory(category);
         product.setDescription(description);
+    }
+
+     private List<Product> getProductData(String searchTerm) {
+        List<Product> sampleProducts = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setProductId(1902L);
+        product1.setName("Whiskey");
+        product1.setCategory("Alcahol");
+        product1.setCurrentQuantity(200);
+        product1.setRequestedQuantity(100);
+        sampleProducts.add(product1);
+
+        List<Product> allProducts = sampleProducts; // Replace with actual data retrieval logic
+
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            return allProducts;
+        }
+
+        return allProducts.stream()
+                .filter(product -> product.getName().toLowerCase().contains(searchTerm.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    private void updateGrid() {
+        String searchTerm = searchField.getValue();
+        String sortCriteria = sortField.getValue();
+        List<Product> products = getProductData(searchTerm);
+
+        if (sortCriteria != null) {
+            switch (sortCriteria) {
+                case "Name":
+                    products = products.stream().sorted(Comparator.comparing(Product::getName)).collect(Collectors.toList());
+                    break;
+                case "Category":
+                    products = products.stream().sorted(Comparator.comparing(Product::getCategory)).collect(Collectors.toList());
+                    break;
+                case "Current Quantity":
+                    products = products.stream().sorted(Comparator.comparingInt(Product::getCurrentQuantity)).collect(Collectors.toList());
+                    break;
+                case "Requested Quantity":
+                    products = products.stream().sorted(Comparator.comparingInt(Product::getRequestedQuantity)).collect(Collectors.toList());
+                    break;
+            }
+        }
+
+        grid1.setItems(products);
     }
 
     @Autowired()
