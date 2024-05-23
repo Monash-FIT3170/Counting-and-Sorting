@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import com.business.application.data.Product;
 import com.business.application.services.ProductService;
 import java.util.ArrayList;
+import com.vaadin.flow.component.textfield.TextField;
 
 @PageTitle("Admin Restocking Request")
 @Route(value = "admin-restock-request", layout = MainLayout.class)
@@ -43,6 +44,12 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         layoutColumn2.getStyle().set("flex-grow", "1");
         
+
+        TextField searchField = new TextField();
+        searchField.setPlaceholder("Search...");
+        searchField.setPlaceholder("Enter product name...");
+        layoutColumn2.add(searchField);
+        
         grid1 = new Grid<Product>(Product.class, false);
         grid1.addColumn("productId").setAutoWidth(true);
         grid1.addColumn("name").setAutoWidth(true);
@@ -51,6 +58,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         grid1.addColumn("requestedQuantity").setAutoWidth(true);
         setProductGridSampleData(grid1);
         layoutColumn2.add(grid1);
+
+       
+
 
         VerticalLayout layoutColumn1 = new VerticalLayout();
         layoutColumn1.getStyle().set("flex-grow", "1");
