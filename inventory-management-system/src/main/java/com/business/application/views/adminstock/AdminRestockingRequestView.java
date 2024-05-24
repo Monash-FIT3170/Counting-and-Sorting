@@ -43,16 +43,12 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
     private final TextField searchFieldPerson = new TextField();
 
     public AdminRestockingRequestView() {
-        VerticalLayout mainLayout = new VerticalLayout();
+        HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setSizeFull();
         mainLayout.setPadding(true);
         mainLayout.setSpacing(true);
         VerticalLayout layoutColumn2 = new VerticalLayout();
         layoutColumn2.getStyle().set("flex-grow", "1");
-        
-        searchFieldPerson.setPlaceholder("Enter Name...");
-        searchFieldPerson.addValueChangeListener(e -> updateGrid());
-        mainLayout.add(searchFieldPerson);
         
         searchField.setPlaceholder("Enter product name...");
         searchField.addValueChangeListener(e -> updateGrid());
@@ -81,6 +77,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         avatarItems.setWidth("min-content");
         avatarItems.getStyle().set("flex-grow", "1");
         setAvatarItemsSampleData(avatarItems);
+        searchFieldPerson.setPlaceholder("Enter Name...");
+        searchFieldPerson.addValueChangeListener(e -> updateGrid());
+        layoutColumn1.add(searchFieldPerson);
         layoutColumn1.add(avatarItems);
         mainLayout.add(layoutColumn1);
         mainLayout.add(layoutColumn2);
