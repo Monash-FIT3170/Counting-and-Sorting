@@ -34,14 +34,19 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
 
+
 @PageTitle("Forecast")
 @Route(value = "forecast", layout = MainLayout.class)
 @RolesAllowed("USER")
+
 public class ForecastView extends Main {
     private Set<String> displayedItems = new HashSet<>();
+    private Chart chart;
+    private MultiSelectListBox<String> multiSelectListBox;
 
     public ForecastView() {
         addClassName("forecast-view");
+        setSizeFull(); // Make the ForecastView take up the full size
         Board board = new Board();
         board.addRow(createViewStockForecast());
         add(board);
@@ -58,6 +63,7 @@ public class ForecastView extends Main {
         Button spiritsBtn = new Button("Spirits");
         Button premixBtn = new Button("Premix");
         Button miscBtn = new Button("Misc");
+        // Button clearGraphBtn = new Button("Clear Graph"); // Clear graph button
 
         // Add buttons to a HorizontalLayout
         HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
@@ -83,8 +89,7 @@ public class ForecastView extends Main {
         // MultiSelectListBox for multi-selector
         MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
         multiSelectListBox.setItems(allCategoriesItems);
-        multiSelectListBox.setHeight("150px");
-        
+        multiSelectListBox.setHeightFull(); // Make MultiSelectListBox take full height
 
         // Add click listeners to each button to update the items in the search ComboBox and MultiSelectListBox
         allCategoriesBtn.addClickListener(event -> {
@@ -111,68 +116,79 @@ public class ForecastView extends Main {
             searchComboBox.setItems(miscItems);
             multiSelectListBox.setItems(miscItems);
         });
+        // // Add clear graph button listener
+        // clearGraphBtn.addClickListener(event -> {
+        //     clearGraph();
+        // }); // Add clear graph button listener
 
         // Layout for ComboBox and MultiSelectListBox
         VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
         selectLayout.setPadding(false);
         selectLayout.setSpacing(false);
         selectLayout.setAlignItems(FlexComponent.Alignment.START);
+        selectLayout.setHeightFull(); // Make this layout take full height
 
         // Chart configuration
         Chart chart = new Chart(ChartType.LINE);
+        chart.setHeightFull(); // Make the chart take full height
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
         conf.getChart().setType(ChartType.LINE);
 
         // Setup X and Y Axes
-XAxis xAxis = new XAxis();
-xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
-conf.addxAxis(xAxis);
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
+        conf.addxAxis(xAxis);
 
-YAxis yAxis = new YAxis();
-yAxis.setTitle("Sales");
-yAxis.setMin(0);
-yAxis.setMax(100);
-conf.addyAxis(yAxis);
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Sales");
+        yAxis.setMin(0);
+        yAxis.setMax(100);
+        conf.addyAxis(yAxis);
 
-// Initial chart data update
-updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
+        // Initial chart data update
+        updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
 
-// Change listener for MultiSelectListBox
-multiSelectListBox.addSelectionListener(event -> {
-    updateChartData(conf, new ArrayList<>(event.getValue()));
-});
+        // Change listener for MultiSelectListBox
+        multiSelectListBox.addSelectionListener(event -> {
+            updateChartData(conf, new ArrayList<>(event.getValue()));
+        });
 
-// Legend Configuration
-Legend legend = new Legend();
-legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
-legend.setAlign(HorizontalAlign.CENTER); // Align to the center horizontally
-legend.setVerticalAlign(VerticalAlign.BOTTOM); // Align to the bottom vertically
-conf.setLegend(legend);
+        // Legend Configuration
+        Legend legend = new Legend();
+        legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
+        legend.setAlign(HorizontalAlign.CENTER); // Align to the center horizontally
+        legend.setVerticalAlign(VerticalAlign.BOTTOM); // Align to the bottom vertically
+        conf.setLegend(legend);
 
-// Layout for chart and selector
-HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, selectLayout);
-chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-chartAndSelectLayout.setWidthFull();
-chartAndSelectLayout.setPadding(false);
-chartAndSelectLayout.setSpacing(false);
+        // Layout for chart and selector
+        HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, selectLayout);
+        chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+        chartAndSelectLayout.setWidthFull();
+        chartAndSelectLayout.setHeightFull(); // Make this layout take full height
+        chartAndSelectLayout.setPadding(false);
+        chartAndSelectLayout.setSpacing(false);
 
-// Layout for buttons and chartAndSelectLayout
-VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
-mainContentLayout.setAlignItems(FlexComponent.Alignment.START);
-mainContentLayout.setSizeFull();
-mainContentLayout.setPadding(false);
-mainContentLayout.setSpacing(false);
+        // Layout for buttons and chartAndSelectLayout
+        VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
+        mainContentLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+        mainContentLayout.setSizeFull();
+        mainContentLayout.setHeightFull(); // Make this layout take full height
+        mainContentLayout.setPadding(false);
+        mainContentLayout.setSpacing(false);
 
-// Main layout combining everything
-VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
-mainLayout.setAlignItems(FlexComponent.Alignment.START);
-mainLayout.setSizeFull();
-mainLayout.setPadding(false);
-mainLayout.setSpacing(false);
+        // Main layout combining everything
+        VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
+        mainLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+        mainLayout.setSizeFull();
+        mainLayout.setHeightFull(); // Make this layout take full height
+        mainLayout.setPadding(false);
+        mainLayout.setSpacing(false);
 
-// Add mainLayout to the ForecastView component
-add(mainLayout);
+         
+
+        // Add mainLayout to the ForecastView component
+        add(mainLayout);
 
         return mainLayout;
     }
@@ -185,7 +201,7 @@ add(mainLayout);
                 if ("Absolut: Vodka 1L".equals(item)) {
                     conf.addSeries(new ListSeries(item, 100, 95, 85, 80, 75, 70, 65, 60, 55, 50, 45));
                 } else if ("Fireball: Cinnamon Flavoured Whisky 1.14L".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 100, 90, 80, 75, 70, 65, 60, 55, 50, 45, 40));
+                    conf.addSeries(new ListSeries(item, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40));
                 } else if ("Suntory: -196 Double Lemon 10 Pack Cans 330mL".equals(item)) {
                     conf.addSeries(new ListSeries(item, 100, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
                 } else if ("Moët & Chandon: Impérial Brut".equals(item)) {
@@ -204,16 +220,7 @@ add(mainLayout);
                     conf.addSeries(new ListSeries(item, 92, 87, 80, 75, 70, 68, 60, 46, 34, 26, 25));
                 } else if ("Vodka Cruiser: Juicy Watermelon 275mL".equals(item)) {
                     conf.addSeries(new ListSeries(item, 88, 80, 75, 70, 64, 57, 55, 42, 35, 32, 20));
-                } 
-                // else if ("Premix 3".equals(item)) {
-                //     conf.addSeries(new ListSeries(item, 86, 73, 68, 66, 62, 53, 52, 41, 36, 38, 15));
-                // } else if ("Misc 1".equals(item)) {
-                //     conf.addSeries(new ListSeries(item, 90, 88, 80, 70, 61, 57, 56, 49, 37, 30, 10));
-                // } else if ("Misc 2".equals(item)) {
-                //     conf.addSeries(new ListSeries(item, 70, 66, 60, 55, 49, 45, 41, 46, 38, 31, 7));
-                // } else if ("Misc 3".equals(item)) {
-                //     conf.addSeries(new ListSeries(item, 77, 74, 70, 65, 51, 46, 40, 42, 39, 32, 26));
-                // }
+                }
                 displayedItems.add(item);
             }
         }
@@ -245,4 +252,12 @@ add(mainLayout);
         header.setWidthFull();
         return header;
     }
+
+        // Method to clear the graph and untick all selected items
+        // private void clearGraph() {
+        //     // Clear the chart
+        //     chart.getConfiguration().getSeries().clear();
+        //     // Untick all selected items
+        //     multiSelectListBox.deselectAll();
+        // }
 }
