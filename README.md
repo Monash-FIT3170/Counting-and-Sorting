@@ -2,6 +2,11 @@
 
 The "Counting and Sorting" project endeavours to create an inventory management and stock replenishment system with a user friendly interface capable of real-time updates, enabling accurate reflections of stock availability and consumption patterns to minimise time and resources required for stock maintenance. 
 
+## Running the application
+
+The project is a standard Maven project. To run it from the command line,
+type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
+http://localhost:20231 in your browser.
 
 
 ## Team Members
