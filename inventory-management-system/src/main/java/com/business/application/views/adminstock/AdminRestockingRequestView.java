@@ -40,6 +40,7 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
     private Grid<Product> grid1;
     private final ComboBox<String> sortField;
     private final TextField searchField = new TextField();
+    private final TextField searchFieldPerson = new TextField();
 
     public AdminRestockingRequestView() {
         VerticalLayout mainLayout = new VerticalLayout();
@@ -49,7 +50,9 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         layoutColumn2.getStyle().set("flex-grow", "1");
         
-
+        searchFieldPerson.setPlaceholder("Enter Name...");
+        searchFieldPerson.addValueChangeListener(e -> updateGrid());
+        mainLayout.add(searchFieldPerson);
         
         searchField.setPlaceholder("Enter product name...");
         searchField.addValueChangeListener(e -> updateGrid());
@@ -111,7 +114,7 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         Product product1 = new Product();
         product1.setProductId(1902L);
         product1.setName("Whiskey");
-        product1.setCategory("Alcahol");
+        product1.setCategory("Alcohol");
         product1.setCurrentQuantity(200);
         product1.setRequestedQuantity(100);
         sampleProducts.add(product1);
@@ -142,7 +145,7 @@ public class AdminRestockingRequestView extends Composite<VerticalLayout> {
         Product product1 = new Product();
         product1.setProductId(1902L);
         product1.setName("Whiskey");
-        product1.setCategory("Alcahol");
+        product1.setCategory("Alcohol");
         product1.setCurrentQuantity(200);
         product1.setRequestedQuantity(100);
         sampleProducts.add(product1);
