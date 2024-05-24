@@ -1,14 +1,14 @@
 package com.business.application.views.forecast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
@@ -20,26 +20,17 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
 
@@ -47,6 +38,8 @@ import jakarta.annotation.security.RolesAllowed;
 @Route(value = "forecast", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class ForecastView extends Main {
+    private Set<String> displayedItems = new HashSet<>();
+
     public ForecastView() {
         addClassName("forecast-view");
         Board board = new Board();
@@ -76,11 +69,11 @@ public class ForecastView extends Main {
         searchComboBox.setPlaceholder("Type to search...");
 
         // Define the items for each button
-        String[] beerItems = {"Beer 1", "Beer 2", "Beer 3"};
-        String[] wineItems = {"Wine 1", "Wine 2", "Wine 3"};
-        String[] spiritsItems = {"Spirits 1", "Spirits 2", "Spirits 3"};
-        String[] premixItems = {"Premix 1", "Premix 2", "Premix 3"};
-        String[] miscItems = {"Misc 1", "Misc 2", "Misc 3"};
+        String[] beerItems = {"Absolut: Vodka 1L", "Fireball: Cinnamon Flavoured Whisky 1.14L"};
+        String[] wineItems = {"Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Moët & Chandon: Impérial Brut", "Moët & Chandon: Rosé Impérial"};
+        String[] spiritsItems = {"Fireball: Cinnamon Flavoured Whisky 1.14L", "Good Day: Watermelon Soju"};
+        String[] premixItems = {"Vodka Cruiser: Wild Raspberry 275mL", "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Brookvale Union: Vodka Lemon Squash Cans 330mL","Vodka Cruiser: Lush Guava 275mL"};
+        String[] miscItems = {"Good Day: Watermelon Soju", "Vodka Cruiser: Juicy Watermelon 275mL", "Smirnoff: Ice Double Black Cans 10 Pack 375mL"};
 
         String[] allCategoriesItems = Stream.of(beerItems, wineItems, spiritsItems, premixItems, miscItems).flatMap(Stream::of).toArray(String[]::new);
 
@@ -184,40 +177,54 @@ public class ForecastView extends Main {
 
     // Method to update chart data based on selected items
     private void updateChartData(Configuration conf, ArrayList<String> selectedItems) {
-        conf.setSeries(new ArrayList<>()); // Clear previous series
+        // Add new series
         for (String item : selectedItems) {
-            if ("Beer 1".equals(item)) {
-                conf.addSeries(new ListSeries(item, 100, 95, 85, 80, 75, 70, 65, 60, 55, 50, 45));
-            } else if ("Beer 2".equals(item)) {
-                conf.addSeries(new ListSeries(item, 100, 90, 80, 75, 70, 65, 60, 55, 50, 45, 40));
-            } else if ("Beer 3".equals(item)) {
-                conf.addSeries(new ListSeries(item, 100, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
-            } else if ("Wine 1".equals(item)) {
-                conf.addSeries(new ListSeries(item, 100, 92, 85, 78, 64, 50, 49, 42, 37, 27, 22));
-            } else if ("Wine 2".equals(item)) {
-                conf.addSeries(new ListSeries(item, 98, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
-            } else if ("Wine 3".equals(item)) {
-                conf.addSeries(new ListSeries(item, 96, 90, 82, 75, 70, 65, 55, 47, 42, 37, 20));
-            } else if ("Spirits 1".equals(item)) {
-                conf.addSeries(new ListSeries(item, 100, 92, 82, 78, 68, 63, 52, 45, 40, 30, 20));
-            } else if ("Spirits 2".equals(item)) {
-                conf.addSeries(new ListSeries(item, 99, 94, 88, 77, 66, 60, 50, 48, 38, 33, 19));
-            } else if ("Spirits 3".equals(item)) {
-                conf.addSeries(new ListSeries(item, 93, 88, 85, 80, 68, 64, 61, 50, 33, 27, 21));
-            } else if ("Premix 1".equals(item)) {
-                conf.addSeries(new ListSeries(item, 92, 87, 80, 75, 70, 68, 60, 46, 34, 26, 25));
-            } else if ("Premix 2".equals(item)) {
-                conf.addSeries(new ListSeries(item, 88, 80, 75, 70, 64, 57, 55, 42, 35, 32, 20));
-            } else if ("Premix 3".equals(item)) {
-                conf.addSeries(new ListSeries(item, 86, 73, 68, 66, 62, 53, 52, 41, 36, 38, 15));
-            } else if ("Misc 1".equals(item)) {
-                conf.addSeries(new ListSeries(item, 90, 88, 80, 70, 61, 57, 56, 49, 37, 30, 10));
-            } else if ("Misc 2".equals(item)) {
-                conf.addSeries(new ListSeries(item, 70, 66, 60, 55, 49, 45, 41, 46, 38, 31, 7));
-            } else if ("Misc 3".equals(item)) {
-                conf.addSeries(new ListSeries(item, 77, 74, 70, 65, 51, 46, 40, 42, 39, 32, 26));
+            if (!displayedItems.contains(item)) {
+                if ("Absolut: Vodka 1L".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 100, 95, 85, 80, 75, 70, 65, 60, 55, 50, 45));
+                } else if ("Fireball: Cinnamon Flavoured Whisky 1.14L".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 100, 90, 80, 75, 70, 65, 60, 55, 50, 45, 40));
+                } else if ("Suntory: -196 Double Lemon 10 Pack Cans 330mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 100, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
+                } else if ("Moët & Chandon: Impérial Brut".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 100, 92, 85, 78, 64, 50, 49, 42, 37, 27, 22));
+                } else if ("Moët & Chandon: Rosé Impérial".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 98, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
+                } else if ("Good Day: Watermelon Soju".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 96, 90, 82, 75, 70, 65, 55, 47, 42, 37, 20));
+                } else if ("Vodka Cruiser: Wild Raspberry 275mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 100, 92, 82, 78, 68, 63, 52, 45, 40, 30, 20));
+                } else if ("Smirnoff: Ice Double Black Cans 10 Pack 375mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 99, 94, 88, 77, 66, 60, 50, 48, 38, 33, 19));
+                } else if ("Brookvale Union: Vodka Lemon Squash Cans 330mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 93, 88, 85, 80, 68, 64, 61, 50, 33, 27, 21));
+                } else if ("Vodka Cruiser: Lush Guava 275mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 92, 87, 80, 75, 70, 68, 60, 46, 34, 26, 25));
+                } else if ("Vodka Cruiser: Juicy Watermelon 275mL".equals(item)) {
+                    conf.addSeries(new ListSeries(item, 88, 80, 75, 70, 64, 57, 55, 42, 35, 32, 20));
+                } 
+                // else if ("Premix 3".equals(item)) {
+                //     conf.addSeries(new ListSeries(item, 86, 73, 68, 66, 62, 53, 52, 41, 36, 38, 15));
+                // } else if ("Misc 1".equals(item)) {
+                //     conf.addSeries(new ListSeries(item, 90, 88, 80, 70, 61, 57, 56, 49, 37, 30, 10));
+                // } else if ("Misc 2".equals(item)) {
+                //     conf.addSeries(new ListSeries(item, 70, 66, 60, 55, 49, 45, 41, 46, 38, 31, 7));
+                // } else if ("Misc 3".equals(item)) {
+                //     conf.addSeries(new ListSeries(item, 77, 74, 70, 65, 51, 46, 40, 42, 39, 32, 26));
+                // }
+                displayedItems.add(item);
             }
         }
+
+        // Remove series for items that are no longer selected
+        displayedItems.removeIf(item -> {
+            if (!selectedItems.contains(item)) {
+                conf.getSeries().removeIf(series -> series.getName().equals(item));
+                return true;
+            }
+            return false;
+        });
+
         // Redraw chart
         conf.getChart();
     }
