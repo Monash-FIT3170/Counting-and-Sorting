@@ -84,6 +84,7 @@ public class ForecastView extends Main {
         MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
         multiSelectListBox.setItems(allCategoriesItems);
         multiSelectListBox.setHeight("150px");
+        
 
         // Add click listeners to each button to update the items in the search ComboBox and MultiSelectListBox
         allCategoriesBtn.addClickListener(event -> {
@@ -124,53 +125,54 @@ public class ForecastView extends Main {
         conf.getChart().setType(ChartType.LINE);
 
         // Setup X and Y Axes
-        XAxis xAxis = new XAxis();
-        xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
-        conf.addxAxis(xAxis);
+XAxis xAxis = new XAxis();
+xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
+conf.addxAxis(xAxis);
 
-        YAxis yAxis = new YAxis();
-        yAxis.setTitle("Sales");
-        yAxis.setMin(0);
-        yAxis.setMax(100);
-        conf.addyAxis(yAxis);
+YAxis yAxis = new YAxis();
+yAxis.setTitle("Sales");
+yAxis.setMin(0);
+yAxis.setMax(100);
+conf.addyAxis(yAxis);
 
-        // Initial chart data update
-        updateChartData(conf, new ArrayList<>(multiSelectListBox.getSelectedItems()));
+// Initial chart data update
+updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
 
-        // Change listener for MultiSelectListBox
-        multiSelectListBox.addSelectionListener(event -> {
-            updateChartData(conf, new ArrayList<>(event.getValue()));
-        });
+// Change listener for MultiSelectListBox
+multiSelectListBox.addSelectionListener(event -> {
+    updateChartData(conf, new ArrayList<>(event.getValue()));
+});
 
-        // Legend Configuration
-        Legend legend = new Legend();
-        legend.setLayout(LayoutDirection.VERTICAL);
-        legend.setAlign(HorizontalAlign.RIGHT);
-        legend.setVerticalAlign(VerticalAlign.MIDDLE);
-        legend.setItemMarginTop(5);
-        legend.setItemMarginBottom(5);
-        conf.setLegend(legend);
+// Legend Configuration
+Legend legend = new Legend();
+legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
+legend.setAlign(HorizontalAlign.CENTER); // Align to the center horizontally
+legend.setVerticalAlign(VerticalAlign.BOTTOM); // Align to the bottom vertically
+conf.setLegend(legend);
 
-        // Layout for chart and selector
-        HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, selectLayout);
-        chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        chartAndSelectLayout.setWidthFull();
-        chartAndSelectLayout.setPadding(false);
-        chartAndSelectLayout.setSpacing(false);
+// Layout for chart and selector
+HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, selectLayout);
+chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+chartAndSelectLayout.setWidthFull();
+chartAndSelectLayout.setPadding(false);
+chartAndSelectLayout.setSpacing(false);
 
-        // Layout for buttons and chartAndSelectLayout
-        VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
-        mainContentLayout.setAlignItems(FlexComponent.Alignment.START);
-        mainContentLayout.setSizeFull();
-        mainContentLayout.setPadding(false);
-        mainContentLayout.setSpacing(false);
+// Layout for buttons and chartAndSelectLayout
+VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
+mainContentLayout.setAlignItems(FlexComponent.Alignment.START);
+mainContentLayout.setSizeFull();
+mainContentLayout.setPadding(false);
+mainContentLayout.setSpacing(false);
 
-        // Main layout combining everything
-        VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
-        mainLayout.setAlignItems(FlexComponent.Alignment.START);
-        mainLayout.setSizeFull();
-        mainLayout.setPadding(false);
-        mainLayout.setSpacing(false);
+// Main layout combining everything
+VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
+mainLayout.setAlignItems(FlexComponent.Alignment.START);
+mainLayout.setSizeFull();
+mainLayout.setPadding(false);
+mainLayout.setSpacing(false);
+
+// Add mainLayout to the ForecastView component
+add(mainLayout);
 
         return mainLayout;
     }
