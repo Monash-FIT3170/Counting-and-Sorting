@@ -3,6 +3,7 @@ package com.business.application.views;
 import com.business.application.domain.User;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.views.admindashboard.AdminDashboardView;
+import com.business.application.views.adminforecast.AdminForecastView;
 import com.business.application.views.adminstock.AdminStockView;
 import com.business.application.views.adminteam.UserManagementView;
 import com.business.application.views.dashboard.DashboardView;
@@ -195,10 +196,17 @@ public class MainLayout extends AppLayout {
         }
 
 
-        // Admin
+        // Admin Dashboard
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
             nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
                     LineAwesomeIcon.CHART_PIE_SOLID.create()));
+        }
+
+        // Admin Forecast
+
+        if (accessChecker.hasAccess(AdminForecastView.class)) {
+            nav.addItem(new SideNavItem("Admin Forecast", AdminForecastView.class,
+                    LineAwesomeIcon.CHART_AREA_SOLID.create()));
         }
 
         if (accessChecker.hasAccess(RequestsView.class)) {
