@@ -32,7 +32,7 @@ def danMurphysWineScraper(url:str):
     wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'ng-star-inserted')))
 
-    # Now you can parse the page source with BeautifulSoup
+    # Parse the page source with BeautifulSoup
     soup = BeautifulSoup(driver.page_source, 'html5lib')
 
     # Find all product cards
@@ -58,7 +58,7 @@ def danMurphysWineScraper(url:str):
         value_spans = card.select('span.value')
         prices = [value_span.get_text(strip=True) for value_span in value_spans]
         
-        # Print the extracted information
+        # Print the title and price
         print(f"Title: {full_title}")
         for price in prices:
             print(f"Price: {price}")
@@ -67,7 +67,7 @@ def danMurphysWineScraper(url:str):
     
     
 
-# Your processing logic here
+# Processing logic
 def main():
     danMurphysWineScraper("https://www.danmurphys.com.au/beer/all")
     print("\n")
