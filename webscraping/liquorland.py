@@ -75,6 +75,56 @@ def scrape_page(url):
 
     return product_list
 
+# Function to scrape store information
+def scrape_stores(url):
+    driver.get(url)
+    print(f"Opened the website: {url}")
+
+    # Wait for the popup to appear and close it
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div#setLocationModal'))
+        )
+        close_button = driver.find_element(By.CSS_SELECTOR, 'button.react-responsive-modal-closeButton')
+        close_button.click()
+        print("Closed the popup")
+    except Exception as e:
+        print(f"No popup appeared or failed to close the popup: {e}")
+
+    # Wait for the store details to load
+    try:
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.StoreDetailsListItem'))
+        )
+        print("Store details loaded")
+    except Exception as e:
+        print(f"Page took too long to load or failed to find store details: {e}")
+        return []
+
+    # Parse the page source with BeautifulSoup
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+    # Extract information of all stores
+    stores = soup.select('div.StoreDetailsListItem')
+    store_list = []
+
+    for store in stores:
+        try:
+            name = store.select_one('div.store-name').text.strip()
+            address = store.select_one('div.address').text.strip()
+            suburb_postcode = store.select_one('div.suburb-postcode').text.strip()
+            full_address = f"{address}, {suburb_postcode}"
+            
+            store_list.append({
+                'name': name,
+                'address': full_address
+            })
+            print(f"Extracted store: {name}")
+        except Exception as e:
+            print(f"Error extracting store: {e}")
+
+    return store_list
+
 # List to hold all products
 all_products = []
 
@@ -83,9 +133,17 @@ for url in urls:
     products = scrape_page(url)
     all_products.extend(products)
 
-# Save to JSON file
+# Save products to JSON file
 with open('products.json', 'w', encoding='utf-8') as f:
     json.dump(all_products, f, ensure_ascii=False, indent=4)
+
+# Scrape store information
+store_url = 'https://www.liquorland.com.au/stores'
+all_stores = scrape_stores(store_url)
+
+# Save stores to JSON file
+with open('stores.json', 'w', encoding='utf-8') as f:
+    json.dump(all_stores, f, ensure_ascii=False, indent=4)
 
 # Close the browser
 driver.quit()
