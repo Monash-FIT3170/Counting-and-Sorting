@@ -69,13 +69,7 @@ def danMurphysScraper(url:str, type:str,products:list) -> None:
 
         products.append(product_info)
 
-        '''
-        # Print the title and price
-        print(f"Title: {full_title}")
-        print(f"{type}") # Print the type of product
-        for price in prices:
-            print(f"Price: {price}")
-        '''
+        
     
 
 
@@ -91,7 +85,11 @@ def main():
     danMurphysScraper("https://www.danmurphys.com.au/spirits/all", "Spirits",products)
     print("\n")
     danMurphysScraper("https://www.danmurphys.com.au/red-wine/availability-delivery/range-1","Wine",products)
-    print(products)
+    
+    # Save the extracted information to a JSON file
+    with open('danmurphys_products.json', 'w') as f:
+        json.dump(products, f, indent=4)
+
     driver.quit()
 
 if __name__ == "__main__":
