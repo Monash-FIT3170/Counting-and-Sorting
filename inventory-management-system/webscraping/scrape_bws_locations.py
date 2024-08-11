@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+import pandas as pd
 import time
 
 # Set up Selenium WebDriver
@@ -21,7 +22,6 @@ search_box.send_keys("Victoria")
 # Wait a moment for results to load
 time.sleep(3)
 
-
 # Grab the HTML content after results have loaded
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -34,6 +34,16 @@ for store in store_list:
     name = store.find('div', class_='store-name').text.strip()
     address = store.find('div', class_='store-address').text.strip()
     store_locations.append({
-        'name': name,
-        'address': address
+        'Store Name': name,
+        'Address': address
     })
+
+# Save store locations to a CSV file using pandas
+df = pd.DataFrame(store_locations)
+df.to_csv('bws_victoria_locations.csv', index=False)
+
+# Print confirmation
+print(f"Saved {len(store_locations)} store locations to 'bws_victoria_locations.csv'.")
+
+# Close the browser
+driver.quit()
