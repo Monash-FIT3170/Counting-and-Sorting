@@ -20,3 +20,20 @@ search_box.send_keys("Victoria")
 
 # Wait a moment for results to load
 time.sleep(3)
+
+
+# Grab the HTML content after results have loaded
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+# Find the container with store results
+store_list = soup.find_all('div', class_='store-item')
+
+# Extract store details
+store_locations = []
+for store in store_list:
+    name = store.find('div', class_='store-name').text.strip()
+    address = store.find('div', class_='store-address').text.strip()
+    store_locations.append({
+        'name': name,
+        'address': address
+    })
