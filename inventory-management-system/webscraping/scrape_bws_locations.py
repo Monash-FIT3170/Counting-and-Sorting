@@ -1,49 +1,56 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-import pandas as pd
 import time
 
-# Set up Selenium WebDriver
-driver = webdriver.Chrome()  # Or whichever WebDriver you are using
+# Set up the webdriver
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service)
 
-# Visit the BWS store locator page
-driver.get('https://bws.com.au/storelocator')
+# Navigate to the BWS store locator page
+driver.get("https://bws.com.au/storelocator")
 
-# Wait until the page is fully loaded
-WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "storeLocator")))
+# Wait for the store list to load
+WebDriverWait(driver, 30).until(
+    EC.presence_of_element_located((By.CLASS_NAME, "bws-store-locator__store-container"))
+)
 
-# Enter Victoria in the search box
-search_box = driver.find_element(By.ID, "store-locator-search-input")
-search_box.send_keys("Victoria")
+# Scroll to load all results
+last_height = driver.execute_script("return document.body.scrollHeight")
+while True:
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    new_height = driver.execute_script("return document.body.scrollHeight")
+    if new_height == last_height:
+        break
+    last_height = new_height
 
-# Wait a moment for results to load
-time.sleep(3)
-
-# Grab the HTML content after results have loaded
+# Get the page source and parse with BeautifulSoup
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-# Find the container with store results
-store_list = soup.find_all('div', class_='store-item')
+# Find all store containers
+store_containers = soup.find_all("div", class_="bws-store-locator__store-container")
 
-# Extract store details
-store_locations = []
-for store in store_list:
-    name = store.find('div', class_='store-name').text.strip()
-    address = store.find('div', class_='store-address').text.strip()
-    store_locations.append({
-        'Store Name': name,
-        'Address': address
+# Extract data for each store
+stores = []
+for container in store_containers:
+    info_container = container.find("div", class_="bws-store-locator__store-info-container")
+    name = info_container.find("h3", class_="bws-store-locator__store-header").text.strip()
+    address = info_container.find("p", class_="bws-store-locator__store-address").text.strip()
+    
+    
+    stores.append({
+        "name": name,
+        "address": address,
     })
 
-# Save store locations to a CSV file using pandas
-df = pd.DataFrame(store_locations)
-df.to_csv('bws_victoria_locations.csv', index=False)
-
-# Print confirmation
-print(f"Saved {len(store_locations)} store locations to 'bws_victoria_locations.csv'.")
+# Print or save the results
+for store in stores:
+    print(store)
 
 # Close the browser
 driver.quit()
