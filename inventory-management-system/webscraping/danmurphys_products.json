@@ -2,376 +2,441 @@
     {
         "title": "XXXX Gold Cans 30 Block 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $55.95 block (30)"
+        "prices": 55.95
     },
     {
         "title": "Bridge Road Brewers Beechworth Pale Ale Bottles 330mL",
         "type": "Beer",
-        "prices": "$24.49"
+        "prices": 24.49
     },
     {
         "title": "Bridge Road Brewers Beechworth Pale Ale Cans 355mL",
         "type": "Beer",
-        "prices": "$19.99"
+        "prices": 19.99
     },
     {
         "title": "Great Northern Brewing Co. Super Crisp 3.5% Lager 30 Pack Cans 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $59.95 each"
+        "prices": 63.99
     },
     {
         "title": "Carlton Dry Bottles 330mL",
         "type": "Beer",
-        "prices": "$54.95"
+        "prices": 54.95
     },
     {
         "title": "Asahi Super Dry Bottles 330mL",
         "type": "Beer",
-        "prices": "Non-Member: $20.95 pack (6)"
-    },
-    {
-        "title": "Corona Extra Beer Bottles 355mL",
-        "type": "Beer",
-        "prices": "Non-Member: $63.95 case (24)"
-    },
-    {
-        "title": "Great Northern Brewing Co. Super Crisp Lager Bottles 330mL",
-        "type": "Beer",
-        "prices": "$50.95"
+        "prices": 20.95
     },
     {
         "title": "Victoria Bitter Bottles 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $59.99 case (24)"
+        "prices": 59.99
+    },
+    {
+        "title": "Corona Extra Beer Bottles 355mL",
+        "type": "Beer",
+        "prices": 63.95
+    },
+    {
+        "title": "Great Northern Brewing Co. Super Crisp Lager Bottles 330mL",
+        "type": "Beer",
+        "prices": 50.95
     },
     {
         "title": "XXXX Gold Cans 30 Block 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $55.95 block (30)"
+        "prices": 55.95
     },
     {
         "title": "Great Northern Brewing Co. Original Lager Bottles 330mL",
         "type": "Beer",
-        "prices": "Non-Member: $57.99 case (24)"
+        "prices": 57.99
     },
     {
         "title": "Victoria Bitter Cans 30 Block 375mL",
         "type": "Beer",
-        "prices": "$63.95"
+        "prices": 63.95
     },
     {
         "title": "Carlton Draught Bottles 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $58.95 case (24)"
+        "prices": 58.95
     },
     {
         "title": "Crown Lager Bottles 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $61.99 case (24)"
+        "prices": 61.99
     },
     {
         "title": "Peroni Nastro Azzurro Nastro Azzuro Bottles 330ml",
         "type": "Beer",
-        "prices": "Non-Member: $58.99 case (24)"
+        "prices": 58.99
     },
     {
         "title": "Coopers Pale Ale Bottles 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $59.95 case (24)"
+        "prices": 59.95
     },
     {
         "title": "Stone & Wood Pacific Ale Bottles 330mL",
         "type": "Beer",
-        "prices": "$25.79"
-    },
-    {
-        "title": "Pure Blonde Ultra Low Carb Lager Cans 375mL",
-        "type": "Beer",
-        "prices": "Non-Member: $58.99 case (24)"
+        "prices": 25.79
     },
     {
         "title": "Carlton Dry Cans 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $58.99 case (24)"
+        "prices": 58.99
     },
     {
-        "title": "James Squire 150 Lashes Premium Pale Ale Bottles 330mL",
+        "title": "Pure Blonde Ultra Low Carb Lager Cans 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $58.95 case (24)"
+        "prices": 58.99
     },
     {
         "title": "Hahn Super Dry Lager Bottle 330mL",
         "type": "Beer",
-        "prices": "Non-Member: $57.99 case (24)"
+        "prices": 57.99
+    },
+    {
+        "title": "James Squire 150 Lashes Premium Pale Ale Bottles 330mL",
+        "type": "Beer",
+        "prices": 58.95
     },
     {
         "title": "James Boag's Premium Lager Bottles 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $57.99 case (24)"
+        "prices": 57.99
     },
     {
         "title": "Mountain Goat Very Enjoyable Beer Cans 375mL",
         "type": "Beer",
-        "prices": "Non-Member: $57.99 case (24)"
+        "prices": 57.99
     },
     {
-        "title": "Guinness Draught Cans 440mL",
+        "title": "Tooheys Extra Dry Bottles 345mL",
         "type": "Beer",
-        "prices": "Non-Member: $87.95 case (24)"
+        "prices": 51.95
     },
     {
         "title": "Pure Blonde Ultra Low Carb Bottles 330mL",
         "type": "Beer",
-        "prices": "Non-Member: $55.95 case (24)"
-    },
-    {
-        "title": "Heineken Lager Bottles 330mL",
-        "type": "Beer",
-        "prices": "Non-Member: $53.99 case (24)"
+        "prices": 55.95
     },
     {
         "title": "XXXX Gold Lager Bottle 375ml",
         "type": "Beer",
-        "prices": "Non-Member: $52.99 case (24)"
+        "prices": 52.99
+    },
+    {
+        "title": "Heineken Lager Bottles 330mL",
+        "type": "Beer",
+        "prices": 53.99
+    },
+    {
+        "title": "Great Northern Brewing Co. Super Crisp 3.5% Lager 30 Pack Cans 375mL",
+        "type": "Beer",
+        "prices": 63.99
+    },
+    {
+        "title": "Carlton Dry Bottles 330mL",
+        "type": "Beer",
+        "prices": 54.95
+    },
+    {
+        "title": "XXXX Gold Cans 30 Block 375mL",
+        "type": "Beer",
+        "prices": 55.95
+    },
+    {
+        "title": "Asahi Super Dry Bottles 330mL",
+        "type": "Beer",
+        "prices": 20.95
+    },
+    {
+        "title": "Great Northern Brewing Co. Super Crisp Lager Bottles 330mL",
+        "type": "Beer",
+        "prices": 50.95
+    },
+    {
+        "title": "Great Northern Brewing Co. Original Lager Bottles 330mL",
+        "type": "Beer",
+        "prices": 57.99
+    },
+    {
+        "title": "XXXX Ultra Zero Carb Bottles 330mL",
+        "type": "Beer",
+        "prices": 50.99
+    },
+    {
+        "title": "Carlton Dry Cans 375mL",
+        "type": "Beer",
+        "prices": 58.99
+    },
+    {
+        "title": "Carlton Draught Bottles 375mL",
+        "type": "Beer",
+        "prices": 58.95
+    },
+    {
+        "title": "Crown Lager Bottles 375mL",
+        "type": "Beer",
+        "prices": 61.99
+    },
+    {
+        "title": "Archie Rose Native Botanical Vodka 700mL",
+        "type": "Spirits",
+        "prices": 74.99
+    },
+    {
+        "title": "Australian Bitters Company Aromatic Bitters 250mL",
+        "type": "Spirits",
+        "prices": 24.99
+    },
+    {
+        "title": "Archie Rose Straight Dry Gin 700mL",
+        "type": "Spirits",
+        "prices": 64.99
     },
     {
         "title": "Smirnoff Red Label Vodka 1L",
         "type": "Spirits",
-        "prices": "$59.95"
-    },
-    {
-        "title": "Baileys Irish Cream 1L",
-        "type": "Spirits",
-        "prices": "Non-Member: $49.95 each"
-    },
-    {
-        "title": "Absolut Vodka 1L",
-        "type": "Spirits",
-        "prices": "Non-Member: $67.95 each"
+        "prices": 59.95
     },
     {
         "title": "Gordon's London Dry Gin 1L",
         "type": "Spirits",
-        "prices": "Non-Member: $65.95 each"
+        "prices": 65.95
+    },
+    {
+        "title": "Baileys Irish Cream 1L",
+        "type": "Spirits",
+        "prices": 49.95
     },
     {
         "title": "Smirnoff Red Label Vodka 1.125L",
         "type": "Spirits",
-        "prices": "Non-Member: $80.99 each"
+        "prices": 80.99
+    },
+    {
+        "title": "Absolut Vodka 1L",
+        "type": "Spirits",
+        "prices": 67.95
     },
     {
         "title": "Wild Hibiscus Distilling Co Finger Lime Gin Snow Dome 750mL",
         "type": "Spirits",
-        "prices": "$150"
+        "prices": 150.0
     },
     {
         "title": "Jack Daniel's Tennessee Whiskey & Cola Cans 375mL",
         "type": "Spirits",
-        "prices": "$32.95"
+        "prices": 32.95
     },
     {
         "title": "Sortilege Original Canadian Maple Whisky Liqueur 700mL",
         "type": "Spirits",
-        "prices": "$59"
-    },
-    {
-        "title": "Bundaberg Original Rum 1L",
-        "type": "Spirits",
-        "prices": "Non-Member: $62.95 each"
+        "prices": 59.0
     },
     {
         "title": "Hard Rated Cans 375mL 10 pack",
         "type": "Spirits",
-        "prices": "$41.95"
+        "prices": 41.95
     },
     {
-        "title": "Fireball Cinnamon Flavoured Whisky 700mL",
+        "title": "Bundaberg Original Rum 1L",
         "type": "Spirits",
-        "prices": "$47.95"
-    },
-    {
-        "title": "Bundaberg Underproof Rum 1.125L",
-        "type": "Spirits",
-        "prices": "$69.95"
+        "prices": 62.95
     },
     {
         "title": "Jim Beam White Label Bourbon & Cola Cans 375mL",
         "type": "Spirits",
-        "prices": "$33.99"
+        "prices": 33.99
     },
     {
-        "title": "Gordon's London Dry Gin 700mL",
+        "title": "Bundaberg Underproof Rum 1.125L",
         "type": "Spirits",
-        "prices": "Non-Member: $45.95 each"
+        "prices": 69.95
+    },
+    {
+        "title": "Fireball Cinnamon Flavoured Whisky 700mL",
+        "type": "Spirits",
+        "prices": 47.95
     },
     {
         "title": "Bundaberg Underproof Rum 700mL",
         "type": "Spirits",
-        "prices": "$45.95"
-    },
-    {
-        "title": "Canadian Club Whisky & Dry Cans 375mL",
-        "type": "Spirits",
-        "prices": "$28.95"
-    },
-    {
-        "title": "Bundaberg U.P. Rum & Cola Cans 375mL",
-        "type": "Spirits",
-        "prices": "$28.95"
+        "prices": 45.95
     },
     {
         "title": "Bacardi Carta Blanca Rum 1L",
         "type": "Spirits",
-        "prices": "Non-Member: $63.95 each"
+        "prices": 63.95
+    },
+    {
+        "title": "Bundaberg U.P. Rum & Cola Cans 375mL",
+        "type": "Spirits",
+        "prices": 28.95
+    },
+    {
+        "title": "Canadian Club Whisky & Dry Cans 375mL",
+        "type": "Spirits",
+        "prices": 28.95
+    },
+    {
+        "title": "Gordon's London Dry Gin 700mL",
+        "type": "Spirits",
+        "prices": 45.95
     },
     {
         "title": "Aviation Limited Edition Gin inspired by Marvel Studios Deadpool & Wolverine 700mL",
         "type": "Spirits",
-        "prices": "$89.99"
+        "prices": 73.0
     },
     {
         "title": "Bacardi Carta Blanca Rum 700mL",
         "type": "Spirits",
-        "prices": "Non-Member: $48.95 each"
+        "prices": 48.95
     },
     {
         "title": "Hard Rated Cans 375mL",
         "type": "Spirits",
-        "prices": "$19.95"
+        "prices": 19.95
     },
     {
         "title": "Divas Vkat Original 700mL",
         "type": "Spirits",
-        "prices": "$42.99"
+        "prices": 42.99
     },
     {
         "title": "London No.1 Gin",
         "type": "Spirits",
-        "prices": "$97.84"
+        "prices": 97.84
     },
     {
         "title": "Vodkapro Protein & Collagen Infused Vodka Lime Seltzer 330mL",
         "type": "Spirits",
-        "prices": "$23.85"
+        "prices": 23.85
     },
     {
         "title": "Lamborghini Wine \"The Legend\" Metodo Classico Rose Millesemato 2019",
         "type": "Wine",
-        "prices": "$188"
+        "prices": 188.0
     },
     {
         "title": "Lamborghini Wine \"The Legend\" Metodo Classico Millesemato Bio 2020",
         "type": "Wine",
-        "prices": "$188"
+        "prices": 188.0
     },
     {
         "title": "Lamborghini Wine \"V12\" Carbon Brut 'Pinot Chardonnay' 2022",
         "type": "Wine",
-        "prices": "Non-Member: $89 each"
+        "prices": 89.0
     },
     {
         "title": "Lamborghini Wine GOLD Brut Pinot Chardonnay 2022",
         "type": "Wine",
-        "prices": "$99"
+        "prices": 99.0
     },
     {
         "title": "Lamborghini Wine Double Bubbles High Fashion Gift Pack",
         "type": "Wine",
-        "prices": "$320"
+        "prices": 320.0
     },
     {
         "title": "Lamborghini Wine \"In the Fast Lane\" Limited Edition Traditional Reds",
         "type": "Wine",
-        "prices": "Non-Member: $549 case (6)"
+        "prices": 549.0
     },
     {
         "title": "Lamborghini Wine \"Luxe Life\" Limited Edition Timber Boxed Gift Set (4 Bottles of Red Wine)",
         "type": "Wine",
-        "prices": "Non-Member: $480 case (4)"
+        "prices": 480.0
     },
     {
         "title": "Lamborghini Wine LUXE COLLECTION ORO Special Cellar Release 2016",
         "type": "Wine",
-        "prices": "$119"
+        "prices": 119.0
     },
     {
         "title": "Lamborghini Wine LUXE COLLECTION ROSSO Special Cellar Release 2016",
         "type": "Wine",
-        "prices": "$119"
+        "prices": 119.0
     },
     {
         "title": "Lamborghini Wine LUXE COLLECTION BLU Special Cellar Release 2020",
         "type": "Wine",
-        "prices": "$119"
+        "prices": 119.0
     },
     {
         "title": "Lamborghini Wine ERA Sangiovese igt Cellar Release 2018",
         "type": "Wine",
-        "prices": "$79"
+        "prices": 79.0
     },
     {
         "title": "Lamborghini Wine 1968 Special Edition Umbria IGT Cabernet Sangiovese Merlot 2016",
         "type": "Wine",
-        "prices": "Non-Member: $88 each"
+        "prices": 88.0
     },
     {
         "title": "Lamborghini Wine TRESCONE Sangiovese Merlot Cabernet IGT Cellar Release 2018",
         "type": "Wine",
-        "prices": "$69"
+        "prices": 69.0
     },
     {
         "title": "Lamborghini Wine TORAMI Cabernet Sangiovese Cellar Release 2016",
         "type": "Wine",
-        "prices": "$89"
+        "prices": 89.0
+    },
+    {
+        "title": "Lamborghini Wine Campoleone Sangiovese Merlot Flagship Cellar Release 2016",
+        "type": "Wine",
+        "prices": 129.0
     },
     {
         "title": "A Little Something Something Yarra Valley Ros\u00e9 + Shiraz Twin Pack 2020",
         "type": "Wine",
-        "prices": "$69"
+        "prices": 69.0
     },
     {
         "title": "A Little Something Something Yarra Valley Pinot Noir + Shiraz Twin Pack 2020",
         "type": "Wine",
-        "prices": "$69"
+        "prices": 69.0
     },
     {
         "title": "Cook and Co Shiraz 2014",
         "type": "Wine",
-        "prices": "$398"
+        "prices": 398.0
     },
     {
         "title": "Edilillie Shiraz 2016",
         "type": "Wine",
-        "prices": "$130"
+        "prices": 130.0
     },
     {
         "title": "Edilillie Clare Valley Cabernet Shiraz 2017",
         "type": "Wine",
-        "prices": "$378"
+        "prices": 378.0
     },
     {
         "title": "Edilillie Shiraz 2017",
         "type": "Wine",
-        "prices": "$378"
+        "prices": 378.0
     },
     {
         "title": "Boydell's Hilltops Shiraz Viognier 2022",
         "type": "Wine",
-        "prices": "$42"
+        "prices": 42.0
     },
     {
         "title": "Boydell's Hunter Valley Shiraz Pinot 2021",
         "type": "Wine",
-        "prices": "$42"
+        "prices": 42.0
     },
     {
         "title": "Boydell's Hunter Valley Shiraz 2022",
         "type": "Wine",
-        "prices": "$25"
-    },
-    {
-        "title": "Boydell's Orange Merlot 2022",
-        "type": "Wine",
-        "prices": "$25"
+        "prices": 25.0
     }
 ]
