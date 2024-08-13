@@ -1,56 +1,83 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
 import time
+import csv
 
-# Set up the webdriver
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service)
+# Initialize the webdriver
+driver = webdriver.Chrome()  # Make sure you have ChromeDriver installed and in PATH
 
-# Navigate to the BWS store locator page
-driver.get("https://bws.com.au/storelocator")
+# Navigate to Google Maps
+driver.get("https://www.google.com/maps")
 
-# Wait for the store list to load
-WebDriverWait(driver, 30).until(
-    EC.presence_of_element_located((By.CLASS_NAME, "bws-store-locator__store-container"))
+# Wait for the search box to be visible and send the search query
+search_box = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "searchboxinput"))
 )
+search_box.send_keys("BWS Victoria")
+search_box.send_keys(Keys.ENTER)
 
-# Scroll to load all results
-last_height = driver.execute_script("return document.body.scrollHeight")
-while True:
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(2)
-    new_height = driver.execute_script("return document.body.scrollHeight")
-    if new_height == last_height:
-        break
-    last_height = new_height
+# Wait for the results to load
+time.sleep(5)
 
-# Get the page source and parse with BeautifulSoup
-soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-# Find all store containers
-store_containers = soup.find_all("div", class_="bws-store-locator__store-container")
-
-# Extract data for each store
-stores = []
-for container in store_containers:
-    info_container = container.find("div", class_="bws-store-locator__store-info-container")
-    name = info_container.find("h3", class_="bws-store-locator__store-header").text.strip()
-    address = info_container.find("p", class_="bws-store-locator__store-address").text.strip()
+# Function to scroll through results
+def scroll_results():
+    scrollable_div = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, 'div[aria-label="Results for BWS Victoria"]'))
+    )
+    last_height = driver.execute_script("return arguments[0].scrollHeight", scrollable_div)
     
-    
-    stores.append({
-        "name": name,
-        "address": address,
-    })
+    while True:
+        driver.execute_script("arguments[0].scrollTo(0, arguments[0].scrollHeight);", scrollable_div)
+        time.sleep(2)
+        new_height = driver.execute_script("return arguments[0].scrollHeight", scrollable_div)
+        if new_height == last_height:
+            break
+        last_height = new_height
 
-# Print or save the results
+# Scroll through all results
+scroll_results()
+
+# Find all store elements
+stores = driver.find_elements(By.CSS_SELECTOR, 'div.Nv2PK')
+print(f"Found {len(stores)} potential store elements")
+
+# Prepare a list to store the data
+store_data = []
+
+# Extract information for each store
 for store in stores:
-    print(store)
+    try:
+        name = store.find_element(By.CSS_SELECTOR, 'h3.fontHeadlineSmall').text.strip()
+        address_elements = store.find_elements(By.CSS_SELECTOR, 'div.W4Efsd')
+        address = ''
+        for elem in address_elements:
+            if 'VIC' in elem.text:
+                address = elem.text.strip()
+                break
+        
+        if name and address:
+            store_data.append({
+                'name': name,
+                'address': address
+            })
+            print(f"Added store: {name} at {address}")
+    except:
+        # Suppress all errors silently
+        pass
 
 # Close the browser
 driver.quit()
+
+# Save the data to a CSV file
+with open('bws_victoria_stores_google_maps.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    fieldnames = ['name', 'address']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    
+    writer.writeheader()
+    for store in store_data:
+        writer.writerow(store)
+
+print(f"Scraped {len(store_data)} BWS stores in Victoria and saved to bws_victoria_stores_google_maps.csv")
