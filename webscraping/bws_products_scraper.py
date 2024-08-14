@@ -13,7 +13,7 @@ product_list = []
 def get_stats(urls, type, product_list):
     ID = 0
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless') 
+    #options.add_argument('--headless') 
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -26,14 +26,15 @@ def get_stats(urls, type, product_list):
         
         for stat in stats:
             name = stat.find('div', class_='productTile_name ng-binding').text.strip()
-            price = int(stat.find('span', class_='productTile_priceDollars ng-binding').text.strip())
+            price = float(stat.find('span', class_='productTile_priceDollars ng-binding').text.strip())
             ID += 1
             print(f'{ID} | Product Name: {name} | Product Type: {type} | Product Price: {price}')
 
             product_data = {
-                'name': name,
+                'title': name,
                 'type': type,
-                'price': price
+                'price': price,
+                'supplier': 'BWS'
             }
         
             product_list.append(product_data)

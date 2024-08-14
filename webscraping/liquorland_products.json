@@ -792,6 +792,12 @@
         "supplier": "Liquorland"
     },
     {
+        "title": "Coldstream Hills The Hills Pinot Noir 750mL",
+        "type": "Wine",
+        "prices": 35.0,
+        "supplier": "Liquorland"
+    },
+    {
         "title": "Parson's Paddock Cabernet Sauvignon 750mL",
         "type": "Wine",
         "prices": 8.0,
@@ -927,12 +933,6 @@
         "title": "Two Towns Pinot Noir 750mL",
         "type": "Wine",
         "prices": 22.0,
-        "supplier": "Liquorland"
-    },
-    {
-        "title": "Two Churches The Preacher Cabernet Sauvignon 750mL",
-        "type": "Wine",
-        "prices": 17.0,
         "supplier": "Liquorland"
     },
     {
