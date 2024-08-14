@@ -98,7 +98,7 @@ def main():
     danMurphysScraper("https://www.danmurphys.com.au/spirits/all", "Spirits",products)
     print("\n")
     danMurphysScraper("https://www.danmurphys.com.au/red-wine/availability-delivery/range-1","Wine",products)
-    print(products)
+
     # Save the extracted information to a JSON file
     with open('danmurphys_products.json', 'w') as f:
         json.dump(products, f, indent=4)
