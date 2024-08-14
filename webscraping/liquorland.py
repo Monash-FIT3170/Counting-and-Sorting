@@ -7,8 +7,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 
-# Setup Selenium WebDriver
-chrome_driver_path = 'webscraping/chromedriver'  # Update this path
+chrome_driver_path = 'webscraping/chromedriver'
 service = Service(chrome_driver_path)
 driver = webdriver.Chrome(service=service)
 
