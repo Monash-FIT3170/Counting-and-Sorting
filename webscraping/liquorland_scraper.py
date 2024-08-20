@@ -73,7 +73,7 @@ def scrape_products(url,type:str,product_list:list) -> list:
             product_list.append({
                 'title': name,
                 'type': type,
-                'prices': extract_price(cost),
+                'price': extract_price(cost),
                 'supplier': 'Liquorland',
                 
             })

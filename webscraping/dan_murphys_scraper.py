@@ -13,7 +13,7 @@ try:
 
     # Set up the ChromeDriver options
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
+    #options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
     options.add_argument('--disable-gpu')  # Disable GPU hardware acceleration
     options.add_argument('--no-sandbox')  # Bypass OS security model
 
