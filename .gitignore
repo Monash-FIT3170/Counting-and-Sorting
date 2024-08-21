@@ -122,3 +122,4 @@ vaadin-gradle-plugin/pom*xml
 vaadin-platform-javadoc/pom.xml
 vaadin-dev-bundle/pom.xml
 vaadin-prod-bundle/pom.xml
+inventory-management-system/node_modules/
