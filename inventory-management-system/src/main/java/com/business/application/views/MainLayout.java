@@ -154,8 +154,8 @@ public class MainLayout extends AppLayout {
 
     private void updateLogo(boolean darkTheme) {
         String logoPath = darkTheme ? 
-            "inventory-management-system/src/main/resources/META-INF/resources/icons/CSLogoLight.png" : 
-            "inventory-management-system/src/main/resources/META-INF/resources/icons/CSLogoDark.png";
+            "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoLight.png" : 
+            "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoDark.png";
         StreamResource logoResource = new StreamResource(darkTheme ? "CSLogoLight.png" : "CSLogoDark.png",
             () -> {
                 try {
