@@ -11,14 +11,18 @@ vaadin-app-layout {
 vaadin-app-layout::part(navbar) {
   border: 0 solid;
   border-radius: var(--lumo-border-radius-xl) 0 0 0;
-  padding: var(--lumo-space-m) var(--lumo-space-l);
+  padding: var(--lumo-space-m) var(--lumo-space-xl) var(--lumo-space-m) var(--lumo-space-l);
 
   /* Glass Effects */
   box-shadow: var(--lumo-box-shadow-m);
   backdrop-filter: var(--lumo-blur);
 }
 
-h1[slot="navbar"] {
+vaadin-horizontal-layout[slot="navbar"] .left-layout {
+  gap: 0;
+}
+
+vaadin-horizontal-layout[slot="navbar"] h1 {
   font-size: var(--lumo-font-size-xs);
   font-weight: 600;
   
@@ -26,6 +30,26 @@ h1[slot="navbar"] {
   letter-spacing: var(--lumo-letter-spacing);
   
   text-transform: uppercase;
+}
+
+.right-layout,
+.right-layout vaadin-horizontal-layout  {
+  gap: var(--lumo-space-m)
+}
+
+.right-layout vaadin-vertical-layout {
+  gap: 0;
+}
+
+.theme-toggle,
+vaadin-drawer-toggle {
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+vaadin-drawer-toggle::part(icon) {
+  color: var(--lumo-secondary-text-color);
 }
 
 vaadin-app-layout::part(drawer) {
@@ -37,18 +61,6 @@ vaadin-app-layout::part(drawer) {
 
 vaadin-scroller[slot="drawer"] {
   background: transparent;
-}
-
-vaadin-side-nav vaadin-horizontal-layout > [slot="label"] {
-  font-size: var(--lumo-font-size-xs);
-  font-weight: 600;
-  
-  line-height: var(--lumo-line-height-xs);
-  letter-spacing: var(--lumo-letter-spacing);
-  
-  text-transform: uppercase;
-  
-  margin-bottom: var(--lumo-space-m);
 }
 
 [slot="drawer"]:is(header, footer) {
