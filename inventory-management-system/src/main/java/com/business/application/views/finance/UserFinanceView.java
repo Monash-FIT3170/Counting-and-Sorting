@@ -70,7 +70,7 @@ public class UserFinanceView extends Div{
             // Show graph or list based on selection
             if ("Graph".equals(event.getValue())) {
                 contentContainer.add(createFinancialGraph());
-            } else if ("List".equals(event.getValue())) {
+            } else if ("Table".equals(event.getValue())) {
                 contentContainer.add(createList());
             }
         });
