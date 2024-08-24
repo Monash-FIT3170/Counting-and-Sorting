@@ -199,7 +199,7 @@ public class MainLayout extends AppLayout {
         /* working to connect to new view */
         if (accessChecker.hasAccess(UserFinanceView.class)) {
             nav.addItem(
-                    new SideNavItem("User Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+                    new SideNavItem("Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
 
         }
 
