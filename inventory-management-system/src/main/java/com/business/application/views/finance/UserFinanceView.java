@@ -11,6 +11,8 @@ import com.vaadin.flow.component.charts.model.PlotOptionsSpline;
 import com.vaadin.flow.component.charts.model.PointPlacement;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
@@ -51,7 +53,29 @@ public class UserFinanceView extends Div{
                 createHighlight("Projected Profit", "$143,777", 5.0));
 
         VerticalLayout analysisLayout = new VerticalLayout();
-        analysisLayout.add(createFinancialGraph());
+
+        ComboBox<String> selectionComboBox = new ComboBox<>("Select View");
+        selectionComboBox.setItems("Graph", "Table");
+
+        VerticalLayout contentContainer = new VerticalLayout();
+        
+        // Set default content (can be empty initially)
+        contentContainer.add(createFinancialGraph());
+
+        // Add listener to ComboBox to handle selection
+        selectionComboBox.addValueChangeListener(event -> {
+            // Clear the content container
+            contentContainer.removeAll();
+
+            // Show graph or list based on selection
+            if ("Graph".equals(event.getValue())) {
+                contentContainer.add(createFinancialGraph());
+            } else if ("List".equals(event.getValue())) {
+                contentContainer.add(createList());
+            }
+        });
+
+        analysisLayout.add(selectionComboBox, contentContainer);
 
         mainLayout.add(highlightsLayout);
         add(mainLayout, analysisLayout);
@@ -158,6 +182,14 @@ public class UserFinanceView extends Div{
         viewEvents.addClassName("rounded-rectangle");
         viewEvents.setWidth("98.5%");
         return viewEvents;
+    }
+
+    private Grid<String> createList() {
+        Grid<String> grid = new Grid<>();
+        grid.setItems("Item 1", "Item 2", "Item 3");
+        grid.addColumn(item -> item).setHeader("Items");
+
+        return grid;
     }
     
 }
