@@ -205,10 +205,7 @@ public class MainLayout extends AppLayout {
 
         }
 
-        if (accessChecker.hasAccess(StoreView.class)) {
-            nav.addItem(
-                    new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
-   }
+
 
 
         // Admin Dashboard
@@ -242,6 +239,11 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(AdminFinanceView.class)) {
             nav.addItem(
             new SideNavItem("Store Finances", AdminFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+        }
+
+        if (accessChecker.hasAccess(StoreView.class)) {
+            nav.addItem(
+                    new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.STORE_SOLID.create()));
         }
         
 

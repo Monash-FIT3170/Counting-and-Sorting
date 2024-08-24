@@ -127,8 +127,7 @@ public class AdminFinanceView extends Div {
     }
 
     private void initializeStores() {
-        // Assuming stores are initialized with IDs 1, 2, and 3
-        storeSelect.setItems(1, 2, 3);
+        storeSelect.setItems(1, 2, 3, 4);
         storeSelect.setValue(1); // Set Store 1 as the default selected store
     }
 
