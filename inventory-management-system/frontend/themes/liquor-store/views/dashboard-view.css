@@ -1,5 +1,8 @@
-/* Borders */
+.dashboard-view {
+  background-color: var(--lumo-base-color);
+}
 
+/* Borders */
 .dashboard-view vaadin-board-row > * {
   border-bottom: 1px solid var(--lumo-contrast-10pct);
   border-right: 1px solid var(--lumo-contrast-10pct);
