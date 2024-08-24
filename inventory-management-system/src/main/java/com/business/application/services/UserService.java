@@ -1,25 +1,26 @@
 package com.business.application.services;
 
-import com.business.application.domain.Role;
-import com.business.application.domain.User;
-import com.business.application.repository.UserRepository;
+import java.util.stream.Collectors;
 
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.*;
+import com.business.application.domain.*;
+import com.business.application.repository.*;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+     private final UserRepository repository;
+
 
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
-
     public Optional<User> get(Long id) {
         return repository.findById(id);
     }
@@ -54,5 +55,11 @@ public class UserService {
         repository.save(user);
         return true;
     }
+    public List<User> findUnassignedManagers() {
+
+        
+        return repository.findAllByRoleAndStoreIsNull(Role.USER);
+    }
+    
 
 }

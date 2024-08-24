@@ -45,6 +45,7 @@ import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.business.application.views.adminstore.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -202,6 +203,10 @@ public class MainLayout extends AppLayout {
         //             new SideNavItem("User Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
 
         // }
+        if (accessChecker.hasAccess(StoreView.class)) {
+                 nav.addItem(
+                         new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+        }
 
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
             nav.addItem(

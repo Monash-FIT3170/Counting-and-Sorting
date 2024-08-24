@@ -2,30 +2,35 @@ package com.business.application.domain;
 
 import jakarta.persistence.*;
 
+
+
 @Entity
-@Table(name = "Stores")
+@Table(name = "stores")
 public class Store {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer StoreID;
+    @Column(name = "storeid")
+    private int storeId;
 
-    @Column(nullable = false)
+    @Column(name = "location", nullable = false, length = 255)
     private String location;
 
-    @OneToOne
-    //@JoinColumn(name = "ManagerID", referencedColumnName = "UserID", unique = true)
-    private User manager;
+    @Column(name = "manager_id", unique = true)
+    private Long managerId;
 
-    // Constructors, getters, and setters
-    public Store() {
+    @Column(name ="budget")
+    private int budget;
+
+    // Constructors, Getters, Setters
+    public Store() {}
+
+    public int getStoreId() {
+        return storeId;
     }
 
-    public Integer getStoreID() {
-        return StoreID;
-    }
-
-    public void setStoreID(Integer StoreID) {
-        this.StoreID = StoreID;
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 
     public String getLocation() {
@@ -36,11 +41,21 @@ public class Store {
         this.location = location;
     }
 
-    public User getManager() {
-        return manager;
+    public Long getManagerId() {
+        return managerId;
     }
 
-    public void setManager(User manager) {
-        this.manager = manager;
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
     }
+
+    public int getBudget(){
+        return budget;
+    }
+    public void setBudget(int amount){
+        this.budget = amount;
+    }
+
+   
 }
+
