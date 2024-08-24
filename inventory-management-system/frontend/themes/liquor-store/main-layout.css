@@ -1,20 +1,114 @@
-vaadin-scroller[slot="drawer"] {
-  padding: var(--lumo-space-s);
+:root {
+  --lumo-letter-spacing: 0.39px;
+  --lumo-border-radius-xl: 2em;
+  --lumo-blur: blur(25px);
 }
 
-vaadin-side-nav-item vaadin-icon {
-  padding: 0;
+vaadin-app-layout {
+  background: url("VAADIN/themes/liquor-store/img/nav-bg.png") lightgray 0% / cover no-repeat;
+}
+
+vaadin-app-layout::part(navbar) {
+  border: 0 solid;
+  border-radius: var(--lumo-border-radius-xl) 0 0 0;
+  padding: var(--lumo-space-m) var(--lumo-space-l);
+
+  /* Glass Effects */
+  box-shadow: var(--lumo-box-shadow-m);
+  backdrop-filter: var(--lumo-blur);
+}
+
+h1[slot="navbar"] {
+  font-size: var(--lumo-font-size-xs);
+  font-weight: 600;
+  
+  line-height: var(--lumo-line-height-xs);
+  letter-spacing: var(--lumo-letter-spacing);
+  
+  text-transform: uppercase;
+}
+
+vaadin-app-layout::part(drawer) {
+  background: transparent;
+  border: 0 solid;
+  padding: var(--lumo-space-s) var(--lumo-space-m);
+  gap: var(--lumo-space-xl);
+}
+
+vaadin-scroller[slot="drawer"] {
+  background: transparent;
+}
+
+vaadin-side-nav vaadin-horizontal-layout > [slot="label"] {
+  font-size: var(--lumo-font-size-xs);
+  font-weight: 600;
+  
+  line-height: var(--lumo-line-height-xs);
+  letter-spacing: var(--lumo-letter-spacing);
+  
+  text-transform: uppercase;
+  
+  margin-bottom: var(--lumo-space-m);
 }
 
 [slot="drawer"]:is(header, footer) {
   display: flex;
   align-items: center;
-  gap: var(--lumo-space-s);
-  padding: var(--lumo-space-s) var(--lumo-space-m);
   min-height: var(--lumo-size-xl);
   box-sizing: border-box;
+  background: transparent;
+  padding-top: var(--lumo-size-s);
+}
+
+.logo {
+  width: 75%;
+  padding-left: var(--lumo-space-m);
 }
 
 [slot="drawer"]:is(header, footer):is(:empty) {
   display: none;
+}
+
+vaadin-side-nav-item::part(content) {
+  background: transparent;
+}
+
+vaadin-side-nav-item[current] {
+  background: var(--lumo-contrast-10pct);
+  
+  /* Glass Effects */
+  box-shadow: var(--lumo-box-shadow-xl);
+  backdrop-filter: var(--lumo-blur);
+}
+
+vaadin-side-nav-item {
+  background: transparent;
+  border-radius: var(--lumo-border-radius-m);
+  margin-bottom: var(--lumo-space-xs);
+}
+
+vaadin-side-nav-item::part(content) {
+  color: var(--lumo-body-text-color);
+}
+
+vaadin-side-nav-item > vaadin-icon {
+  padding: var(--lumo-space-xs);
+}
+
+vaadin-side-nav-item > vaadin-icon[icon^="lumo"] {
+  padding: 0;
+}
+
+.nav-wrapper {
+  gap: var(--lumo-space-l);
+}
+
+vaadin-app-layout[overlay][drawer-opened]::part(drawer) {
+  background: var(--lumo-contrast-10pct);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+}
+
+vaadin-app-layout::part(backdrop) {
+  background: transparent;
 }
