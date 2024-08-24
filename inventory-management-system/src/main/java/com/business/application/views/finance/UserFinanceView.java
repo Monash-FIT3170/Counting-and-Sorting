@@ -1,5 +1,7 @@
 package com.business.application.views.finance;
 
+import com.business.application.domain.Transaction;
+import com.business.application.services.TransactionService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
@@ -19,67 +21,92 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.security.RolesAllowed;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@PageTitle("User Finance")
-@Route(value = "User Finance", layout = MainLayout.class)
+@PageTitle("Store Finance")
+@Route(value = "store-finance", layout = MainLayout.class)
 @RolesAllowed("USER")
+public class UserFinanceView extends Div {
 
-public class UserFinanceView extends Div{
+    private final TransactionService transactionService;
 
-    public UserFinanceView() {
-        addClassName("user-finance-view");
+    @Autowired
+    public UserFinanceView(TransactionService transactionService) {
+        this.transactionService = transactionService;
+        addClassName("store-finance-view");
+        transactionService.logTransactionsUsingNativeQuery(1);
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
-        
+
+        // Assuming storeId is passed or selected, here we're using storeId = 1 as an example
+        int storeId = 1;
+
+        // Get real data for the store
+        BigDecimal accountBalance = transactionService.getAccountBalanceForStore(storeId);
+        BigDecimal totalSales = transactionService.getTotalSalesForStore(storeId);
+        BigDecimal totalExpenses = transactionService.getTotalExpensesForStore(storeId);
+        BigDecimal profit = transactionService.getProfitForStore(storeId);
+        Map<String, BigDecimal> costBreakdown = transactionService.getCostBreakdownForStore(storeId);
+        Map<String, BigDecimal> revenueBreakdown = transactionService.getRevenueBreakdownForStore(storeId);
+
+        // Debug output
+        printStoreFinancialData(storeId, accountBalance, totalSales, totalExpenses, profit, costBreakdown, revenueBreakdown);
+
+        // Highlights section
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Cash on Hand", "$157,434.40", 0.0),
-                createHighlight("Projected Profit", "$143,777", 5.0));
+        highlightsLayout.add(createHighlight("Account Balance", formatCurrency(accountBalance), 0.0),
+                createHighlight("Profit", formatCurrency(profit), 0.0),
+                createHighlight("Total Sales", formatCurrency(totalSales), 0.0),
+                createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0));
+
+        // Cost breakdown section
+        VerticalLayout costBreakdownLayout = new VerticalLayout();
+        costBreakdownLayout.add(createHighlight("Cost Breakdown", formatCostBreakdown(costBreakdown), 0.0));
+
+        // Revenue breakdown section
+        VerticalLayout revenueBreakdownLayout = new VerticalLayout();
+        revenueBreakdownLayout.add(createHighlight("Revenue Breakdown", formatRevenueBreakdown(revenueBreakdown), 0.0));
 
         VerticalLayout analysisLayout = new VerticalLayout();
 
+        // ComboBox for selecting view
         ComboBox<String> selectionComboBox = new ComboBox<>("Select View");
         selectionComboBox.setItems("Graph", "Table");
 
-        VerticalLayout contentContainer = new VerticalLayout();
-        
-        // Set default content (can be empty initially)
-        contentContainer.add(createFinancialGraph());
 
-        // Add listener to ComboBox to handle selection
-        selectionComboBox.addValueChangeListener(event -> {
-            // Clear the content container
-            contentContainer.removeAll();
 
-            // Show graph or list based on selection
-            if ("Graph".equals(event.getValue())) {
-                contentContainer.add(createFinancialGraph());
-            } else if ("Table".equals(event.getValue())) {
-                contentContainer.add(createList());
-            }
-        });
 
-        analysisLayout.add(selectionComboBox, contentContainer);
-
-        mainLayout.add(highlightsLayout);
+        mainLayout.add(highlightsLayout, costBreakdownLayout, revenueBreakdownLayout);
         add(mainLayout, analysisLayout);
+    }
 
+    // Method to print out the financial data for debugging
+    private void printStoreFinancialData(int storeId, BigDecimal accountBalance, BigDecimal totalSales, BigDecimal totalExpenses, BigDecimal profit, Map<String, BigDecimal> costBreakdown, Map<String, BigDecimal> revenueBreakdown) {
+        System.out.println("==== Debugging Store ID: " + storeId + " ====");
+        System.out.println("Account Balance: " + formatCurrency(accountBalance));
+        System.out.println("Total Sales: " + formatCurrency(totalSales));
+        System.out.println("Total Expenses: " + formatCurrency(totalExpenses));
+        System.out.println("Profit: " + formatCurrency(profit));
+        System.out.println("Cost Breakdown: ");
+        costBreakdown.forEach((item, amount) -> System.out.println(" - " + item + ": " + formatCurrency(amount)));
+        System.out.println("Revenue Breakdown: ");
+        revenueBreakdown.forEach((item, amount) -> System.out.println(" - " + item + ": " + formatCurrency(amount)));
+        System.out.println("Account Balance Over Time:");
+        System.out.println("==== End of Debugging ====");
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
@@ -106,7 +133,7 @@ public class UserFinanceView extends Div{
         Icon i = icon.create();
         i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
 
-        Span badge = new Span(i, new Span(prefix + percentage.toString()));
+        Span badge = new Span(i, new Span(prefix + percentage.toString() + "%"));
         badge.getElement().getThemeList().add(theme);
 
         VerticalLayout layout = new VerticalLayout(h2, span, badge);
@@ -136,16 +163,16 @@ public class UserFinanceView extends Div{
         return header;
     }
 
-    private Component createFinancialGraph() {
+    private Component createFinancialGraph(List<BigDecimal> accountBalanceOverTime) {
         // Header
         IntegerField year = new IntegerField();
-        year.addClassName("user-financial-graph");
+        year.addClassName("store-financial-graph");
         year.setValue(2024);
         year.setStepButtonsVisible(true);
         year.setMin(2020);
         year.setMax(2024);
 
-        HorizontalLayout header = createHeader("Yearly Financial Analysis", "");
+        HorizontalLayout header = createHeader("Account Balance Over Time", "");
         header.add(year);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
 
@@ -156,12 +183,11 @@ public class UserFinanceView extends Div{
         chart.setWidth("97%");
 
         XAxis xAxis = new XAxis();
-        xAxis.setCategories("Q1", "Q2", "Q3", "Q4");
+        xAxis.setCategories("Month 1", "Month 2", "Month 3", "Month 4", "Month 5", "Month 6", "Month 7", "Month 8", "Month 9", "Month 10", "Month 11", "Month 12");
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
-        yAxis.setTitle("$k");
-        yAxis.setCategories("20", "40", "60", "80", "100", "120", "140", "160", "180", "200");
+        yAxis.setTitle("Account Balance ($)");
         conf.addyAxis(yAxis);
 
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
@@ -169,9 +195,8 @@ public class UserFinanceView extends Div{
         plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
 
-        conf.addSeries(new ListSeries("Profit", 109, 141, 91, 126));
-        conf.addSeries(new ListSeries("Income", 138, 190, 109, 150));
-        conf.addSeries(new ListSeries("Expenses", 65, 61, 66, 71));
+        // Use real data from the services
+        conf.addSeries(new ListSeries("Account Balance", accountBalanceOverTime.toArray(new BigDecimal[0])));
 
         // Add it all together
         VerticalLayout viewEvents = new VerticalLayout(header, chart);
@@ -184,12 +209,28 @@ public class UserFinanceView extends Div{
         return viewEvents;
     }
 
-    private Grid<String> createList() {
-        Grid<String> grid = new Grid<>();
-        grid.setItems("Item 1", "Item 2", "Item 3");
-        grid.addColumn(item -> item).setHeader("Items");
+    private Grid<Transaction> createTransactionGrid(int storeId) {
+        Grid<Transaction> grid = new Grid<>(Transaction.class);
+        grid.addColumn(Transaction::getStoreId).setHeader("Store ID");
+        grid.addColumn(Transaction::getItem).setHeader("Item");
+        grid.addColumn(Transaction::getAmount).setHeader("Amount");
 
         return grid;
     }
-    
+
+    private String formatCurrency(BigDecimal value) {
+        return "$" + value.setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
+    }
+
+    private String formatCostBreakdown(Map<String, BigDecimal> costBreakdown) {
+        return costBreakdown.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + formatCurrency(entry.getValue()))
+                .collect(Collectors.joining(", "));
+    }
+
+    private String formatRevenueBreakdown(Map<String, BigDecimal> revenueBreakdown) {
+        return revenueBreakdown.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + formatCurrency(entry.getValue()))
+                .collect(Collectors.joining(", "));
+    }
 }
