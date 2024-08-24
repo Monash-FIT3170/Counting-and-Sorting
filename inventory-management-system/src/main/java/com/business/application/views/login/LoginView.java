@@ -36,11 +36,14 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         this.authenticatedUser = authenticatedUser;
         setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
 
+        
         LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Counting & Sorting");
-        i18n.getHeader().setDescription("Login using user or admin");
-        i18n.setAdditionalInformation(null);
+
+        LoginI18n.Header i18nHeader = new LoginI18n.Header();
+        i18nHeader.setTitle("Counting & Sorting");
+        i18nHeader.setDescription("Inventory Management System");
+        i18n.setHeader(i18nHeader);
+
         setI18n(i18n);
 
         setForgotPasswordButtonVisible(true);
