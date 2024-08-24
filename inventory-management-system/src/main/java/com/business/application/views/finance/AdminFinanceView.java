@@ -1,10 +1,16 @@
 package com.business.application.views.finance;
 
+import com.business.application.domain.Transaction;
+import com.business.application.services.TransactionService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
+import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotOptionsSpline;
@@ -13,53 +19,85 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-
 import jakarta.annotation.security.RolesAllowed;
-import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @PageTitle("Admin Finance")
 @Route(value = "admin-finance-view", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 public class AdminFinanceView extends Div {
 
+    private final TransactionService transactionService;
+
     private final VerticalLayout mainLayout;
     private final HorizontalLayout highlightsLayout;
-    private final ComboBox<Store> storeSelect;
+    private final ComboBox<Integer> storeSelect;
     private final VerticalLayout contentContainer;
     private final ComboBox<String> selectionComboBox;
 
-    public AdminFinanceView() {
+    @Autowired
+    public AdminFinanceView(TransactionService transactionService) {
+        this.transactionService = transactionService;
         addClassName("admin-finance-view");
 
         mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
 
+
+
+        // Overall metrics section
+        HorizontalLayout overallMetricsLayout = new HorizontalLayout();
+        overallMetricsLayout.setWidthFull();
+        overallMetricsLayout.add(
+                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 0.0),
+                createHighlight("Total Profit", formatCurrency(getTotalProfit()), 0.0),
+                createHighlight("Total Disbursements", formatCurrency(getTotalDisbursements()), 0.0)
+        );
+
+        mainLayout.add(overallMetricsLayout);
+
         highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
+        
+        // Profit Pie Chart for all stores
+        Chart profitPieChart = createProfitPieChart();
+        mainLayout.add(profitPieChart);
 
         storeSelect = new ComboBox<>();
         storeSelect.setLabel("Select Store");
         storeSelect.setPlaceholder("Select Store");
-        storeSelect.setItemLabelGenerator(Store::getName);
-        storeSelect.addValueChangeListener(event -> updateHighlightsAndGraph(event.getValue()));
+        storeSelect.addValueChangeListener(event -> updateStoreSpecificData(event.getValue()));
 
         HorizontalLayout storeSelectorLayout = new HorizontalLayout();
         storeSelectorLayout.setWidthFull();
@@ -78,7 +116,7 @@ public class AdminFinanceView extends Div {
             if ("Graph".equals(event.getValue())) {
                 contentContainer.add(createFinancialGraph(storeSelect.getValue()));
             } else if ("Table".equals(event.getValue())) {
-                contentContainer.add(createList(storeSelect.getValue()));
+                contentContainer.add(createTransactionsTable(storeSelect.getValue()));
             }
         });
 
@@ -89,43 +127,53 @@ public class AdminFinanceView extends Div {
     }
 
     private void initializeStores() {
-        Store store1 = new Store("Store 1",
-                10000, 50000, 40000, 10000,
-                Arrays.asList(109, 141, 91, 126),
-                Arrays.asList(138, 190, 109, 150),
-                Arrays.asList(65, 61, 66, 71));
-
-        Store store2 = new Store("Store 2",
-                20000, 60000, 40000, 20000,
-                Arrays.asList(85, 130, 70, 100),
-                Arrays.asList(110, 170, 90, 140),
-                Arrays.asList(55, 50, 55, 60));
-
-        Store store3 = new Store("Store 3",
-                30000, 70000, 40000, 30000,
-                Arrays.asList(120, 150, 100, 130),
-                Arrays.asList(150, 200, 120, 160),
-                Arrays.asList(70, 65, 70, 75));
-
-        storeSelect.setItems(store1, store2, store3);
-        storeSelect.setValue(store1); // Set Store 1 as the default selected store
+        // Assuming stores are initialized with IDs 1, 2, and 3
+        storeSelect.setItems(1, 2, 3);
+        storeSelect.setValue(1); // Set Store 1 as the default selected store
     }
 
-    private void updateHighlightsAndGraph(Store store) {
-        if (store == null) return;
+    private void updateStoreSpecificData(Integer storeId) {
+        if (storeId == null) return;
+
+        BigDecimal cashOnHand = transactionService.getAccountBalanceForStore(storeId);
+        BigDecimal profit = transactionService.getProfitForStore(storeId);
+        BigDecimal totalSales = transactionService.getTotalSalesForStore(storeId);
+        BigDecimal totalExpenses = transactionService.getTotalExpensesForStore(storeId);
 
         highlightsLayout.removeAll();
-        highlightsLayout.add(createHighlight("Cash on Hand", "$" + store.getCashOnHand(), 0.0),
-                             createHighlight("Projected Profit", "$" + store.getProfit(), calculatePercentage(store.getProfit(), store.getRevenue())));
+        highlightsLayout.add(
+                createHighlight("Cash on Hand", formatCurrency(cashOnHand), 0.0),
+                createHighlight("Profit", formatCurrency(profit), calculatePercentage(profit, totalSales)),
+                createHighlight("Total Sales", formatCurrency(totalSales), 0.0),
+                createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0)
+        );
 
-        // Update the graph when the store is changed
+        // Update the graph and transactions table when the store is changed
         contentContainer.removeAll();
-        contentContainer.add(createFinancialGraph(store));
+        contentContainer.add(createCumulativeSumChart(storeId), createFinancialGraph(storeId), createTransactionsTable(storeId));
     }
 
-    private double calculatePercentage(int profit, int revenue) {
-        if (revenue == 0) return 0.0;
-        return (double) profit / revenue * 100;
+    private String formatCurrency(BigDecimal value) {
+        return String.format("$%,.2f", value);
+    }
+
+    private double calculatePercentage(BigDecimal value, BigDecimal total) {
+        if (total.compareTo(BigDecimal.ZERO) == 0) return 0.0;
+        return value.divide(total, BigDecimal.ROUND_HALF_EVEN).multiply(BigDecimal.valueOf(100)).doubleValue();
+    }
+
+    private BigDecimal getTotalRevenue() {
+        return transactionService.getTotalSalesForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal getTotalProfit() {
+        return transactionService.getProfitsForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal getTotalDisbursements() {
+        return transactionService.getTotalDisbursements();
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
@@ -162,9 +210,35 @@ public class AdminFinanceView extends Div {
         layout.setSpacing(false);
         return layout;
     }
+       // Method to create a pie chart showing profit distribution among stores
+    private Chart createProfitPieChart() {
+        Chart chart = new Chart(ChartType.PIE);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Profit Distribution Among Stores");
 
-    // Method to create a dynamic financial graph based on store data
-    private Component createFinancialGraph(Store store) {
+        // Get the profit data for all stores
+        java.util.Map<Integer, BigDecimal> profits = transactionService.getProfitsForAllStores();
+        profits.putIfAbsent(0, BigDecimal.ZERO);
+
+        // Create a series for the pie chart
+        DataSeries series = new DataSeries();
+
+        profits.forEach((storeId, profit) -> {
+            DataSeriesItem item = new DataSeriesItem("Store " + storeId + " (" + formatCurrency(profit) + ")", profit.doubleValue());
+            series.add(item);
+        });
+
+        conf.addSeries(series);
+        chart.setWidth("97%");
+        return chart;
+    }
+
+    private Component createFinancialGraph(Integer storeId) {
+        // Get the necessary data for the selected store
+        BigDecimal profit = transactionService.getProfitForStore(storeId);
+        BigDecimal income = transactionService.getTotalSalesForStore(storeId);
+        BigDecimal expenses = transactionService.getTotalExpensesForStore(storeId);
+    
         // Header
         IntegerField year = new IntegerField();
         year.addClassName("user-financial-graph");
@@ -173,33 +247,42 @@ public class AdminFinanceView extends Div {
         year.setMin(2020);
         year.setMax(2024);
     
-        HorizontalLayout header = createHeader("Yearly Financial Analysis", store.getName());
+        HorizontalLayout header = createHeader("Yearly Financial Analysis", "Store " + storeId);
         header.add(year);
         header.setAlignItems(FlexComponent.Alignment.CENTER);
     
-        // Chart
-        Chart chart = new Chart(ChartType.SPLINE);
+        // Bar Chart
+        Chart chart = new Chart(ChartType.COLUMN);
         Configuration conf = chart.getConfiguration();
-        conf.getChart().setStyledMode(true);
+        conf.setTitle("Yearly Financial Analysis");
         chart.setWidth("97%");
     
         XAxis xAxis = new XAxis();
-        xAxis.setCategories("Q1", "Q2", "Q3", "Q4");
+        xAxis.setCategories("Income", "Expenses", "Profit");
         conf.addxAxis(xAxis);
     
         YAxis yAxis = new YAxis();
         yAxis.setTitle("$k");
         conf.addyAxis(yAxis);
     
-        PlotOptionsSpline plotOptions = new PlotOptionsSpline();
-        plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setMarker(new Marker(false));
-        conf.addPlotOptions(plotOptions);
+        // Adding the series for the bar chart
+        DataSeries series = new DataSeries();
     
-        // Convert List<Integer> to Integer[] and add to series
-        conf.addSeries(new ListSeries("Profit", store.getQuarterlyProfit().toArray(new Integer[0])));
-        conf.addSeries(new ListSeries("Income", store.getQuarterlyIncome().toArray(new Integer[0])));
-        conf.addSeries(new ListSeries("Expenses", store.getQuarterlyExpenses().toArray(new Integer[0])));
+        // Income
+        DataSeriesItem incomeItem = new DataSeriesItem("Income", income.doubleValue());
+ // Green for positive
+        series.add(incomeItem);
+    
+        // Expenses
+        DataSeriesItem expensesItem = new DataSeriesItem("Expenses", expenses.doubleValue());
+
+        series.add(expensesItem);
+    
+        // Profit
+        DataSeriesItem profitItem = new DataSeriesItem("Profit", profit.doubleValue());
+        series.add(profitItem);
+    
+        conf.addSeries(series);
     
         // Add it all together
         VerticalLayout viewEvents = new VerticalLayout(header, chart);
@@ -211,14 +294,126 @@ public class AdminFinanceView extends Div {
         viewEvents.setWidth("98.5%");
         return viewEvents;
     }
+    
 
-    private Grid<String> createList(Store store) {
-        Grid<String> grid = new Grid<>();
-        grid.setItems("Item 1", "Item 2", "Item 3"); // Example items, you can customize this to show store-specific data
-        grid.addColumn(item -> item).setHeader("Items");
 
-        return grid;
+    private VerticalLayout createTransactionsTable(Integer storeId) {
+        Grid<Transaction> grid = new Grid<>(Transaction.class);
+        List<Transaction> transactions = transactionService.getTransactionsForStore(storeId);
+        grid.setItems(transactions);
+
+        // Add columns
+        grid.addColumn(Transaction::getItem).setHeader("Category").setSortable(true);
+        grid.addColumn(Transaction::getType).setHeader("Type").setSortable(true);
+        grid.addColumn(Transaction::getAmount).setHeader("Amount").setSortable(true);
+
+        // Add filtering capability
+        TextField categoryFilter = new TextField();
+        categoryFilter.setPlaceholder("Filter by Category...");
+        categoryFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        categoryFilter.addValueChangeListener(e -> {
+            String filter = e.getValue().trim();
+            grid.setItems(transactions.stream()
+                    .filter(tx -> tx.getItem().toLowerCase().contains(filter.toLowerCase()))
+                    .collect(Collectors.toList()));
+        });
+
+        TextField typeFilter = new TextField();
+        typeFilter.setPlaceholder("Filter by Type...");
+        typeFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        typeFilter.addValueChangeListener(e -> {
+            String filter = e.getValue().trim();
+            grid.setItems(transactions.stream()
+                    .filter(tx -> tx.getType().name().toLowerCase().contains(filter.toLowerCase()))
+                    .collect(Collectors.toList()));
+        });
+
+        HorizontalLayout filters = new HorizontalLayout(categoryFilter, typeFilter);
+        filters.setWidthFull();
+
+        // Add export functionality
+        Button exportButton = new Button("Export CSV");
+        exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Anchor downloadLink = createDownloadLink(grid);
+        downloadLink.add(exportButton);
+
+        HorizontalLayout actions = new HorizontalLayout(filters, downloadLink);
+        actions.setWidthFull();
+
+        // Add grid to layout
+        VerticalLayout layout = new VerticalLayout(actions, grid);
+        layout.setWidthFull();
+
+        // Add styling
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT);
+
+        return layout;
     }
+
+    private Anchor createDownloadLink(Grid<Transaction> grid) {
+        StreamResource resource = new StreamResource("transactions.csv", () -> {
+            List<Transaction> transactions = grid.getListDataView().getItems().collect(Collectors.toList());
+            StringBuilder csv = new StringBuilder("Category,Type,Amount\n");
+            transactions.forEach(tx -> csv.append(tx.getItem()).append(",")
+                    .append(tx.getType()).append(",")
+                    .append(tx.getAmount()).append("\n"));
+            return new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
+        });
+
+        Anchor downloadLink = new Anchor(resource, "");
+        downloadLink.getElement().setAttribute("download", true);
+        return downloadLink;
+    }
+
+    private Component createCumulativeSumChart(Integer storeId) {
+        List<Transaction> transactions = transactionService.getTransactionsForStore(storeId);
+        transactions.sort(Comparator.comparing(Transaction::getDate));
+    
+        List<LocalDate> dates = transactions.stream()
+                .map(Transaction::getDate)
+                .distinct()
+                .collect(Collectors.toList());
+    
+        List<BigDecimal> cumulativeSums = transactions.stream()
+                .collect(Collectors.groupingBy(Transaction::getDate, Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)))
+                .entrySet().stream()
+                .sorted(java.util.Map.Entry.comparingByKey())
+                .map(java.util.Map.Entry::getValue)
+                .collect(Collectors.toList());
+    
+        // Accumulate sums
+        for (int i = 1; i < cumulativeSums.size(); i++) {
+            cumulativeSums.set(i, cumulativeSums.get(i).add(cumulativeSums.get(i - 1)));
+        }
+    
+        // Convert cumulative sums to Number[] for chart compatibility
+        Number[] cumulativeSumArray = cumulativeSums.toArray(new Number[0]);
+    
+        // Chart for cumulative sum
+        Chart chart = new Chart(ChartType.SPLINE);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Cumulative Sum of Transactions Over Time");
+        chart.setWidth("97%");
+    
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(dates.stream().map(LocalDate::toString).toArray(String[]::new));
+        conf.addxAxis(xAxis);
+    
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Cumulative Sum ($)");
+        conf.addyAxis(yAxis);
+    
+        PlotOptionsSpline plotOptions = new PlotOptionsSpline();
+        plotOptions.setPointPlacement(PointPlacement.ON);
+        plotOptions.setMarker(new Marker(true));
+        conf.addPlotOptions(plotOptions);
+    
+        conf.addSeries(new ListSeries("Cumulative Sum", cumulativeSumArray));
+    
+        return chart;
+    }
+    
 
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
@@ -239,59 +434,8 @@ public class AdminFinanceView extends Div {
         return header;
     }
 
-    // Store class with financial data and methods
-    public static class Store {
-        private final String name;
-        private final Integer profit;
-        private final Integer revenue;
-        private final Integer expenses;
-        private final Integer cashOnHand;
-        private final List<Integer> quarterlyProfit;
-        private final List<Integer> quarterlyIncome;
-        private final List<Integer> quarterlyExpenses;
-
-        public Store(String name, Integer profit, Integer revenue, Integer expenses, Integer cashOnHand,
-                     List<Integer> quarterlyProfit, List<Integer> quarterlyIncome, List<Integer> quarterlyExpenses) {
-            this.name = name;
-            this.profit = profit;
-            this.revenue = revenue;
-            this.expenses = expenses;
-            this.cashOnHand = cashOnHand;
-            this.quarterlyProfit = quarterlyProfit;
-            this.quarterlyIncome = quarterlyIncome;
-            this.quarterlyExpenses = quarterlyExpenses;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Integer getProfit() {
-            return profit;
-        }
-
-        public Integer getRevenue() {
-            return revenue;
-        }
-
-        public Integer getExpenses() {
-            return expenses;
-        }
-
-        public Integer getCashOnHand() {
-            return cashOnHand;
-        }
-
-        public List<Integer> getQuarterlyProfit() {
-            return quarterlyProfit;
-        }
-
-        public List<Integer> getQuarterlyIncome() {
-            return quarterlyIncome;
-        }
-
-        public List<Integer> getQuarterlyExpenses() {
-            return quarterlyExpenses;
-        }
+    private List<BigDecimal> splitToQuarters(BigDecimal value) {
+        BigDecimal quarterValue = value.divide(BigDecimal.valueOf(4), BigDecimal.ROUND_HALF_EVEN);
+        return List.of(quarterValue, quarterValue, quarterValue, quarterValue);
     }
 }

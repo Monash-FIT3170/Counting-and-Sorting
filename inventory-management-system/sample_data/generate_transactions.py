@@ -18,8 +18,8 @@ config = {
 
 # Sample data settings
 number_of_stores = 4
-number_of_sales_per_month = 1000
-number_of_inventory_purchases_per_month = 15
+number_of_sales_per_month = 300
+number_of_inventory_purchases_per_month = 8
 initial_funds = 100000
 export_as_json = False  # Toggle between exporting as JSON or SQL database
 
@@ -63,7 +63,7 @@ def generate_sample_data():
         total_inventory_cost = 0
         total_sales = 0
         quarterly_sales = 0
-        sales_multiplier = random.uniform(1.6, 4) # Sales should be roughly 2-3x the inventory cost
+        sales_multiplier = random.uniform(1.4, 4.5) # Sales should be roughly 2-3x the inventory cost
 
         for month in range(1, 13):  # Loop over each month in the year
             year = 2024

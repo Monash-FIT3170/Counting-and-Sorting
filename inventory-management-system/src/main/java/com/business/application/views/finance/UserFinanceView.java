@@ -7,6 +7,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
+import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotOptionsSpline;
@@ -46,7 +48,6 @@ public class UserFinanceView extends Div {
     public UserFinanceView(TransactionService transactionService) {
         this.transactionService = transactionService;
         addClassName("store-finance-view");
-        transactionService.logTransactionsUsingNativeQuery(1);
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
@@ -62,51 +63,47 @@ public class UserFinanceView extends Div {
         Map<String, BigDecimal> costBreakdown = transactionService.getCostBreakdownForStore(storeId);
         Map<String, BigDecimal> revenueBreakdown = transactionService.getRevenueBreakdownForStore(storeId);
 
-        // Debug output
-        printStoreFinancialData(storeId, accountBalance, totalSales, totalExpenses, profit, costBreakdown, revenueBreakdown);
-
         // Highlights section
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Account Balance", formatCurrency(accountBalance), 0.0),
+        highlightsLayout.add(
+                createHighlight("Account Balance", formatCurrency(accountBalance), 0.0),
                 createHighlight("Profit", formatCurrency(profit), 0.0),
                 createHighlight("Total Sales", formatCurrency(totalSales), 0.0),
-                createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0));
+                createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0)
+        );
 
-        // Cost breakdown section
-        VerticalLayout costBreakdownLayout = new VerticalLayout();
-        costBreakdownLayout.add(createHighlight("Cost Breakdown", formatCostBreakdown(costBreakdown), 0.0));
-
-        // Revenue breakdown section
-        VerticalLayout revenueBreakdownLayout = new VerticalLayout();
-        revenueBreakdownLayout.add(createHighlight("Revenue Breakdown", formatRevenueBreakdown(revenueBreakdown), 0.0));
+        // Cost and Revenue breakdown section side by side
+        HorizontalLayout breakdownLayout = new HorizontalLayout();
+        breakdownLayout.setWidthFull();
+        breakdownLayout.add(
+                createPieChartWithDetails("Cost Breakdown", costBreakdown, true),
+                createPieChartWithDetails("Revenue Breakdown", revenueBreakdown, false)
+        );
 
         VerticalLayout analysisLayout = new VerticalLayout();
 
         // ComboBox for selecting view
         ComboBox<String> selectionComboBox = new ComboBox<>("Select View");
-        selectionComboBox.setItems("Graph", "Table");
+        selectionComboBox.setItems("Graph View", "Table View");
+        selectionComboBox.addValueChangeListener(e -> switchView(e.getValue(), analysisLayout, storeId));
 
+        analysisLayout.add(selectionComboBox);
 
-
-
-        mainLayout.add(highlightsLayout, costBreakdownLayout, revenueBreakdownLayout);
-        add(mainLayout, analysisLayout);
+        mainLayout.add(highlightsLayout, breakdownLayout, analysisLayout);
+        add(mainLayout);
     }
 
-    // Method to print out the financial data for debugging
-    private void printStoreFinancialData(int storeId, BigDecimal accountBalance, BigDecimal totalSales, BigDecimal totalExpenses, BigDecimal profit, Map<String, BigDecimal> costBreakdown, Map<String, BigDecimal> revenueBreakdown) {
-        System.out.println("==== Debugging Store ID: " + storeId + " ====");
-        System.out.println("Account Balance: " + formatCurrency(accountBalance));
-        System.out.println("Total Sales: " + formatCurrency(totalSales));
-        System.out.println("Total Expenses: " + formatCurrency(totalExpenses));
-        System.out.println("Profit: " + formatCurrency(profit));
-        System.out.println("Cost Breakdown: ");
-        costBreakdown.forEach((item, amount) -> System.out.println(" - " + item + ": " + formatCurrency(amount)));
-        System.out.println("Revenue Breakdown: ");
-        revenueBreakdown.forEach((item, amount) -> System.out.println(" - " + item + ": " + formatCurrency(amount)));
-        System.out.println("Account Balance Over Time:");
-        System.out.println("==== End of Debugging ====");
+    private void switchView(String viewType, VerticalLayout analysisLayout, int storeId) {
+        analysisLayout.removeAll();
+
+        if ("Graph View".equals(viewType)) {
+            List<BigDecimal> accountBalanceOverTime = transactionService.getAccountBalancesForAllStores()
+                    .values().stream().collect(Collectors.toList());
+            analysisLayout.add(createFinancialGraph(accountBalanceOverTime));
+        } else if ("Table View".equals(viewType)) {
+            analysisLayout.add(createTransactionGrid(storeId));
+        }
     }
 
     private Component createHighlight(String title, String value, Double percentage) {
@@ -142,25 +139,6 @@ public class UserFinanceView extends Div {
         layout.setPadding(false);
         layout.setSpacing(false);
         return layout;
-    }
-
-    private HorizontalLayout createHeader(String title, String subtitle) {
-        H2 h2 = new H2(title);
-        h2.addClassName("financial-view-h2-1");
-        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
-
-        Span span = new Span(subtitle);
-        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
-
-        VerticalLayout column = new VerticalLayout(h2, span);
-        column.setPadding(true);
-        column.setSpacing(false);
-
-        HorizontalLayout header = new HorizontalLayout(column);
-        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        header.setSpacing(false);
-        header.setWidth("97%");
-        return header;
     }
 
     private Component createFinancialGraph(List<BigDecimal> accountBalanceOverTime) {
@@ -209,6 +187,25 @@ public class UserFinanceView extends Div {
         return viewEvents;
     }
 
+    private HorizontalLayout createHeader(String title, String subtitle) {
+        H2 h2 = new H2(title);
+        h2.addClassName("financial-view-h2-1");
+        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
+
+        Span span = new Span(subtitle);
+        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
+
+        VerticalLayout column = new VerticalLayout(h2, span);
+        column.setPadding(true);
+        column.setSpacing(false);
+
+        HorizontalLayout header = new HorizontalLayout(column);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.setSpacing(false);
+        header.setWidth("97%");
+        return header;
+    }
+
     private Grid<Transaction> createTransactionGrid(int storeId) {
         Grid<Transaction> grid = new Grid<>(Transaction.class);
         grid.addColumn(Transaction::getStoreId).setHeader("Store ID");
@@ -222,15 +219,39 @@ public class UserFinanceView extends Div {
         return "$" + value.setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
     }
 
-    private String formatCostBreakdown(Map<String, BigDecimal> costBreakdown) {
-        return costBreakdown.entrySet().stream()
-                .map(entry -> entry.getKey() + ": " + formatCurrency(entry.getValue()))
-                .collect(Collectors.joining(", "));
-    }
+    private Component createPieChartWithDetails(String title, Map<String, BigDecimal> breakdown, boolean isCost) {
+        // Create the pie chart
+        Chart chart = new Chart(ChartType.PIE);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle(title);
 
-    private String formatRevenueBreakdown(Map<String, BigDecimal> revenueBreakdown) {
-        return revenueBreakdown.entrySet().stream()
-                .map(entry -> entry.getKey() + ": " + formatCurrency(entry.getValue()))
-                .collect(Collectors.joining(", "));
+        DataSeries series = new DataSeries();
+
+        breakdown.forEach((key, value) -> {
+            // Costs should be positive in the chart even though they are negative values
+            BigDecimal displayValue = isCost ? value.abs() : value;
+            series.add(new DataSeriesItem(key, displayValue.doubleValue()));
+        });
+
+        conf.setSeries(series);
+        chart.setWidth("50%");
+
+        // Create the details list
+        VerticalLayout detailsLayout = new VerticalLayout();
+        breakdown.forEach((key, value) -> {
+            Span detail = new Span(key + ": " + formatCurrency(value));
+            detailsLayout.add(detail);
+        });
+        detailsLayout.setPadding(false);
+        detailsLayout.setSpacing(false);
+
+        // Combine the chart and details in a single layout
+        VerticalLayout layout = new VerticalLayout(chart, detailsLayout);
+        layout.setPadding(false);
+        layout.setSpacing(false);
+        layout.addClassName("rounded-rectangle");
+        layout.setWidth("100%");
+
+        return layout;
     }
 }

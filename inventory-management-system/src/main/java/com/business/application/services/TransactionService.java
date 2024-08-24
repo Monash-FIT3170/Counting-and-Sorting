@@ -155,7 +155,13 @@ public class TransactionService {
             System.out.println("=====================================");
         });
     }
-        
+
+    // New method to get all transactions for a specific store
+    public List<Transaction> getTransactionsForStore(Integer storeId) {
+        return transactionRepository.findAll().stream()
+                .filter(t -> t.getStoreId().equals(storeId))
+                .collect(Collectors.toList());
+    }
 
 
 }
