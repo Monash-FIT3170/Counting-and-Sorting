@@ -31,6 +31,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
     private final AuthenticatedUser authenticatedUser;
 
     public LoginView(AuthenticatedUser authenticatedUser) {
+        this.getElement().setAttribute("theme", Lumo.DARK);
+        
         this.authenticatedUser = authenticatedUser;
         setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
 

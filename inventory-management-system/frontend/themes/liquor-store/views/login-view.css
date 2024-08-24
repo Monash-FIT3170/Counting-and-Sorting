@@ -1,0 +1,71 @@
+:root {
+    --lumo-letter-spacing: 0.39px;
+    --lumo-border-radius-xl: 2em;
+    --lumo-blur: blur(25px);
+  }
+
+vaadin-login-overlay-wrapper::part(backdrop) {
+    background: url("VAADIN/themes/liquor-store/img/nav-bg.png") lightgray 0% / cover no-repeat;
+}
+
+vaadin-login-form-wrapper,
+vaadin-login-overlay-wrapper::part(brand),
+vaadin-login-overlay-wrapper::part(card) {
+    background: transparent;
+}
+
+vaadin-login-overlay-wrapper::part(card) {
+    border-radius: var(--lumo-border-radius-l);
+    border: 1px solid var(--lumo-tertiary-text-color);
+
+    /* Glass Effects */
+    box-shadow: var(--lumo-box-shadow-m);
+    backdrop-filter: var(--lumo-blur);
+}
+
+vaadin-login-form-wrapper{
+    border-top: 1px solid var(--lumo-tertiary-text-color);
+}
+
+vaadin-login-form-wrapper ::part(input-field) {
+    background: var(--lumo-contrast-10pct);
+    box-shadow: none;
+}
+
+vaadin-login-form vaadin-button[theme~="submit"] {
+    box-shadow: none;
+    background: var(--lumo-primary-color);
+}
+
+vaadin-login-form vaadin-password-field-button {
+    box-shadow: none;
+    background: transparent;
+}
+
+vaadin-login-overlay-wrapper::part(card) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+vaadin-login-form-wrapper {
+    padding: 16px 72px 48px 72px;
+    width: 312px;
+}
+
+vaadin-login-overlay-wrapper::part(brand) {
+    padding: 0;
+    margin: 48px 72px 24px 72px;
+    width: 312px;
+}
+
+vaadin-login-form-wrapper::part(form) {
+    padding: 0;
+}
+
+
+
+
