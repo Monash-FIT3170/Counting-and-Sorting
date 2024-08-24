@@ -1,4 +1,5 @@
 .admin-dashboard-view {
+  padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
 }
 
