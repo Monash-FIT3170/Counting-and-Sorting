@@ -196,18 +196,13 @@ public class MainLayout extends AppLayout {
                     new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
-        /* Not working cant connect to new view */
-        // if (accessChecker.hasAccess(UserFinanceView.class)) {
-        //     nav.addItem(
-        //             new SideNavItem("User Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
-
-        // }
-
-        if (accessChecker.hasAccess(ShoppingListsView.class)) {
+        /* working to connect to new view */
+        if (accessChecker.hasAccess(UserFinanceView.class)) {
             nav.addItem(
-                    new SideNavItem("Finance", ShoppingListsView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+                    new SideNavItem("User Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
 
         }
+
 
         // Admin Dashboard
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
