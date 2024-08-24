@@ -40,6 +40,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.dom.Style.AlignItems;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
@@ -53,6 +54,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+
+// TODO: remove unused code
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -83,6 +86,8 @@ public class MainLayout extends AppLayout {
     
         // Left-aligned components
         HorizontalLayout leftLayout = new HorizontalLayout();
+        leftLayout.addClassName("left-layout");
+        
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
     
@@ -93,6 +98,9 @@ public class MainLayout extends AppLayout {
     
         // Right-aligned components
         HorizontalLayout rightLayout = new HorizontalLayout();
+        rightLayout.addClassName("right-layout");
+        rightLayout.setAlignItems(Alignment.CENTER);
+
         rightLayout.add(createThemeToggleButton(), createUserMenu());
         // rightLayout.setSpacing(true);
         // rightLayout.getStyle().set("padding-right", "40px"); 
@@ -105,45 +113,76 @@ public class MainLayout extends AppLayout {
     }
 
     private Component createUserMenu() {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        layout.setAlignItems(Alignment.CENTER);
+        HorizontalLayout outerLayout = new HorizontalLayout();
+        outerLayout.setAlignItems(Alignment.CENTER);
 
         Optional<User> maybeUser = authenticatedUser.get();
+
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
             Avatar avatar = new Avatar(user.getName());
-            avatar.setThemeName("xsmall");
+            avatar.setThemeName("medium");
 
-            MenuBar userMenu = new MenuBar();
-            userMenu.setThemeName("tertiary-inline");
 
-            MenuItem userDetails = userMenu.addItem(user.getName(), e -> {});
-            userDetails.getSubMenu().addItem("Sign out", e -> authenticatedUser.logout());
+            Span name = new Span(user.getName());
+            name.addClassNames(
+                LumoUtility.FontSize.SMALL, 
+                LumoUtility.TextColor.BODY
+                );
 
-            layout.add(avatar, userMenu);
-        } else {
-            Button loginButton = new Button("Sign in", VaadinIcon.SIGN_IN.create());
-            loginButton.addClickListener(e -> UI.getCurrent().navigate("login"));
-            loginButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-            layout.add(loginButton);
+            Span username = new Span(user.getUsername());
+            username.addClassNames(
+                LumoUtility.FontSize.XXSMALL,
+                LumoUtility.TextColor.SECONDARY
+            );
+
+            VerticalLayout innerLayout = new VerticalLayout();
+            innerLayout.setPadding(false);
+
+            innerLayout.add(name, username);
+
+            outerLayout.add(avatar, innerLayout);
         }
 
-        return layout;
+
+
+        // TODO: reimplement log in and log out
+
+        // if (maybeUser.isPresent()) {
+        //     User user = maybeUser.get();
+        //     Avatar avatar = new Avatar(user.getName());
+        //     avatar.setThemeName("medium");
+
+        //     MenuBar userMenu = new MenuBar();
+        //     // userMenu.setThemeName("tertiary-inline");
+
+        //     MenuItem userDetails = userMenu.addItem(user.getName(), e -> {});
+        //     userDetails.getSubMenu().addItem("Sign out", e -> authenticatedUser.logout());
+
+        //     layout.add(avatar, userMenu);
+        // } else {
+        //     Button loginButton = new Button("Sign in", VaadinIcon.SIGN_IN.create());
+        //     loginButton.addClickListener(e -> UI.getCurrent().navigate("login"));
+        //     loginButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        //     layout.add(loginButton);
+        // }
+
+        return outerLayout;
 }
 
     private Component createThemeToggleButton() {
-        Icon themeIcon = new Icon("vaadin", "moon");
-        themeIcon.getStyle().set("cursor", "pointer");
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
 
-        Button themeToggleButton = new Button();
-        themeToggleButton.setIcon(themeIcon);
+        Icon themeIcon = new Icon("vaadin", themeList.contains(Lumo.DARK) ? "moon-o" : "sun-o");
+
+        Button themeToggleButton = new Button(themeIcon);
         themeToggleButton.addClickListener(e -> toggleTheme(themeIcon));
-        themeToggleButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        themeToggleButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+        themeToggleButton.addClassName("theme-toggle");
         // Set button margin to align with user menu
         // Set button size to be 40 pixels to match the user menu
-        themeToggleButton.getElement().getStyle().set("width", "40px").set("height", "40px");
-        themeToggleButton.getElement().getStyle().set("margin-right", "20px");
+        // themeToggleButton.getElement().getStyle().set("width", "40px").set("height", "40px");
+        // themeToggleButton.getElement().getStyle().set("margin-right", "20px");
 
         return themeToggleButton;
     }
@@ -189,6 +228,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void updateLogo(boolean darkTheme) {
+        // TODO: fix colour of logo in small view
         String logoPath = darkTheme ? 
             "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoLight.png" : 
             "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoDark.png";
@@ -287,7 +327,7 @@ public class MainLayout extends AppLayout {
             icon.getElement().setAttribute("icon", "vaadin:sun-o");
         } else {
             themeList.add(Lumo.DARK);
-            icon.getElement().setAttribute("icon", "vaadin:moon");
+            icon.getElement().setAttribute("icon", "vaadin:moon-o");
         }
         // Immediately reflect the new theme state on the UI without full page refresh
 
