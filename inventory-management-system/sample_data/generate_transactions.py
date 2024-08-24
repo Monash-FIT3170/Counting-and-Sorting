@@ -7,18 +7,19 @@ import json
 
 # Database connection configuration
 config = {
-    'user': 'username',
-    'password': 'password',
-    'host': 'localhost',
-    'database': 'database',
+    'host': 'counting-sorting-1.cpy86y0c89jt.ap-southeast-2.rds.amazonaws.com',
+    'user': 'admin',
+    'password': 'countingSorting100%',
+    'database': 'liquor_store',
+    'port': 3306
 }
 
 # Sample data settings
 number_of_stores = 4
-number_of_sales_per_month = 100
-number_of_inventory_purchases_per_month = 10
+number_of_sales_per_month = 1000
+number_of_inventory_purchases_per_month = 15
 initial_funds = 100000
-export_as_json = True  # Toggle between exporting as JSON or SQL database
+export_as_json = False  # Toggle between exporting as JSON or SQL database
 
 # Generate a random UUID
 def generate_tx_id():
@@ -32,43 +33,20 @@ def generate_random_date_within_month(year, month):
 
 # Function to create a transaction entry
 def create_transaction(tx_id, store_id, item, amount, tx_type, to, date):
-    return {
-        "TxId": tx_id,
-        "StoreId": store_id,
-        "Item": item,
-        "Amount": amount,
-        "Type": tx_type,
-        "To": to,
-        "Date": date.strftime('%Y-%m-%d')
-    }
-
-# Function to execute the transaction on the database
-def execute_transactions(transactions, cursor):
-    for transaction in transactions:
-        insert_query = """
-        INSERT INTO transactions (TxId, StoreId, Item, Amount, Type, `To`, Date)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(insert_query, (
-            transaction['TxId'], 
-            transaction['StoreId'], 
-            transaction['Item'], 
-            transaction['Amount'], 
-            transaction['Type'], 
-            transaction['To'], 
-            transaction['Date']
-        ))
+    return (
+        tx_id, store_id, item, amount, tx_type, to, date.strftime('%Y-%m-%d')
+    )
 
 # Function to export the transactions as JSON
 def export_transactions_as_json(transactions):
     with open('inventory-management-system/sample_data/transactions.json', 'w') as file:
-        json.dump(transactions, file, indent=4)
+        json.dump([dict(zip(['TxId', 'StoreId', 'Item', 'Amount', 'Type', 'To', 'Date'], transaction)) for transaction in transactions], file, indent=4)
     print("Sample data exported as JSON successfully!")
 
 # Function to export the transactions as Excel
 def export_transactions_as_excel(transactions):
     import pandas as pd
-    df = pd.DataFrame(transactions)
+    df = pd.DataFrame(transactions, columns=['TxId', 'StoreId', 'Item', 'Amount', 'Type', 'To', 'Date'])
     df.to_excel('inventory-management-system/sample_data/transactions.xlsx', index=False)
     print("Sample data exported as Excel successfully!")
 
@@ -82,7 +60,8 @@ def generate_sample_data():
 
         total_inventory_cost = 0
         total_sales = 0
-        sales_multiplier = 2.0  # Sales should be roughly double the inventory cost
+        quarterly_sales = 0
+        sales_multiplier = random.uniform(1.6, 4) # Sales should be roughly 2-3x the inventory cost
 
         for month in range(1, 13):  # Loop over each month in the year
             year = 2024
@@ -101,13 +80,14 @@ def generate_sample_data():
 
             # Sales
             monthly_sales = monthly_inventory_cost * sales_multiplier
-            sales_per_transaction = round( monthly_sales / number_of_sales_per_month, 2)
-            for _ in range(number_of_sales_per_month):
+            sales_per_transaction = round(monthly_sales / number_of_sales_per_month, 2)
+            for _ in range((round(number_of_sales_per_month * random.uniform(0.8, 1.5)))):
                 item = random.choice(['Beer', 'Wine', 'Whiskey'])
                 date = generate_random_date_within_month(year, month)
                 transactions.append(create_transaction(generate_tx_id(), store_id, item, round(sales_per_transaction * random.uniform(0.5, 1.5), 2), 'Sales', 'Store', date))
 
             total_sales += monthly_sales
+            quarterly_sales  += monthly_sales
 
             # Expenses (same every month for simplicity)
             expenses = [
@@ -121,9 +101,10 @@ def generate_sample_data():
                 date = generate_random_date_within_month(year, month)
                 transactions.append(create_transaction(generate_tx_id(), store_id, item, amount, 'Expenses', '', date))
 
-            # Quarterly Disbursements (30% of total sales)
+            # Quarterly Disbursements (30% of total sales for the quarter)
             if month % 3 == 0:
-                disbursement_amount = -0.30 * (total_sales)
+                disbursement_amount = -0.30 * quarterly_sales
+                quarterly_sales = 0
                 date = generate_random_date_within_month(year, month)
                 transactions.append(create_transaction(generate_tx_id(), store_id, 'Royalty Fee', disbursement_amount, 'Disbursement', 'Head office', date))
 
@@ -131,12 +112,11 @@ def generate_sample_data():
 
 # Run the data generation and export
 try:
+    transactions = generate_sample_data()
+    
     if export_as_json:
-        transactions = generate_sample_data()
         export_transactions_as_json(transactions)
-        #save as excel
         export_transactions_as_excel(transactions)
-
     else:
         cnx = mysql.connector.connect(**config)
         cursor = cnx.cursor()
@@ -155,8 +135,15 @@ try:
         );
         """)
 
-        transactions = generate_sample_data()
-        execute_transactions(transactions, cursor)
+        # Clear the transactions table
+        cursor.execute("DELETE FROM transactions")
+
+        # Bulk insert all transactions at once
+        insert_query = """
+        INSERT INTO transactions (TxId, StoreId, Item, Amount, Type, `To`, Date)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.executemany(insert_query, transactions)
 
         cnx.commit()
         print("Sample data inserted into SQL database successfully!")
@@ -169,6 +156,7 @@ except mysql.connector.Error as err:
     else:
         print(err)
 finally:
-    if not export_as_json:
+    if not export_as_json and 'cursor' in locals():
         cursor.close()
+    if not export_as_json and 'cnx' in locals():
         cnx.close()
