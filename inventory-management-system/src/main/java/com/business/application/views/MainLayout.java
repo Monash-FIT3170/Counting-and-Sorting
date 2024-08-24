@@ -27,6 +27,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -34,6 +35,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
@@ -42,6 +45,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,7 +59,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
  */
 public class MainLayout extends AppLayout {
 
-    private H2 viewTitle;
+    private H1 viewTitle;
     private Image logoImage;
 
     private AuthenticatedUser authenticatedUser;
@@ -82,7 +86,7 @@ public class MainLayout extends AppLayout {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
     
-        viewTitle = new H2();  // Set a title or leave it dynamic as needed
+        viewTitle = new H1();  // Set a title or leave it dynamic as needed
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         leftLayout.add(toggle, viewTitle);
         leftLayout.setAlignItems(Alignment.CENTER);
@@ -90,14 +94,14 @@ public class MainLayout extends AppLayout {
         // Right-aligned components
         HorizontalLayout rightLayout = new HorizontalLayout();
         rightLayout.add(createThemeToggleButton(), createUserMenu());
-        rightLayout.setSpacing(true);
-        rightLayout.getStyle().set("padding-right", "40px"); 
+        // rightLayout.setSpacing(true);
+        // rightLayout.getStyle().set("padding-right", "40px"); 
 
     
         mainLayout.add(leftLayout, rightLayout);
         mainLayout.expand(leftLayout);  
 
-        addToNavbar(mainLayout);
+        addToNavbar(true, mainLayout);
     }
 
     private Component createUserMenu() {
@@ -146,10 +150,42 @@ public class MainLayout extends AppLayout {
 
 
     private void addDrawerContent() {
-        updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
+        // updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
+        
+        Image logoImage = new Image("VAADIN/themes/liquor-store/img/logo-full.svg", "logo");
+        logoImage.addClassName("logo");
+
+        Header header = new Header(logoImage);
 
         Scroller scroller = new Scroller(createNavigation());
-        addToDrawer(logoImage, scroller);
+        
+        addToDrawer(header, scroller);
+
+        // Set Drawer content to dark mode
+        header.getElement().setAttribute("theme", Lumo.DARK);
+
+        if (this.hasClassName("overlay")) {
+            scroller.getElement().setAttribute("theme", Lumo.DARK);
+        }
+
+        Page page = UI.getCurrent().getPage();
+
+        page.retrieveExtendedClientDetails(details -> {
+            if (details.getWindowInnerWidth() < 800) {
+                scroller.getElement().setAttribute("theme", Lumo.LIGHT);
+            } else {
+                scroller.getElement().setAttribute("theme", Lumo.DARK); 
+            }
+        });
+
+        page.addBrowserWindowResizeListener(
+        event -> {
+            if (event.getWidth() < 800) {
+                scroller.getElement().setAttribute("theme", Lumo.LIGHT);
+            } else {
+                scroller.getElement().setAttribute("theme", Lumo.DARK); 
+            }          
+        });
     }
 
     private void updateLogo(boolean darkTheme) {
@@ -172,60 +208,77 @@ public class MainLayout extends AppLayout {
         }
     }
 
-    private SideNav createNavigation() {
+    private Component createNavigation() {
         SideNav nav = new SideNav();
-        // User
+        
+        // Manager - Menu
         if (accessChecker.hasAccess(DashboardView.class)) {
-            nav.addItem(new SideNavItem("Dashboard", DashboardView.class, LineAwesomeIcon.HOME_SOLID.create()));
+            nav.addItem(new SideNavItem("Dashboard", DashboardView.class, VaadinIcon.GRID_SMALL.create()));
 
         }
 
         if (accessChecker.hasAccess(InventoryView.class)) {
-            nav.addItem(new SideNavItem("Inventory", InventoryView.class, LineAwesomeIcon.BOXES_SOLID.create()));
-
-        }
-        if (accessChecker.hasAccess(ForecastView.class)) {
-            nav.addItem(
-                    new SideNavItem("Forecast", ForecastView.class, LineAwesomeIcon.CHART_LINE_SOLID.create()));
+            nav.addItem(new SideNavItem("Inventory", InventoryView.class, VaadinIcon.LIST_UL.create()));
 
         }
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
             nav.addItem(
-                    new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.LIST_SOLID.create()));
+                    new SideNavItem("Shopping Lists", ShoppingListsView.class, VaadinIcon.CART.create()));
+
+        }
+        if (accessChecker.hasAccess(ForecastView.class)) {
+            nav.addItem(
+                    new SideNavItem("Forecasts", ForecastView.class, VaadinIcon.BAR_CHART_H.create()));
 
         }
 
 
-        // Admin Dashboard
+        // Admin - Menu
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
-            nav.addItem(new SideNavItem("Admin Dashboard", AdminDashboardView.class,
-                    LineAwesomeIcon.CHART_PIE_SOLID.create()));
+            nav.addItem(new SideNavItem("Dashboard", AdminDashboardView.class,
+            VaadinIcon.GRID_SMALL.create()));
         }
-
-        // Admin Forecast
-
-        if (accessChecker.hasAccess(AdminForecastView.class)) {
-            nav.addItem(new SideNavItem("Admin Forecast", AdminForecastView.class,
-                    LineAwesomeIcon.CHART_AREA_SOLID.create()));
-        }
-
-        if (accessChecker.hasAccess(RequestsView.class)) {
-            nav.addItem(new SideNavItem("Requests", RequestsView.class, LineAwesomeIcon.BELL_SOLID.create()));
-
-        }
-
         if (accessChecker.hasAccess(SuppliersView.class)) {
-            nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, LineAwesomeIcon.TRUCK_SOLID.create()));
+            nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, VaadinIcon.CLIPBOARD_USER.create()));
 
         }
+        if (accessChecker.hasAccess(RequestsView.class)) {
+            SideNavItem notificationNavItem = new SideNavItem("Requests", RequestsView.class, LumoIcon.BELL.create());
 
+            // ADD A SUFFIX TO NOTIFICATION NAV ITEM
+            int numRequests = 6;
+            Span notificationCounter = new Span(String.valueOf(numRequests));
+            notificationCounter.getElement().getThemeList().add("badge contrast pill");
+            notificationCounter.getElement().setAttribute("aria-label", numRequests + " unread messages");
+
+            notificationNavItem.setSuffixComponent(notificationCounter);
+            
+            nav.addItem(notificationNavItem);
+
+        }
+        if (accessChecker.hasAccess(AdminForecastView.class)) {
+            nav.addItem(new SideNavItem("Forecasts", AdminForecastView.class,
+            VaadinIcon.BAR_CHART_H.create()));
+        }
         if (accessChecker.hasAccess(UserManagementView.class)) {
             nav.addItem(new SideNavItem("Team", UserManagementView.class,
-                    LineAwesomeIcon.USERS_SOLID.create()));
+                    VaadinIcon.USERS.create()));
         }
+        // ADD LOGOUT SECTION
+        SideNav logoutNav = new SideNav();
         
+        logoutNav.addItem(new SideNavItem("Logout", "example", VaadinIcon.SIGN_OUT_ALT.create()));
+        
+        // WRAP NAV SECTIONS IN VERTICAL LAYOUT
+        VerticalLayout navWrapper = new VerticalLayout(nav, logoutNav);
+        navWrapper.setSpacing(true);
+        navWrapper.setSizeUndefined();
+        nav.setWidthFull();
+        logoutNav.setWidthFull();
 
-        return nav;
+        navWrapper.addClassName("nav-wrapper");
+
+        return navWrapper;
     }
     private void toggleTheme(Icon icon) {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
@@ -238,9 +291,9 @@ public class MainLayout extends AppLayout {
         }
         // Immediately reflect the new theme state on the UI without full page refresh
 
-        UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
-                                            themeList.contains(Lumo.DARK) ? "dark" : "light");
-                                            updateLogo(themeList.contains(Lumo.DARK));
+        // UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
+        //                                     themeList.contains(Lumo.DARK) ? "dark" : "light");
+        //                                     updateLogo(themeList.contains(Lumo.DARK));
     }
 
 
