@@ -9,9 +9,11 @@ import com.business.application.views.adminteam.UserManagementView;
 import com.business.application.views.dashboard.DashboardView;
 import com.business.application.views.forecast.ForecastView;
 import com.business.application.views.inventory.InventoryView;
+import com.business.application.views.login.LoginView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -143,29 +145,6 @@ public class MainLayout extends AppLayout {
 
             outerLayout.add(avatar, innerLayout);
         }
-
-
-
-        // TODO: reimplement log in and log out
-
-        // if (maybeUser.isPresent()) {
-        //     User user = maybeUser.get();
-        //     Avatar avatar = new Avatar(user.getName());
-        //     avatar.setThemeName("medium");
-
-        //     MenuBar userMenu = new MenuBar();
-        //     // userMenu.setThemeName("tertiary-inline");
-
-        //     MenuItem userDetails = userMenu.addItem(user.getName(), e -> {});
-        //     userDetails.getSubMenu().addItem("Sign out", e -> authenticatedUser.logout());
-
-        //     layout.add(avatar, userMenu);
-        // } else {
-        //     Button loginButton = new Button("Sign in", VaadinIcon.SIGN_IN.create());
-        //     loginButton.addClickListener(e -> UI.getCurrent().navigate("login"));
-        //     loginButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        //     layout.add(loginButton);
-        // }
 
         return outerLayout;
 }
@@ -301,13 +280,31 @@ public class MainLayout extends AppLayout {
             VaadinIcon.BAR_CHART_H.create()));
         }
         if (accessChecker.hasAccess(UserManagementView.class)) {
-            nav.addItem(new SideNavItem("Team", UserManagementView.class,
-                    VaadinIcon.USERS.create()));
+            nav.addItem(new SideNavItem("Team", UserManagementView.class, VaadinIcon.USERS.create()));
         }
         // ADD LOGOUT SECTION
         SideNav logoutNav = new SideNav();
+        SideNavItem signInOut;
         
-        logoutNav.addItem(new SideNavItem("Logout", "example", VaadinIcon.SIGN_OUT_ALT.create()));
+        Optional<User> maybeUser = authenticatedUser.get();
+
+        if (maybeUser.isPresent()) {
+            signInOut = new SideNavItem("Log Out");
+            signInOut.setPrefixComponent(VaadinIcon.SIGN_OUT.create());
+            
+            signInOut.getElement().addEventListener(
+                "click", e -> authenticatedUser.logout()
+                );
+        } else {
+            signInOut = new SideNavItem("Log In");
+            signInOut.setPrefixComponent(VaadinIcon.SIGN_IN.create());
+            
+            signInOut.getElement().addEventListener(
+                "click", e -> UI.getCurrent().navigate("login")
+                );
+        }
+
+        logoutNav.addItem(signInOut);
         
         // WRAP NAV SECTIONS IN VERTICAL LAYOUT
         VerticalLayout navWrapper = new VerticalLayout(nav, logoutNav);
