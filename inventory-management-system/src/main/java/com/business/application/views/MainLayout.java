@@ -14,6 +14,7 @@ import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
 import com.business.application.views.finance.UserFinanceView;
+import com.business.application.views.finance.AdminFinanceView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -197,22 +198,18 @@ public class MainLayout extends AppLayout {
                     new SideNavItem("Shopping Lists", ShoppingListsView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
-        /* Not working cant connect to new view */
-        // if (accessChecker.hasAccess(UserFinanceView.class)) {
-        //     nav.addItem(
-        //             new SideNavItem("User Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
-
-        // }
-        if (accessChecker.hasAccess(StoreView.class)) {
-                 nav.addItem(
-                         new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
-        }
-
-        if (accessChecker.hasAccess(ShoppingListsView.class)) {
+        /* working to connect to new view */
+        if (accessChecker.hasAccess(UserFinanceView.class)) {
             nav.addItem(
-                    new SideNavItem("Finance", ShoppingListsView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+                    new SideNavItem("Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
 
         }
+
+        if (accessChecker.hasAccess(StoreView.class)) {
+            nav.addItem(
+                    new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+   }
+
 
         // Admin Dashboard
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
@@ -240,6 +237,11 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(UserManagementView.class)) {
             nav.addItem(new SideNavItem("Team", UserManagementView.class,
                     LineAwesomeIcon.USERS_SOLID.create()));
+        }
+
+        if (accessChecker.hasAccess(AdminFinanceView.class)) {
+            nav.addItem(
+            new SideNavItem("Store Finances", AdminFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
         }
         
 
