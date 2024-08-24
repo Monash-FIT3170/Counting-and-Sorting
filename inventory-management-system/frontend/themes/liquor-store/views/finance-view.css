@@ -1,0 +1,4 @@
+.user-finance-view vaadin-board-row > * {
+    border-bottom: 1px solid var(--lumo-contrast-10pct);
+    border-right: 1px solid var(--lumo-contrast-10pct);
+  }
