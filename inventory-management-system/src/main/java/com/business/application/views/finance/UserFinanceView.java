@@ -31,8 +31,8 @@ public class UserFinanceView extends Div{
     public UserFinanceView() {
         addClassName("user-finance-view");
 
-        HorizontalLayout mainLayout = new HorizontalLayout();
-        mainLayout.setWidthFull();
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setPadding(true);
         
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
