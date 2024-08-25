@@ -115,6 +115,7 @@ public class AdminFinanceView extends Div {
         selectionComboBox.addValueChangeListener(event -> {
             contentContainer.removeAll();
             if ("Graph".equals(event.getValue())) {
+                contentContainer.add(createCumulativeSumChart(storeSelect.getValue()));
                 contentContainer.add(createFinancialGraph(storeSelect.getValue()));
             } else if ("Table".equals(event.getValue())) {
                 contentContainer.add(createTransactionsTable(storeSelect.getValue()));
