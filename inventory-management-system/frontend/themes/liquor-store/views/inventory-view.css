@@ -1,6 +1,8 @@
 .inventory-view {
   display: block;
   height: 100%;
+  background-color: var(--lumo-base-color);
+  padding-top: var(--lumo-space-xl);
 }
 .inventory-view vaadin-grid-pro {
   height: 100%;

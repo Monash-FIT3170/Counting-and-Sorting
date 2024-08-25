@@ -9,8 +9,10 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,6 +22,10 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 import jakarta.annotation.security.RolesAllowed;
 
@@ -47,9 +53,21 @@ public class InventoryView extends Div {
 
     public InventoryView() {
         addClassName("inventory-view");
-        setSizeFull();
+        // Create the toolbar
+        HorizontalLayout toolbar = createToolbar();
+
+        // Create the grid
         createGrid();
-        add(grid);
+
+        // Layout
+        VerticalLayout mainLayout = new VerticalLayout(toolbar, grid);
+        mainLayout.setSizeFull();
+        mainLayout.setPadding(false);
+        mainLayout.setSpacing(false);
+        grid.getElement().getStyle().set("margin-top", "16px");
+
+        // Add to the view
+        add(mainLayout);
     }
 
     private void createGrid() {
@@ -138,6 +156,65 @@ public class InventoryView extends Div {
                 .setHeader("Stock Level");
     }
 
+    private HorizontalLayout createToolbar() {
+        // Create the search bar
+        TextField searchBar = new TextField();
+        searchBar.addClassName("toolbar-search-bar");
+        searchBar.setPlaceholder("Search Items");
+        searchBar.setSuffixComponent(VaadinIcon.SEARCH.create());
+        searchBar.setWidth("300px");
+
+        // Add filters to search bar
+        searchBar.setValueChangeMode(ValueChangeMode.EAGER);
+        searchBar.addValueChangeListener(event -> {
+            String filterText = event.getValue().trim();
+            if (filterText.isEmpty()) {
+                // Clear all filters if the search field is empty
+                gridListDataView.removeFilters();
+            } else {
+                gridListDataView.removeFilters();
+                gridListDataView.addFilter(product -> {
+                    // Filter by name, category, quantity, and stock status
+                    boolean matchesName = StringUtils.containsIgnoreCase(product.getName(), filterText);
+                    boolean matchesCategory = StringUtils.containsIgnoreCase(product.getCategory(), filterText);
+                    boolean matchesQuantity = StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), filterText);
+                    boolean matchesStockStatus = StringUtils.containsIgnoreCase(product.getStockStatus(), filterText);
+                    return matchesName || matchesCategory || matchesQuantity || matchesStockStatus;
+                });
+            }
+        });
+
+        // Create the layout for the label and search field
+        HorizontalLayout toolbar = createHeader("INVENTORY ITEMS", "");
+        toolbar.add(searchBar);
+        toolbar.setWidthFull();
+        toolbar.setHeight("50px");
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        toolbar.addClassName(Padding.LARGE);
+        toolbar.addClassName("search-top-section");
+        return toolbar;
+    }
+
+    private HorizontalLayout createHeader(String title, String subtitle) {
+        H2 h2 = new H2(title);
+        h2.addClassName("admin-dashboard-view-h2-1");
+        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
+
+        Span span = new Span(subtitle);
+        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
+
+        VerticalLayout column = new VerticalLayout(h2, span);
+        column.setPadding(false);
+        column.setSpacing(false);
+
+        HorizontalLayout header = new HorizontalLayout(column);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.setSpacing(false);
+        header.setWidthFull();
+        return header;
+    }
+
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
@@ -146,7 +223,11 @@ public class InventoryView extends Div {
         itemIDFilter.setClearButtonVisible(true);
         itemIDFilter.setWidth("100%");
         itemIDFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getItemID()), itemIDFilter.getValue())));
+        itemIDFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getItemID()), itemIDFilter.getValue()));
+        });
         filterRow.getCell(itemIDColumn).setComponent(itemIDFilter);
 
         TextField nameFilter = new TextField();
@@ -154,21 +235,29 @@ public class InventoryView extends Div {
         nameFilter.setClearButtonVisible(true);
         nameFilter.setWidth("100%");
         nameFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        nameFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue())));
+        nameFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue()));
+        });
         filterRow.getCell(nameColumn).setComponent(nameFilter);
 
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
         categoryFilter.setPlaceholder("Filter");
-        categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        categoryFilter.setClearButtonVisible(true);
         categoryFilter.setWidth("100%");
-        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
-            String filterValue = categoryFilter.getValue();
-            if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(product.getCategory());
-            }
-            return true;
-        }));
+        categoryFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> {
+                String filterValue = categoryFilter.getValue();
+                if (filterValue != null) {
+                    return filterValue.equalsIgnoreCase(product.getCategory());
+                }
+                return true;
+            });
+        });
         filterRow.getCell(categoryColumn).setComponent(categoryFilter);
 
         TextField quantityFilter = new TextField();
@@ -176,21 +265,29 @@ public class InventoryView extends Div {
         quantityFilter.setClearButtonVisible(true);
         quantityFilter.setWidth("100%");
         quantityFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        quantityFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue())));
+        quantityFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue()));
+        });
         filterRow.getCell(quantityColumn).setComponent(quantityFilter);
 
         ComboBox<String> stockLevelFilter = new ComboBox<>();
         stockLevelFilter.setItems("Low", "Medium", "High");
         stockLevelFilter.setPlaceholder("Filter");
-        stockLevelFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        stockLevelFilter.setClearButtonVisible(true);
         stockLevelFilter.setWidth("100%");
-        stockLevelFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
-            String filterValue = stockLevelFilter.getValue();
-            if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(product.getStockStatus());
-            }
-            return true;
-        }));
+        stockLevelFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> {
+                String filterValue = stockLevelFilter.getValue();
+                if (filterValue != null) {
+                    return filterValue.equalsIgnoreCase(product.getStockStatus());
+                }
+                return true;
+            });
+        });
         filterRow.getCell(stockLevelColumn).setComponent(stockLevelFilter);
     }
 

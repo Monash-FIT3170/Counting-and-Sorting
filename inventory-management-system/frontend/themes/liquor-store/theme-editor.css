@@ -28,19 +28,12 @@
  
  vaadin-grid.admin-dashboard-view-grid-1 { border-width:0px; }
  
- vaadin-text-field.admin-dashboard-view-store-search::part(input-field) {
+ vaadin-text-field.toolbar-search-bar::part(input-field) {
    background-color:rgba(26,57,96,0.1);
    border-width:0px;
    border:none;
    box-shadow:none;
  }
-
- vaadin-text-field.supplier-view-item-search::part(input-field) {
-  background-color:rgba(26,57,96,0.1);
-  border-width:0px;
-  border:none;
-  box-shadow:none;
-}
  
  .notification-item {
      background-color: #FFFFFF;
