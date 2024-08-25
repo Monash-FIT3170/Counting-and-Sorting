@@ -14,6 +14,8 @@
 @import url('./views/admin-user-view.css');
 @import url('./views/admin-api-view.css');
 @import url('./views/manager-finance-view.css');
+@import url('./views/forecast-view.css');
+
 
 vaadin-dev-tools {
     visibility: hidden;

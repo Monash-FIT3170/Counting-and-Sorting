@@ -46,10 +46,14 @@ public class ForecastView extends Main {
 
     public ForecastView() {
         addClassName("forecast-view");
-        setSizeFull(); // Make the ForecastView take up the full size
+        HorizontalLayout mainLayout = new HorizontalLayout();
+        mainLayout.addClassName("forecast-view-layout");
+        mainLayout.setSizeFull();
+        mainLayout.setHeight("100%");
         Board board = new Board();
         board.addRow(createViewStockForecast());
-        add(board);
+        mainLayout.add(board);
+        add(mainLayout);
     }
 
     private Component createViewStockForecast() {
