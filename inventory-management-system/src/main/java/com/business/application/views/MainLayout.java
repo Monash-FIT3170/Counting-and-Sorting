@@ -35,6 +35,7 @@ import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
@@ -78,7 +79,7 @@ public class MainLayout extends AppLayout {
     public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker) {
         this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
-
+        
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
@@ -174,7 +175,7 @@ public class MainLayout extends AppLayout {
     private void addDrawerContent() {
         // updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
         
-        Image logoImage = new Image("VAADIN/themes/liquor-store/img/logo-full.svg", "logo");
+        SvgIcon logoImage = new SvgIcon("VAADIN/themes/liquor-store/img/logo-full.svg");
         logoImage.addClassName("logo");
 
         Header header = new Header(logoImage);
@@ -184,19 +185,15 @@ public class MainLayout extends AppLayout {
         addToDrawer(header, scroller);
 
         // Set Drawer content to dark mode
-        header.getElement().setAttribute("theme", Lumo.DARK);
-
-        if (this.hasClassName("overlay")) {
-            scroller.getElement().setAttribute("theme", Lumo.DARK);
-        }
-
         Page page = UI.getCurrent().getPage();
-
+        
         page.retrieveExtendedClientDetails(details -> {
             if (details.getWindowInnerWidth() < 800) {
                 scroller.getElement().setAttribute("theme", Lumo.LIGHT);
+                header.getElement().setAttribute("theme", Lumo.LIGHT);
             } else {
                 scroller.getElement().setAttribute("theme", Lumo.DARK); 
+                header.getElement().setAttribute("theme", Lumo.DARK);
             }
         });
 
@@ -204,8 +201,10 @@ public class MainLayout extends AppLayout {
         event -> {
             if (event.getWidth() < 800) {
                 scroller.getElement().setAttribute("theme", Lumo.LIGHT);
+                header.getElement().setAttribute("theme", Lumo.LIGHT);
             } else {
                 scroller.getElement().setAttribute("theme", Lumo.DARK); 
+                header.getElement().setAttribute("theme", Lumo.DARK);
             }          
         });
     }
