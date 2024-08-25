@@ -55,7 +55,7 @@ public class SuppliersView extends Div {
     private Grid.Column<WebScrapedProduct> QtyColumn;
     private Grid.Column<WebScrapedProduct> SalePriceColumn;
     private Grid.Column<WebScrapedProduct> SupplierColumn;
-    
+
     private WebScrapedProductService webscrapedProductService;
 
     @Autowired
@@ -69,11 +69,8 @@ public class SuppliersView extends Div {
     }
 
     private void createSuppliers() {
-        // TODO Auto-generated method stub
         suppliers = webscrapedProductService.getAllWebscrapedProducts();
         gridListDataView = grid.setItems(suppliers);
-
-        
     }
 
     private void createGrid() {
@@ -126,13 +123,11 @@ public class SuppliersView extends Div {
                 .setHeader("Category");
     }
 
-
     private void createSalePriceColumn() {
         SalePriceColumn = grid
                 .addColumn(WebScrapedProduct::getPrice)
                 .setHeader("Sale Price")
                 .setSortable(true);
-            
     }
 
     private void createSupplierColumn() {
@@ -142,21 +137,37 @@ public class SuppliersView extends Div {
                 .setSortable(true);
     }
 
-    
     private HorizontalLayout createToolbar() {
         TextField searchField = new TextField();
         searchField.setPlaceholder("Search Items");
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.setWidth("300px");
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField);
+        Button refreshButton = new Button("Refresh", VaadinIcon.REFRESH.create());
+        refreshButton.addClickListener(click -> refreshGridData());
+
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, refreshButton);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
 
+    private void refreshGridData() {
+        // replace this line with a service call the webscraper endpoint 
+        suppliers = webscrapedProductService.getAllWebscrapedProducts();
+        gridListDataView = grid.setItems(suppliers);
+        grid.getDataProvider().refreshAll();
+        grid.deselectAll();
+        // Wait 5 seconds
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Notification.show("Data refreshed");
+    }
+
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
-
 
         TextField nameFilter = new TextField();
         nameFilter.setPlaceholder("Filter");
@@ -169,7 +180,7 @@ public class SuppliersView extends Div {
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.setItems("Beer", "Wine", "Spirits", "Cider", "Misc");
         categoryFilter.setPlaceholder("Filter");
-        categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        categoryFilter.setClearButtonVisible(true);
         categoryFilter.setWidth("100%");
         categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> {
             String filterValue = categoryFilter.getValue();
@@ -190,14 +201,10 @@ public class SuppliersView extends Div {
 
         TextField supplierFilter = new TextField();
         supplierFilter.setPlaceholder("Filter");
-        supplierFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        supplierFilter.setClearButtonVisible(true);
         supplierFilter.setWidth("100%");
         supplierFilter.setValueChangeMode(ValueChangeMode.EAGER);
         supplierFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(supplier.getSupplier(), supplierFilter.getValue())));
         filterRow.getCell(SupplierColumn).setComponent(supplierFilter);
     }
-
-    
-
-    
-};
+}
