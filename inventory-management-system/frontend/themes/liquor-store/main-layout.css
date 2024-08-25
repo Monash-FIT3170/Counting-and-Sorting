@@ -22,16 +22,6 @@ vaadin-horizontal-layout[slot="navbar"] .left-layout {
   gap: 0;
 }
 
-vaadin-horizontal-layout[slot="navbar"] h1 {
-  font-size: var(--lumo-font-size-xs);
-  font-weight: 600;
-  
-  line-height: var(--lumo-line-height-xs);
-  letter-spacing: var(--lumo-letter-spacing);
-  
-  text-transform: uppercase;
-}
-
 .right-layout,
 .right-layout vaadin-horizontal-layout  {
   gap: var(--lumo-space-m)

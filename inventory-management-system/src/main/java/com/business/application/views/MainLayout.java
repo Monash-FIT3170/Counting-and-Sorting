@@ -27,6 +27,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -64,7 +65,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
  */
 public class MainLayout extends AppLayout {
 
-    private H1 viewTitle;
+    private H6 viewTitle;
     private Image logoImage;
 
     private AuthenticatedUser authenticatedUser;
@@ -93,8 +94,7 @@ public class MainLayout extends AppLayout {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
     
-        viewTitle = new H1();  // Set a title or leave it dynamic as needed
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+        viewTitle = new H6();  // Set a title or leave it dynamic as needed
         leftLayout.add(toggle, viewTitle);
         leftLayout.setAlignItems(Alignment.CENTER);
     
