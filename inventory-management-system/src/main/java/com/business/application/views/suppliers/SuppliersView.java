@@ -114,10 +114,10 @@ public class SuppliersView extends Div {
                         categorySpan.getElement().setAttribute("class", "badge-wine");
                     } else if ("Beer".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-beer");
-                    } else if ("Spirit".equals(category)) {
+                    } else if ("Spirits".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-spirit");
-                    } else if ("Premix".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-premix");
+                    } else if ("Cider".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-cider");
                     } else {
                         categorySpan.getElement().setAttribute("class", "badge-misc");
                     }
@@ -167,7 +167,7 @@ public class SuppliersView extends Div {
         filterRow.getCell(ItemNameColumn).setComponent(nameFilter);
 
         ComboBox<String> categoryFilter = new ComboBox<>();
-        categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
+        categoryFilter.setItems("Beer", "Wine", "Spirits", "Cider", "Misc");
         categoryFilter.setPlaceholder("Filter");
         categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
         categoryFilter.setWidth("100%");
