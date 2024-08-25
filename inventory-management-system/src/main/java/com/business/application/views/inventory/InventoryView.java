@@ -1,5 +1,7 @@
 package com.business.application.views.inventory;
 
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -8,6 +10,7 @@ import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -24,32 +27,47 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
 
 import com.business.application.views.inventory.ProductFrontend;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Inventory")
 @Route(value = "inventory", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class InventoryView extends Div {
+    private List<WebScrapedProduct> suppliers = new ArrayList<>();
 
-    private Grid<ProductFrontend> grid;
-    private GridListDataView<ProductFrontend> gridListDataView;
+    private Grid<WebScrapedProduct> grid;
+    private GridListDataView<WebScrapedProduct> gridListDataView;
 
-    private Grid.Column<ProductFrontend> itemIDColumn;
-    private Grid.Column<ProductFrontend> nameColumn;
-    private Grid.Column<ProductFrontend> categoryColumn;
-    private Grid.Column<ProductFrontend> quantityColumn;
-    private Grid.Column<ProductFrontend> stockLevelColumn;
+    private Grid.Column<WebScrapedProduct> itemIDColumn;
+    private Grid.Column<WebScrapedProduct> nameColumn;
+    private Grid.Column<WebScrapedProduct> categoryColumn;
+    private Grid.Column<WebScrapedProduct> quantityColumn;
+    private Grid.Column<WebScrapedProduct> stockLevelColumn;
 
-    public InventoryView() {
+    private WebScrapedProductService webScrapedProductService;
+
+    @Autowired
+    public InventoryView(WebScrapedProductService webScrapedProductService) {
+        this.webScrapedProductService = webScrapedProductService;
         addClassName("inventory-view");
         setSizeFull();
         createGrid();
+        createInventory();
         add(grid);
+
+        
+    }
+
+    private void createInventory() {
+        suppliers = webScrapedProductService.getAllWebscrapedProducts();
+        gridListDataView = grid.setItems(suppliers);
     }
 
     private void createGrid() {
@@ -59,13 +77,11 @@ public class InventoryView extends Div {
     }
 
     private void createGridComponent() {
-        grid = new Grid<>();
-        grid.setSelectionMode(SelectionMode.NONE);
+        grid = new GridPro<>();
+        grid.setSelectionMode(SelectionMode.SINGLE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
-
-        List<ProductFrontend> products = getProducts();
-        gridListDataView = grid.setItems(products);
+        gridListDataView = grid.setItems(suppliers);
     }
 
     private void addColumnsToGrid() {
@@ -78,14 +94,14 @@ public class InventoryView extends Div {
 
     private void createItemIDColumn() {
         itemIDColumn = grid
-                .addColumn(ProductFrontend::getItemID)
+                .addColumn(WebScrapedProduct::getId)
                 .setHeader("Item ID")
                 .setSortable(true);
     }
 
     private void createNameColumn() {
         nameColumn = grid
-                .addColumn(ProductFrontend::getName)
+                .addColumn(WebScrapedProduct::getName)
                 .setAutoWidth(true)
                 .setHeader("Item Name")
                 .setSortable(true);
@@ -93,18 +109,18 @@ public class InventoryView extends Div {
 
     private void createCategoryColumn() {
         categoryColumn = grid
-                .addColumn(new ComponentRenderer<>(product -> {
+                .addColumn(new ComponentRenderer<>(supplier -> {
                     Span categorySpan = new Span();
-                    String category = product.getCategory();
+                    String category = supplier.getCategory();
                     categorySpan.setText(category);
                     if ("Wine".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-wine");
                     } else if ("Beer".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-beer");
-                    } else if ("Spirit".equals(category)) {
+                    } else if ("Spirits".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-spirit");
-                    } else if ("Premix".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-premix");
+                    } else if ("Cider".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-cider");
                     } else {
                         categorySpan.getElement().setAttribute("class", "badge-misc");
                     }
@@ -115,7 +131,7 @@ public class InventoryView extends Div {
 
     private void createQuantityColumn() {
         quantityColumn = grid
-                .addColumn(ProductFrontend::getQuantity)
+                .addColumn(WebScrapedProduct::getQuantity)
                 .setHeader("Current Quantity")
                 .setSortable(true);
     }
@@ -124,13 +140,17 @@ public class InventoryView extends Div {
         stockLevelColumn = grid
                 .addColumn(new ComponentRenderer<>(product -> {
                     Span stockLevel = new Span();
-                    String stockStatus = product.getStockStatus();
+                    int stockQuantity = product.getQuantity();
+                    String stockStatus = "High";
                     stockLevel.setText(stockStatus);
-                    if ("High".equals(stockStatus)) {
+                    if (stockQuantity >= 500) {
+                        stockLevel.setText("High");
                         stockLevel.getElement().setAttribute("theme", "badge success");
-                    } else if ("Medium".equals(stockStatus)) {
+                    } else if (stockQuantity >= 100) {
+                        stockLevel.setText("Medium");
                         stockLevel.getElement().setAttribute("theme", "badge warning");
-                    } else if ("Low".equals(stockStatus)) {
+                    } else {
+                        stockLevel.setText("Low");
                         stockLevel.getElement().setAttribute("theme", "badge error");
                     }
                     return stockLevel;
@@ -146,7 +166,7 @@ public class InventoryView extends Div {
         itemIDFilter.setClearButtonVisible(true);
         itemIDFilter.setWidth("100%");
         itemIDFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getItemID()), itemIDFilter.getValue())));
+        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getId().intValue()), itemIDFilter.getValue())));
         filterRow.getCell(itemIDColumn).setComponent(itemIDFilter);
 
         TextField nameFilter = new TextField();
@@ -187,36 +207,23 @@ public class InventoryView extends Div {
         stockLevelFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
             String filterValue = stockLevelFilter.getValue();
             if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(product.getStockStatus());
+                return filterValue.equalsIgnoreCase(getStockLevel(product.getQuantity()));
             }
             return true;
         }));
         filterRow.getCell(stockLevelColumn).setComponent(stockLevelFilter);
     }
 
-    private List<ProductFrontend> getProducts() {
-        return Arrays.asList(
-                new ProductFrontend(174926328, "Vodka Cruiser: Wild Raspberry 275mL", "Premix", 375, 600),
-                new ProductFrontend(174036988, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 802, 1000),
-                new ProductFrontend(846302592, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 3079296, 5000000),
-                new ProductFrontend(769035037, "Good Day: Watermelon Soju", "Misc", 3514346, 5000000),
-                new ProductFrontend(185035836, "Absolut: Vodka 1L", "Beer", 542669, 1000000),
-                new ProductFrontend(562784657, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 458, 2000),
-                new ProductFrontend(186538594, "Brookvale Union: Vodka Lemon Squash Cans 330mL", "Premix", 997, 1000),
-                new ProductFrontend(879467856, "Moët & Chandon: Impérial Brut", "Wine", 1700250, 2000000),
-                new ProductFrontend(108767894, "Moët & Chandon: Rosé Impérial", "Wine", 1429048, 2000000),
-                new ProductFrontend(265743940, "Vodka Cruiser: Lush Guava 275mL", "Premix", 472648, 5000000),
-                new ProductFrontend(123454352, "Vodka Cruiser: Juicy Watermelon 275mL", "Misc", 833, 1500),
-                new ProductFrontend(456374567, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 222, 1000),
-                new ProductFrontend(867584756, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 438, 1000),
-                new ProductFrontend(347453482, "Absolut: Vodka 1L", "Beer", 1913750, 2000000),
-                new ProductFrontend(956836417, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 528950, 600000),
-                new ProductFrontend(958403584, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 3750, 8000),
-                new ProductFrontend(239563895, "Good Day: Watermelon Soju", "Spirit", 290600, 500000),
-                new ProductFrontend(375845219, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Misc", 4933400, 5000000),
-                new ProductFrontend(384926414, "Vodka Cruiser: Lush Guava 275mL", "Premix", 2266200, 3000000),
-                new ProductFrontend(194637894, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Beer", 1563450, 2000000)
-        );
+    private String getStockLevel(int quantity) {
+        if (quantity >= 500) {
+            return "High";
+        } else if (quantity >= 100) {
+            return "Medium";
+        } else {
+            return "Low";
+        }
     }
+
+    
 
 }

@@ -88,10 +88,18 @@ public class SuppliersView extends Div {
     }
 
     private void addColumnsToGrid() {
+        createIdColumn();
         createItemNameColumn();
         createCategoryColumn();
         createSalePriceColumn();
         createSupplierColumn();
+    }
+
+    private void createIdColumn() {
+        IdColumn = grid
+                .addColumn(WebScrapedProduct::getId)
+                .setHeader("ID")
+                .setSortable(true);
     }
 
     private void createItemNameColumn() {
@@ -168,6 +176,15 @@ public class SuppliersView extends Div {
 
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
+
+        //Id filter
+        TextField idFilter = new TextField();
+        idFilter.setPlaceholder("Filter");
+        idFilter.setClearButtonVisible(true);
+        idFilter.setWidth("100%");
+        idFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        idFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(Long.toString(supplier.getId()), idFilter.getValue())));
+        filterRow.getCell(IdColumn).setComponent(idFilter);
 
         TextField nameFilter = new TextField();
         nameFilter.setPlaceholder("Filter");
