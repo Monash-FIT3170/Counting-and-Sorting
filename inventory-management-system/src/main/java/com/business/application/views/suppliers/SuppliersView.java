@@ -164,6 +164,27 @@ public class SuppliersView extends Div {
         searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
         searchBar.setWidth("300px");
 
+        // Add filters to search bar
+        searchBar.setValueChangeMode(ValueChangeMode.EAGER);
+        searchBar.addValueChangeListener(event -> {
+            String filterText = event.getValue().trim();
+            if (filterText.isEmpty()) {
+                // Clear all fsilters if the search field is empty
+                gridListDataView.removeFilters();
+            } else {
+                gridListDataView.removeFilters();
+                gridListDataView.addFilter(supplier -> {
+                    // Filter by name, caetegory, sale price,m and supplier
+                    boolean matchesName = StringUtils.containsIgnoreCase(supplier.getName(), filterText);
+                    boolean matchesCategory = StringUtils.containsIgnoreCase(supplier.getCategory(), filterText);
+                    boolean matchesPrice = StringUtils.containsIgnoreCase(Double.toString(supplier.getPrice()),
+                            filterText);
+                    boolean matchesSupplier = StringUtils.containsIgnoreCase(supplier.getSupplier(), filterText);
+                    return matchesName || matchesCategory || matchesPrice || matchesSupplier;
+                });
+            }
+        });
+
         // Create the layout for the label and search field
         HorizontalLayout toolbar = createHeader("SUPPLIERS", "");
         toolbar.add(searchBar);
