@@ -18,8 +18,8 @@ config = {
 
 # Sample data settings
 number_of_stores = 4
-number_of_sales_per_month = 300
-number_of_inventory_purchases_per_month = 8
+number_of_sales_per_month = 200
+number_of_inventory_purchases_per_month = 6
 initial_funds = 100000
 export_as_json = False  # Toggle between exporting as JSON or SQL database
 
@@ -123,9 +123,10 @@ try:
         cnx = mysql.connector.connect(**config)
         cursor = cnx.cursor()
 
+
         # Creating the transactions table
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS store_transactions (
+        CREATE TABLE IF NOT EXISTS store_transactions_2 (
             tx_id VARCHAR(12) NOT NULL,
             store_id INT NOT NULL,
             item VARCHAR(50),
@@ -138,11 +139,11 @@ try:
         """)
 
         # Clear the transactions table
-        cursor.execute("DELETE FROM store_transactions")
+        cursor.execute("DELETE FROM store_transactions_2")
 
         # Bulk insert all transactions at once
         insert_query = """
-        INSERT INTO store_transactions (tx_id, store_id, item, amount, type, to_entity, date)
+        INSERT INTO store_transactions_2 (tx_id, store_id, item, amount, type, to_entity, date)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         cursor.executemany(insert_query, transactions)

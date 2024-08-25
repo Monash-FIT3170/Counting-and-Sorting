@@ -81,6 +81,55 @@ public class TransactionService {
 
         return totalAmount.subtract(initialFunds);
     }
+    public List<BigDecimal> getMonthlyRevenueForStore(int storeId, int year) {
+        return transactionRepository.findAll().stream()
+                .filter(t -> t.getStoreId() == storeId && t.getType().equals(TransactionType.SALES))
+                .filter(t -> t.getDate().getYear() == year)
+                .collect(Collectors.groupingBy(t -> t.getDate().getMonthValue(),
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+    public BigDecimal getProfitMarginForStore(int storeId) {
+        BigDecimal totalSales = getTotalSalesForStore(storeId);
+        BigDecimal profit = getProfitForStore(storeId);
+    
+        if (totalSales.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+    
+        return profit.divide(totalSales, 4, BigDecimal.ROUND_HALF_EVEN).multiply(BigDecimal.valueOf(100));
+    }
+    
+    public List<BigDecimal> getMonthlyProfitForStore(int storeId, int year) {
+        // Calculate the total initial funds for the store
+        BigDecimal initialFunds = transactionRepository.findAll().stream()
+                .filter(t -> t.getStoreId() == storeId && t.getType().equals(TransactionType.INITIAL_FUNDS))
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    
+        // Calculate monthly profits for the given year
+        List<BigDecimal> monthlyProfits = transactionRepository.findAll().stream()
+                .filter(t -> t.getStoreId() == storeId)
+                .filter(t -> t.getDate().getYear() == year)
+                .collect(Collectors.groupingBy(t -> t.getDate().getMonthValue(),
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    
+        // Subtract the initial funds from the first month's profit
+        if (!monthlyProfits.isEmpty()) {
+            monthlyProfits.set(0, monthlyProfits.get(0).subtract(initialFunds));
+        }
+    
+        return monthlyProfits;
+    }
+    
+    
 
     // Methods for all stores (head office)
 
@@ -118,6 +167,18 @@ public class TransactionService {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().subtract(initialFunds.getOrDefault(entry.getKey(), BigDecimal.ZERO))
+                ));
+    }
+    public Map<Integer, BigDecimal> getProfitMarginsForAllStores() {
+        return getProfitsForAllStores().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> {
+                            BigDecimal totalSales = getTotalSalesForAllStores().get(entry.getKey());
+                            return totalSales.compareTo(BigDecimal.ZERO) == 0 ?
+                                    BigDecimal.ZERO :
+                                    entry.getValue().divide(totalSales, 4, BigDecimal.ROUND_HALF_EVEN).multiply(BigDecimal.valueOf(100));
+                        }
                 ));
     }
 

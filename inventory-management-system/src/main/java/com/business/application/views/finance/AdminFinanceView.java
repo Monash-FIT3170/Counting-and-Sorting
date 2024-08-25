@@ -70,48 +70,52 @@ public class AdminFinanceView extends Div {
     public AdminFinanceView(TransactionService transactionService) {
         this.transactionService = transactionService;
         addClassName("admin-finance-view");
-
+    
         mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
         mainLayout.addClassName("admin-finance-view");
-
-
-
+    
         // Overall metrics section
         HorizontalLayout overallMetricsLayout = new HorizontalLayout();
         overallMetricsLayout.setWidthFull();
         overallMetricsLayout.add(
-                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 0.0),
-                createHighlight("Total Profit", formatCurrency(getTotalProfit()), 0.0),
-                createHighlight("Total Disbursements", formatCurrency(getTotalDisbursements()), 0.0)
+                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 3.6),
+                createHighlight("Total Store Profits", formatCurrency(getTotalProfit()), -2.4),
+                createHighlight("Total Royalty Fees Collected", formatCurrency(getTotalDisbursements()), 3.6)
         );
-
+    
         mainLayout.add(overallMetricsLayout);
-
+    
         highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        
-        // Profit Pie Chart for all stores
+    
+        // Profit and Revenue Pie Charts for all stores
+        HorizontalLayout chartsLayout = new HorizontalLayout();
+        chartsLayout.setWidthFull();
+    
         Chart profitPieChart = createProfitPieChart();
-        mainLayout.add(profitPieChart);
-
+        Chart revenuePieChart = createRevenuePieChart();
+    
+        chartsLayout.add(profitPieChart, revenuePieChart);
+        mainLayout.add(chartsLayout);
+    
         storeSelect = new ComboBox<>();
         storeSelect.setLabel("Select Store");
         storeSelect.setPlaceholder("Select Store");
         storeSelect.addValueChangeListener(event -> updateStoreSpecificData(event.getValue()));
-
+    
         HorizontalLayout storeSelectorLayout = new HorizontalLayout();
         storeSelectorLayout.setWidthFull();
         storeSelectorLayout.add(storeSelect);
-
+    
         mainLayout.add(storeSelectorLayout, highlightsLayout);
-
+    
         VerticalLayout analysisLayout = new VerticalLayout();
         selectionComboBox = new ComboBox<>("Select View");
         selectionComboBox.setItems("Graph", "Table");
-
+    
         contentContainer = new VerticalLayout();
-
+    
         selectionComboBox.addValueChangeListener(event -> {
             contentContainer.removeAll();
             if ("Graph".equals(event.getValue())) {
@@ -121,11 +125,32 @@ public class AdminFinanceView extends Div {
                 contentContainer.add(createTransactionsTable(storeSelect.getValue()));
             }
         });
-
+    
         analysisLayout.add(selectionComboBox, contentContainer);
         add(mainLayout, analysisLayout);
-
+    
         initializeStores();
+    }
+    private Chart createRevenuePieChart() {
+        Chart chart = new Chart(ChartType.PIE);
+        Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
+        conf.setTitle("Revenue Distribution Across Stores");
+    
+        // Get the revenue data for all stores
+        java.util.Map<Integer, BigDecimal> revenues = transactionService.getTotalSalesForAllStores();
+    
+        // Create a series for the pie chart
+        DataSeries series = new DataSeries();
+    
+        revenues.forEach((storeId, revenue) -> {
+            DataSeriesItem item = new DataSeriesItem("Store " + storeId + " (" + formatCurrency(revenue) + ")", revenue.doubleValue());
+            series.add(item);
+        });
+    
+        conf.addSeries(series);
+        chart.setWidth("97%");
+        return chart;
     }
 
     private void initializeStores() {
@@ -216,11 +241,10 @@ public class AdminFinanceView extends Div {
         Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
-        conf.setTitle("Profit Distribution Among Stores");
+        conf.setTitle("Profit Distribution Across Stores");
 
         // Get the profit data for all stores
         java.util.Map<Integer, BigDecimal> profits = transactionService.getProfitsForAllStores();
-        profits.putIfAbsent(0, BigDecimal.ZERO);
 
         // Create a series for the pie chart
         DataSeries series = new DataSeries();
@@ -234,6 +258,7 @@ public class AdminFinanceView extends Div {
         chart.setWidth("97%");
         return chart;
     }
+
 
     private Component createFinancialGraph(Integer storeId) {
         // Get the necessary data for the selected store
@@ -304,11 +329,15 @@ public class AdminFinanceView extends Div {
         Grid<Transaction> grid = new Grid<>(Transaction.class);
         List<Transaction> transactions = transactionService.getTransactionsForStore(storeId);
         grid.setItems(transactions);
+        grid.removeAllColumns();
 
         // Add columns
         grid.addColumn(Transaction::getItem).setHeader("Category").setSortable(true);
         grid.addColumn(Transaction::getType).setHeader("Type").setSortable(true);
         grid.addColumn(Transaction::getAmount).setHeader("Amount").setSortable(true);
+        grid.addColumn(Transaction::getDate).setHeader("Date").setSortable(true);
+        grid.addColumn(Transaction::getTxId).setHeader("Transaction ID").setSortable(true);
+
 
         // Add filtering capability
         TextField categoryFilter = new TextField();
@@ -357,10 +386,12 @@ public class AdminFinanceView extends Div {
     private Anchor createDownloadLink(Grid<Transaction> grid) {
         StreamResource resource = new StreamResource("transactions.csv", () -> {
             List<Transaction> transactions = grid.getListDataView().getItems().collect(Collectors.toList());
-            StringBuilder csv = new StringBuilder("Category,Type,Amount\n");
+            StringBuilder csv = new StringBuilder("Category,Type,Amount,Date,Transaction ID\n");
             transactions.forEach(tx -> csv.append(tx.getItem()).append(",")
                     .append(tx.getType()).append(",")
-                    .append(tx.getAmount()).append("\n"));
+                    .append(tx.getAmount()).append(",")
+                    .append(tx.getDate()).append(",")
+                    .append(tx.getTxId()).append("\n"));
             return new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
         });
 

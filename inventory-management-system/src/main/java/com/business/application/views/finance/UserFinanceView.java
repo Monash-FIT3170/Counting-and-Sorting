@@ -81,9 +81,9 @@ public class UserFinanceView extends Div {
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
         highlightsLayout.add(
-                createHighlight("Account Balance", formatCurrency(accountBalance), 0.0),
-                createHighlight("Profit", formatCurrency(profit), 0.0),
-                createHighlight("Total Sales", formatCurrency(totalSales), 0.0),
+                createHighlight("Account Balance", formatCurrency(accountBalance), 56.3),
+                createHighlight("Profit", formatCurrency(profit), 3.9),
+                createHighlight("Total Sales", formatCurrency(totalSales), 8.3),
                 createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0)
         );
 
@@ -156,7 +156,7 @@ public class UserFinanceView extends Div {
         analysisLayout.removeAll();
 
         if ("Graph View".equals(viewType)) {
-            analysisLayout.add(createCumulativeSumChart(storeId), createFinancialGraph(storeId));
+            analysisLayout.add(createCumulativeSumChart(storeId), createMonthlyRevenueProfitBarChart(storeId));
         } else if ("Table View".equals(viewType)) {
             analysisLayout.add(createTransactionsTable(storeId));
         }
@@ -250,11 +250,14 @@ public class UserFinanceView extends Div {
         Grid<Transaction> grid = new Grid<>(Transaction.class);
         List<Transaction> transactions = transactionService.getTransactionsForStore(storeId);
         grid.setItems(transactions);
+        grid.removeAllColumns();
 
         // Add columns
         grid.addColumn(Transaction::getItem).setHeader("Category").setSortable(true);
         grid.addColumn(Transaction::getType).setHeader("Type").setSortable(true);
         grid.addColumn(Transaction::getAmount).setHeader("Amount").setSortable(true);
+        grid.addColumn(Transaction::getDate).setHeader("Date").setSortable(true);
+        grid.addColumn(Transaction::getTxId).setHeader("Transaction ID").setSortable(true);
 
         // Add filtering capability
         TextField categoryFilter = new TextField();
@@ -303,75 +306,52 @@ public class UserFinanceView extends Div {
     private Anchor createDownloadLink(Grid<Transaction> grid) {
         StreamResource resource = new StreamResource("transactions.csv", () -> {
             List<Transaction> transactions = grid.getListDataView().getItems().collect(Collectors.toList());
-            StringBuilder csv = new StringBuilder("Category,Type,Amount\n");
+            StringBuilder csv = new StringBuilder("Category,Type,Amount,Date,Transaction ID\n");
             transactions.forEach(tx -> csv.append(tx.getItem()).append(",")
                     .append(tx.getType()).append(",")
-                    .append(tx.getAmount()).append("\n"));
+                    .append(tx.getAmount()).append(",")
+                    .append(tx.getDate()).append(",")
+                    .append(tx.getTxId()).append("\n"));
             return new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
         });
-
         Anchor downloadLink = new Anchor(resource, "");
         downloadLink.getElement().setAttribute("download", true);
         return downloadLink;
     }
-
-    private Component createFinancialGraph(int storeId) {
-        // Get the necessary data for the selected store
-        BigDecimal profit = transactionService.getProfitForStore(storeId);
-        BigDecimal income = transactionService.getTotalSalesForStore(storeId);
-        BigDecimal expenses = transactionService.getTotalExpensesForStore(storeId);
-
-        // Create dummy quarterly data based on the store's yearly data (for demo purposes)
-        List<BigDecimal> quarterlyProfit = splitToQuarters(profit);
-        List<BigDecimal> quarterlyIncome = splitToQuarters(income);
-        List<BigDecimal> quarterlyExpenses = splitToQuarters(expenses);
-
-        // Header
-        IntegerField year = new IntegerField();
-        year.addClassName("user-financial-graph");
-        year.setValue(2024);
-        year.setStepButtonsVisible(true);
-        year.setMin(2020);
-        year.setMax(2024);
-
-        HorizontalLayout header = createHeader("Yearly Financial Analysis", "Store " + storeId);
-        header.add(year);
-        header.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        // Chart
-        Chart chart = new Chart(ChartType.SPLINE);
+    private Component createMonthlyRevenueProfitBarChart(Integer storeId) {
+        int currentYear = LocalDate.now().getYear(); // Assuming you want to display data for the current year
+    
+        // Fetch monthly data
+        List<BigDecimal> monthlyRevenues = transactionService.getMonthlyRevenueForStore(storeId, currentYear);
+        List<BigDecimal> monthlyProfits = transactionService.getMonthlyProfitForStore(storeId, currentYear);
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    
+        // Create the bar chart
+        Chart chart = new Chart(ChartType.COLUMN);
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
+        conf.setTitle("Monthly Revenue and Profit Analysis");
         chart.setWidth("97%");
-
+    
         XAxis xAxis = new XAxis();
-        xAxis.setCategories("Q1", "Q2", "Q3", "Q4");
+        xAxis.setCategories(months);
         conf.addxAxis(xAxis);
-
+    
         YAxis yAxis = new YAxis();
-        yAxis.setTitle("$k");
+        yAxis.setTitle("Amount ($)");
         conf.addyAxis(yAxis);
-
-        PlotOptionsSpline plotOptions = new PlotOptionsSpline();
-        plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setMarker(new Marker(false));
-        conf.addPlotOptions(plotOptions);
-
-        // Convert List<BigDecimal> to Number[] and add to series
-        conf.addSeries(new ListSeries("Profit", quarterlyProfit.toArray(new Number[0])));
-        conf.addSeries(new ListSeries("Income", quarterlyIncome.toArray(new Number[0])));
-        conf.addSeries(new ListSeries("Expenses", quarterlyExpenses.toArray(new Number[0])));
-
-        // Add it all together
-        VerticalLayout viewEvents = new VerticalLayout(header, chart);
-        viewEvents.addClassName("Graph");
-        viewEvents.setPadding(false);
-        viewEvents.setSpacing(false);
-        viewEvents.getElement().getThemeList().add("spacing-l");
-        viewEvents.addClassName("rounded-rectangle");
-        viewEvents.setWidth("98.5%");
-        return viewEvents;
+    
+        // Adding the revenue series to the bar chart
+        ListSeries revenueSeries = new ListSeries("Revenue", monthlyRevenues.toArray(new Number[0]));
+        conf.addSeries(revenueSeries);
+    
+        // Adding the profit series to the bar chart
+        ListSeries profitSeries = new ListSeries("Profit", monthlyProfits.toArray(new Number[0]));
+        conf.addSeries(profitSeries);
+    
+        return chart;
     }
+    
 
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
