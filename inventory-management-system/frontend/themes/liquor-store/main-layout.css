@@ -5,7 +5,7 @@
 }
 
 vaadin-app-layout {
-  background: url("VAADIN/themes/liquor-store/img/nav-bg.png") lightgray 0% / cover no-repeat;
+  background: url('/VAADIN/themes/liquor-store/img/nav-bg.png');
 }
 
 vaadin-app-layout::part(navbar) {
