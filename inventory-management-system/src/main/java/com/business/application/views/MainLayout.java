@@ -7,12 +7,15 @@ import com.business.application.views.adminforecast.AdminForecastView;
 import com.business.application.views.adminstock.AdminStockView;
 import com.business.application.views.adminteam.UserManagementView;
 import com.business.application.views.dashboard.DashboardView;
+import com.business.application.views.finance.UserFinanceView;
 import com.business.application.views.forecast.ForecastView;
 import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.login.LoginView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
 import com.business.application.views.suppliers.SuppliersView;
+import com.business.application.views.finance.UserFinanceView;
+import com.business.application.views.finance.AdminFinanceView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -51,6 +54,7 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.business.application.views.adminstore.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -249,8 +253,13 @@ public class MainLayout extends AppLayout {
             nav.addItem(
                     new SideNavItem("Forecasts", ForecastView.class, VaadinIcon.BAR_CHART_H.create()));
 
-        }
+        }/* working to connect to new view */
+        /* working to connect to new view */
+        if (accessChecker.hasAccess(UserFinanceView.class)) {
+            nav.addItem(
+                    new SideNavItem("Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
 
+        }
 
         // Admin - Menu
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
@@ -281,6 +290,16 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(UserManagementView.class)) {
             nav.addItem(new SideNavItem("Team", UserManagementView.class, VaadinIcon.USERS.create()));
+        }
+
+        if (accessChecker.hasAccess(AdminFinanceView.class)) {
+            nav.addItem(
+            new SideNavItem("Store Finances", AdminFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+        }
+
+        if (accessChecker.hasAccess(StoreView.class)) {
+            nav.addItem(
+                    new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.STORE_SOLID.create()));
         }
         // ADD LOGOUT SECTION
         SideNav logoutNav = new SideNav();

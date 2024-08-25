@@ -9,8 +9,15 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import java.util.List;
 import java.util.stream.Collectors;
+
+
+import java.util.Optional;
+import com.business.application.domain.Store;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
+import com.business.application.domain.User;
+import com.business.application.security.AuthenticatedUser;
+import com.business.application.services.StoreService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
@@ -36,6 +43,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
 
+
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
 @RolesAllowed("USER") // Keep only for the user role
@@ -43,12 +51,29 @@ import jakarta.annotation.security.RolesAllowed;
 
 
 public class DashboardView extends Main {
-
-    public DashboardView() {
+private AuthenticatedUser authenticatedUser;
+private StoreService storeService;
+private Store store; 
+    public DashboardView( AuthenticatedUser authenticatedUser,StoreService storeService) {
         addClassName("dashboard-view");
+        this.authenticatedUser = authenticatedUser;
+        this.storeService = storeService;
 
         // HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         // add(storeInfoLayout);
+        Optional<User> maybeUser = authenticatedUser.get(); // Assuming authenticatedUser is an Optional<User>
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            String userName = user.getName(); 
+            user.getId();
+            this.store = storeService.getStoreByManagerId(user.getId());
+            System.out.println("User name: " + userName);
+            } else {
+            
+            System.out.println("No user present");
+        }
+
+
 
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setWidthFull();
@@ -58,7 +83,7 @@ public class DashboardView extends Main {
 
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
+        highlightsLayout.add(createHighlight("Monthly Revenue",String.valueOf(store.getBudget()), 11.0),
                 createHighlight("Total Inventory Count", "12,345,340", 11.0));
 
         leftColumn.add(highlightsLayout);
