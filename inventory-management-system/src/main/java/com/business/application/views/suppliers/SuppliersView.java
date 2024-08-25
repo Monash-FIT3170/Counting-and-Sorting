@@ -159,7 +159,7 @@ public class SuppliersView extends Div {
     private HorizontalLayout createToolbar() {
         // Create the search bar
         TextField searchBar = new TextField();
-        searchBar.addClassName("supplier-view-item-search");
+        searchBar.addClassName("toolbar-search-bar");
         searchBar.setPlaceholder("Search Items");
         searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
         searchBar.setWidth("300px");

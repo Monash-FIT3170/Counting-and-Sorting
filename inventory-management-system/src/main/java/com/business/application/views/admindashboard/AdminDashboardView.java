@@ -112,7 +112,7 @@ public class AdminDashboardView extends Main {
     private HorizontalLayout createStoreInfoLayout() {
         // Search bar
         TextField searchBar = new TextField();
-        searchBar.addClassName("admin-dashboard-view-store-search");
+        searchBar.addClassName("toolbar-search-bar");
         searchBar.setPlaceholder("Select Store");
         searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
         searchBar.setWidth("300px");

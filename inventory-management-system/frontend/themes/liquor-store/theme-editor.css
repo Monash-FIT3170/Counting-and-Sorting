@@ -2,53 +2,65 @@
  * This file has been created by the Vaadin Theme Editor. Please note that
  * manual changes to individual CSS properties may be overwritten by the theme editor.
  */
- .admin-dashboard-view-h2-1 { margin:0; }
- 
-
- .admin-dashboard-view-year-1 input { border:none; }
- 
- .search-top-section {
-     margin-top: 8px;
- }
- 
- .rounded-rectangle {
-   border-radius:10px;
-   box-shadow:0px 2px 4px -1px rgba(26,56,96,0.1);
-   box-shadow:0px 3px 12px -1px rgba(28,55,90,0.16);
-   margin:8px;
-   padding:16px;
- }
-
- [theme~='dark'] .rounded-rectangle {
-  box-shadow: 0px 2px 4px -1px rgba(255,255,255,0.1), 0px 3px 12px -1px rgba(255,255,255,0.16);
-  border: 1px solid rgba(255,255,255,0.2);
+.admin-dashboard-view-h2-1 {
+  margin: 0;
 }
 
 
- 
- vaadin-grid.admin-dashboard-view-grid-1 { border-width:0px; }
- 
- vaadin-text-field.toolbar-search-bar::part(input-field) {
-   background-color:rgba(26,57,96,0.1);
-   border-width:0px;
-   border:none;
-   box-shadow:none;
- }
- 
- .notification-item {
-     background-color: #FFFFFF;
-     border-radius: 10px;
-     border: 1px solid #1a38601f;
-     padding: 4px;
-     width: 100%;
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     margin-bottom: 3px;
-     margin-top: 3px;
-     box-sizing: border-box;
- }
- 
- .special {
-     color: rgb(0, 81, 255);  
+.admin-dashboard-view-year-1 input {
+  border: none;
+}
+
+.search-top-section {
+  margin-top: 8px;
+}
+
+.rounded-rectangle {
+  border-radius: 10px;
+  box-shadow: 0px 2px 4px -1px rgba(26, 56, 96, 0.1);
+  box-shadow: 0px 3px 12px -1px rgba(28, 55, 90, 0.16);
+  margin: 8px;
+  padding: 16px;
+}
+
+[theme~='dark'] .rounded-rectangle {
+  box-shadow: 0px 2px 4px -1px rgba(255, 255, 255, 0.1), 0px 3px 12px -1px rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+vaadin-grid.admin-dashboard-view-grid-1 {
+  border-width: 0px;
+}
+
+vaadin-text-field.toolbar-search-bar::part(input-field) {
+  background-color: rgba(26,57,96,0.1);
+  border-width: 0px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Dark mode specific styles */
+[theme~='dark'] vaadin-text-field.toolbar-search-bar::part(input-field) {
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly darker background in dark mode */
+  color: var(--lumo-contrast-80pct); /* Ensures the text color is visible */
+  border-radius: 5px; /* Optional: add some rounding to the corners */
+}
+.notification-item {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  border: 1px solid #1a38601f;
+  padding: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  box-sizing: border-box;
+}
+
+.special {
+  color: rgb(0, 81, 255);
 }
