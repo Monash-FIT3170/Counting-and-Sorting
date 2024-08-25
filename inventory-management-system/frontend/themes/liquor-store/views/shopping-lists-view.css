@@ -2,16 +2,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.shopping-lists-view {
+  padding: var(--lumo-space-m);
   padding-top: var(--lumo-space-xl);
-  background-color: var(--lumo-base-color);
-}
-.shopping-lists-view {
-  border: 1px solid var(--lumo-contrast-20pct); /* Adding a border */
-  border-radius: 8px;
-  padding: var(--lumo-space-m); /* Adjust padding if needed */
   background-color: var(--lumo-base-color);
 }
 

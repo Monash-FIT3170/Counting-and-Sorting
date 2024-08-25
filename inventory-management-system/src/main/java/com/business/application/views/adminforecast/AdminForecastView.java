@@ -41,6 +41,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 public class AdminForecastView extends Div {
     public AdminForecastView() {
+        addClassName("admin-forecast-view");
         // Create a board layout
         Board board = new Board();
         

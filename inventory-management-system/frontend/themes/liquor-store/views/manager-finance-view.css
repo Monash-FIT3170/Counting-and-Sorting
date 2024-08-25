@@ -1,6 +1,7 @@
 .manager-finance-view {
   padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
+  overflow: scroll; /* TODO: add in better overflow mechanism/fix layout */
 }
 
 /* Borders */

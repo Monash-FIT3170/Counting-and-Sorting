@@ -50,6 +50,8 @@ public class StoreView extends VerticalLayout {
 
     @Autowired
     public StoreView(StoreService storeService,UserService userService) {
+        addClassName("stores-view");
+        
         this.storeService = storeService;
         this.userService = userService;
         this.storeGrid = new Grid<>(Store.class);

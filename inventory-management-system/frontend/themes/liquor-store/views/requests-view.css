@@ -1,16 +1,13 @@
 .requests-view {
   display: block;
   height: 100%;
+  padding-top: var(--lumo-space-xl);
+  background-color: var(--lumo-base-color);
 }
 
 .requests-view vaadin-grid {
   height: 100%;
   line-height: var(--lumo-line-height-m);
-}
-
-.requests-view vaadin-grid,
-.requests-view vaadin-grid-cell-content {
-  background-color: var(--lumo-contrast-10pct);
 }
 
 .requests-view .card {
