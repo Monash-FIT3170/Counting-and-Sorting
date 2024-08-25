@@ -55,6 +55,7 @@ public class UserFinanceView extends Div {
 
     private final TransactionService transactionService;
     private ComboBox<String> selectionComboBox;
+    
 
     @Autowired
     public UserFinanceView(TransactionService transactionService) {
@@ -122,6 +123,7 @@ public class UserFinanceView extends Div {
         // Create the pie chart
         Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle(title);
 
         DataSeries series = new DataSeries();
@@ -222,6 +224,7 @@ public class UserFinanceView extends Div {
         // Chart for cumulative sum
         Chart chart = new Chart(ChartType.SPLINE);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Cumulative Sum of Transactions Over Time");
         chart.setWidth("97%");
 
