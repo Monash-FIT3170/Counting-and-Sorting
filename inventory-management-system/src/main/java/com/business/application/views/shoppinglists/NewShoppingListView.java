@@ -4,7 +4,8 @@ import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.Product;
 import com.business.application.domain.ShoppingList;
 import com.business.application.domain.ShoppingListItem;
-
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -35,17 +36,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Stack;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 @PageTitle("Create A New Shopping List")
 @Route(value = "new-shopping-list", layout = MainLayout.class)
 @AnonymousAllowed
 public class NewShoppingListView extends Div {
 
-    private List<Product> productList = getProductList();
     private ArrayList<ShoppingListItem> shoppingListItems = new ArrayList<>();
-    private Grid<Product> productGrid = new Grid<>(Product.class);
+    private Grid<WebScrapedProduct> productGrid = new Grid<>(WebScrapedProduct.class);
     private GridPro<ShoppingListItem> shoppingListGrid = new GridPro<>();
-    private ListDataProvider<Product> productDataProvider;
+    private ListDataProvider<WebScrapedProduct> productDataProvider;
     private ListDataProvider<ShoppingListItem> shoppingListDataProvider;
     private Date chosenDate;
     private String ShoppingListNameEntered;
@@ -53,9 +55,13 @@ public class NewShoppingListView extends Div {
     int currentList = shoppingListInstance.getShoppingListLength() + 1;
     private BigDecimal totalPrice;
     private Text shoppingListPriceText;
-    
 
-    public NewShoppingListView() {
+    private WebScrapedProductService webScrapedProductService;
+    
+    @Autowired
+    public NewShoppingListView(WebScrapedProductService webScrapedProductService) {
+        this.webScrapedProductService = webScrapedProductService;
+        addClassName("new-shopping-list-view");
         // Create date picker for order date
         totalPrice = new BigDecimal(0.00);
         shoppingListPriceText = new Text("$" + totalPrice.toString());
@@ -84,13 +90,13 @@ public class NewShoppingListView extends Div {
         dateAndShoppingListName.addClassName("dynamic-style");
 
         // Create a grid for all the products
-        productDataProvider = new ListDataProvider<>(productList);
+        productDataProvider = new ListDataProvider<>(webScrapedProductService.getAllWebscrapedProducts());
         productGrid.setDataProvider(productDataProvider);
         //productGrid.setColumns("productId", "name", "salePrice", "category", "description");
         productGrid.removeAllColumns();
-        productGrid.addColumn(Product::getName).setHeader("Product Name").setSortable(true);
-        productGrid.addColumn(Product::getSalePrice).setHeader("Product Sale Price").setSortable(true);
-        productGrid.addColumn(Product::getQuantity).setHeader("Current Stock").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getName).setHeader("Product Name").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getPrice).setHeader("Product Sale Price").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getQuantity).setHeader("Current Stock").setSortable(true);
         // Round sale price to 2 decimal places
 
 
@@ -117,7 +123,7 @@ public class NewShoppingListView extends Div {
         TextField quantityField = new TextField("Quantity");
 
         Button addButton = new Button("Add to Shopping List", event -> {
-            Product selectedProduct = productGrid.asSingleSelect().getValue();
+            WebScrapedProduct selectedProduct = productGrid.asSingleSelect().getValue();
             if (selectedProduct != null) {
                 try {
                     String quantityValue = quantityField.getValue();
@@ -173,6 +179,12 @@ public class NewShoppingListView extends Div {
         add(layout);
     }
 
+    private void getProducts() {
+        List<WebScrapedProduct> products = webScrapedProductService.getAllWebscrapedProducts();
+        productDataProvider.getItems().addAll(products);
+        productDataProvider.refreshAll();
+    }
+
     public void setChosenDate(Date date) {
         this.chosenDate = date;
     }
@@ -192,8 +204,8 @@ public class NewShoppingListView extends Div {
         this.shoppingListPriceText.setText(string);
     }
 
-    public void updateTotalPrice(Product item,int amount){
-        BigDecimal orderPriceOfItem = item.getSalePrice().multiply(new BigDecimal(amount));
+    public void updateTotalPrice(WebScrapedProduct item,int amount){
+        BigDecimal orderPriceOfItem = BigDecimal.valueOf(item.getPrice()).multiply(new BigDecimal(amount));
         // Round to 2 decimal places
         orderPriceOfItem = orderPriceOfItem.setScale(2, BigDecimal.ROUND_HALF_UP);
         this.totalPrice = totalPrice.add(orderPriceOfItem);
