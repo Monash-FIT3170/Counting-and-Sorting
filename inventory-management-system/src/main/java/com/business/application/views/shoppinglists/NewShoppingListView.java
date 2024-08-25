@@ -22,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -55,6 +56,7 @@ public class NewShoppingListView extends Div {
     int currentList = shoppingListInstance.getShoppingListLength() + 1;
     private BigDecimal totalPrice;
     private Text shoppingListPriceText;
+    private TextField searchField;
 
     private WebScrapedProductService webScrapedProductService;
     
@@ -84,6 +86,12 @@ public class NewShoppingListView extends Div {
         ShoppingListName.setClearButtonVisible(true);
         ShoppingListName.setPrefixComponent(VaadinIcon.CART.create());
         ShoppingListName.addValueChangeListener(event -> setShoppingListName(event.getValue()));
+
+        searchField = new TextField();
+        searchField.setPlaceholder("Search products...");
+        searchField.setClearButtonVisible(true);
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(event -> filterProducts(event.getValue()));
 
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName,shoppingListPriceText);
         dateAndShoppingListName.setSpacing(true);
@@ -159,7 +167,7 @@ public class NewShoppingListView extends Div {
             }
         });
 
-        VerticalLayout productLayout = new VerticalLayout(new H3("Products"), productGrid);
+        VerticalLayout productLayout = new VerticalLayout(new H3("Products"),searchField, productGrid);
         productLayout.addClassName("dynamic-style");
 
         VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping List Items"), shoppingListGrid);
@@ -179,11 +187,18 @@ public class NewShoppingListView extends Div {
         add(layout);
     }
 
-    private void getProducts() {
-        List<WebScrapedProduct> products = webScrapedProductService.getAllWebscrapedProducts();
-        productDataProvider.getItems().addAll(products);
-        productDataProvider.refreshAll();
+    private void filterProducts(String searchTerm) {
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            productDataProvider.clearFilters();
+        } else {
+            productDataProvider.setFilter(product ->
+                    product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getCategory().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getPrice().toString().contains(searchTerm.toLowerCase())
+            );
+        }
     }
+
 
     public void setChosenDate(Date date) {
         this.chosenDate = date;
@@ -280,29 +295,4 @@ public class NewShoppingListView extends Div {
         return Math.max(result, 0);
     }
 
-    private List<Product> getProductList() {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product(174926328L, "Vodka Cruiser: Wild Raspberry 275mL", new BigDecimal(4.5), "Premix", "600",50));
-        products.add(new Product(174036988L, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", new BigDecimal(36), "Wine", "1000",900));
-        products.add(new Product(846302592L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(44), "Premix", "5000000",300));
-        products.add(new Product(769035037L, "Good Day: Watermelon Soju", new BigDecimal(5.8), "Misc", "5000000",567));
-        products.add(new Product(185035836L, "Absolut: Vodka 1L", new BigDecimal(67), "Beer", "1000000",123));
-        products.add(new Product(562784657L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(85), "Spirit", "2000",812));
-        products.add(new Product(186538594L, "Brookvale Union: Vodka Lemon Squash Cans 330mL", new BigDecimal(3.6), "Premix", "1000",5000));
-        products.add(new Product(879467856L, "Moët & Chandon: Impérial Brut", new BigDecimal(114), "Wine", "2000000",129));
-        products.add(new Product(108767894L, "Moët & Chandon: Rosé Impérial", new BigDecimal(156), "Wine", "2000000",36));
-        products.add(new Product(265743940L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(5.7), "Premix", "5000000",983));
-        products.add(new Product(123454352L, "Vodka Cruiser: Juicy Watermelon 275mL", new BigDecimal(5.7), "Misc", "1500",0));
-        products.add(new Product(456374567L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(78), "Spirit", "1000",852));
-        products.add(new Product(867584756L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(46), "Premix", "1000",89));
-        products.add(new Product(347453482L, "Absolut: Vodka 1L", new BigDecimal(77), "Beer", "2000000",12));
-        products.add(new Product(956836417L, "Suntory: -196 Double Lemon Can 330mL", new BigDecimal(4.5), "Wine", "600000",982));
-        products.add(new Product(958403584L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(77), "Spirit", "8000",500));
-        products.add(new Product(239563895L, "Good Day: Watermelon Soju", new BigDecimal(6.5), "Spirit", "500000",500));
-        products.add(new Product(375845219L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(55), "Misc", "5000000",500));
-        products.add(new Product(384926414L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(4), "Premix", "3000000",500));
-        products.add(new Product(194637894L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(66), "Beer", "2000000",500));
-
-        return products;
-    }
 }
