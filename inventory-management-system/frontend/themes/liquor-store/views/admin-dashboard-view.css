@@ -4,10 +4,10 @@
 }
 
 /* Borders */
-.admin-dashboard-view vaadin-board-row > * {
+/* .admin-dashboard-view vaadin-board-row > * {
   border-bottom: 1px solid var(--lumo-contrast-10pct);
   border-right: 1px solid var(--lumo-contrast-10pct);
-}
+} */
 
 .admin-dashboard-view vaadin-board-row.small > * {
   border-right: none;
@@ -20,4 +20,77 @@
 
 .admin-dashboard-view vaadin-board-row.large > *:last-child {
   border-right: none;
+}
+
+.admin-dashboard-view-store-search::part(input-field) {
+  background: var(--lumo-contrast-10pct);
+  box-shadow: none;
+}
+
+.admin-dashboard-view vaadin-board-row {
+  height: 100%;
+  --vaadin-board-width-small: 650px;
+}
+
+.admin-dashboard-view vaadin-board-row vaadin-board {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-dashboard-view .board-top-left {
+  height: auto;
+}
+
+.admin-dashboard-view vaadin-board-row vaadin-board vaadin-board-row {
+  --vaadin-board-width-small: 500px;
+}
+
+.admin-dashboard-view > vaadin-board {
+  padding: var(--lumo-space-m) var(--lumo-space-xl);
+  box-sizing: border-box;
+}
+
+.admin-dashboard-view .rounded-rectangle {
+  background: var(--lumo-base-color);
+  border-radius: var(--lumo-border-radius-l);
+  border: 1px solid var(--lumo-contrast-10pct);
+  box-shadow: var(--lumo-box-shadow-s);
+  
+  height: 100%;
+  justify-content: space-between;
+  gap: var(--lumo-space-s);
+}
+
+.admin-dashboard-view .rounded-rectangle-wrapper {
+  padding: var(--lumo-space-s);
+}
+
+.admin-dashboard-view .rounded-rectangle vaadin-horizontal-layout {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--lumo-space-s);
+}
+
+.admin-dashboard-view .stock-levels {
+  box-sizing: border-box;
+  height: 220px;
+  gap: 0;
+}
+
+vaadin-grid-cell-content[slot$="-9"],
+vaadin-grid-cell-content[slot$="-12"],
+vaadin-grid-cell-content[slot$="-15"],
+vaadin-grid-cell-content[slot$="-18"],
+vaadin-grid-cell-content[slot$="-21"],
+vaadin-grid-cell-content[slot$="-24"],
+vaadin-grid-cell-content[slot$="-27"],
+vaadin-grid-cell-content[slot$="-30"],
+vaadin-grid-cell-content[slot$="-33"],
+vaadin-grid-cell-content[slot$="-36"] {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
 }

@@ -13,11 +13,17 @@ import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ScrollOptions.Alignment;
+import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -25,9 +31,12 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.dom.Style.Display;
+import com.vaadin.flow.dom.Style.FlexBasis;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoIcon;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
@@ -44,42 +53,39 @@ public class AdminDashboardView extends Main {
 
     public AdminDashboardView() {
         addClassName("admin-dashboard-view");
+        
+        Board board = new Board();
+        
+        Row mainRow = new Row();
 
-        HorizontalLayout storeInfoLayout = createStoreInfoLayout();
-        add(storeInfoLayout);
+        Board leftBoard = new Board();
+        leftBoard.addRow(
+            createHighlight("Monthly Revenue", "$213,434.40", 11.0), 
+            createHighlight("Total Inventory Count", "12,345,340", -3.4)
+            ).addClassName("board-top-left");
+        leftBoard.addRow(createViewSalesQty());
+        leftBoard.addRow(createStockLevelsByCategory()).addClassName("stock-levels-row");
 
-        HorizontalLayout mainLayout = new HorizontalLayout();
-        mainLayout.setWidthFull();
+        Board rightBoard = new Board();
+        rightBoard.addRow(createLowStockItemsGrid());
+        rightBoard.addRow(createShoppingListRequests());
+        
+        mainRow.add(leftBoard);
+        mainRow.add(rightBoard);
 
-        VerticalLayout leftColumn = new VerticalLayout();
-        leftColumn.setWidth("calc(55% - 16px)");
+        board.add(mainRow);
 
-        HorizontalLayout highlightsLayout = new HorizontalLayout();
-        highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
-                createHighlight("Total Inventory Count", "12,345,340", 11.0));
-
-        leftColumn.add(highlightsLayout);
-        leftColumn.add(createViewSalesQty());
-        leftColumn.add(createStockLevelsByCategory());
-
-        VerticalLayout rightColumn = new VerticalLayout();
-        rightColumn.setWidth("calc(45% - 16px)");
-        rightColumn.add(createLowStockItemsGrid());
-        rightColumn.add(createShoppingListRequests());
-
-        mainLayout.add(leftColumn, rightColumn);
-        add(mainLayout);
+        add(createStoreInfoLayout(), board);
     }
 
     private Component createShoppingListRequests() {
         // Header
-        HorizontalLayout header = createHeader("PENDING SHOPPING LIST REQUESTS", "Approve or Deny Requests");
+        H6 h6 = new H6("Requests");
+        h6.addClassNames(TextColor.SECONDARY);
 
         // Grid
         Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.setAllRowsVisible(true);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER);
 
         grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
         grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
@@ -94,13 +100,15 @@ public class AdminDashboardView extends Main {
             getUI().ifPresent(ui -> ui.navigate("requests"));
         });
 
+        grid.setHeight("auto");
+
         // Add it all together
-        VerticalLayout layout = new VerticalLayout(header, grid);
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.setSpacing(false);
+        VerticalLayout layout = new VerticalLayout(h6, grid);
         layout.addClassName("rounded-rectangle");
-        return layout;
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private List<ShoppingList> getPendingShoppingLists() {
@@ -110,22 +118,32 @@ public class AdminDashboardView extends Main {
     }
 
     private HorizontalLayout createStoreInfoLayout() {
+        // Header container
+        HorizontalLayout layout = new HorizontalLayout();
+        
+        layout.addClassName("search-top-section");
+        layout.setWidthFull();
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        layout.addClassNames(
+            LumoUtility.Padding.Left.XLARGE,
+            LumoUtility.Padding.Right.XLARGE
+            );
+        
+        // TODO: make store location dynamic
+        // Store location
+        H6 location = new H6("Clayton");
+        
+        location.addClassNames(LumoUtility.TextColor.SECONDARY);
+        
         // Search bar
         TextField searchBar = new TextField();
         searchBar.addClassName("admin-dashboard-view-store-search");
         searchBar.setPlaceholder("Select Store");
         searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
-        searchBar.setWidth("300px");
+        searchBar.setWidth("300px"); 
 
-        // Layout for store info and search bar
-        HorizontalLayout layout = createHeader("CLAYTON", "");
-        layout.add(searchBar);
-        layout.setWidthFull();
-        layout.setHeight("50px");
-        layout.setAlignItems(FlexComponent.Alignment.CENTER);
-        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        layout.addClassName(Padding.LARGE);
-        layout.addClassName("search-top-section");
+        layout.add(location, searchBar);
         return layout;
     }
 
@@ -144,11 +162,8 @@ public class AdminDashboardView extends Main {
             theme += " error";
         }
 
-        H2 h2 = new H2(title);
-        h2.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.XSMALL);
-
-        Span span = new Span(value);
-        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXXLARGE);
+        H6 h6 = new H6(title);
+        h6.addClassNames(TextColor.SECONDARY);
 
         Icon i = icon.create();
         i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
@@ -156,12 +171,17 @@ public class AdminDashboardView extends Main {
         Span badge = new Span(i, new Span(prefix + percentage.toString()));
         badge.getElement().getThemeList().add(theme);
 
-        VerticalLayout layout = new VerticalLayout(h2, span, badge);
+        HorizontalLayout header = new HorizontalLayout(h6, badge);
+        header.setPadding(false);
+
+        H2 h2 = new H2(value);
+
+        VerticalLayout layout = new VerticalLayout(header, h2);
         layout.addClassName("rounded-rectangle");
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        return layout;
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private Component createViewSalesQty() {
@@ -173,9 +193,11 @@ public class AdminDashboardView extends Main {
         year.setMin(1970);
         year.setMax(2024);
 
-        HorizontalLayout header = createHeader("View Sales Qty", "");
-        header.add(year);
-        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        H6 h6 = new H6("View Sales Qty");
+        h6.addClassNames(TextColor.SECONDARY);
+
+        HorizontalLayout header = new HorizontalLayout(h6, year);
+        header.setPadding(false);
 
         // Chart
         Chart chart = new Chart(ChartType.SPLINE);
@@ -186,7 +208,7 @@ public class AdminDashboardView extends Main {
         xAxis.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         conf.addxAxis(xAxis);
 
-        conf.getyAxis().setTitle("Values");
+        conf.getyAxis().setTitle("Quantity");
 
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
@@ -198,20 +220,18 @@ public class AdminDashboardView extends Main {
         conf.addSeries(new ListSeries("Spirits", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
 
         // Add it all together
-        VerticalLayout viewEvents = new VerticalLayout(header, chart);
-        viewEvents.addClassName(Padding.LARGE);
-        viewEvents.setPadding(false);
-        viewEvents.setSpacing(false);
-        viewEvents.getElement().getThemeList().add("spacing-l");
-        viewEvents.addClassName("rounded-rectangle");
-        return viewEvents;
+        VerticalLayout layout = new VerticalLayout(header, chart);
+        layout.addClassName("rounded-rectangle");
+        
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private Component createStockLevelsByCategory(){
         Chart chart = new Chart(ChartType.BAR);
 
         Configuration configuration = chart.getConfiguration();
-        configuration.setTitle("Stock Levels by Category");
         configuration.getChart().setStyledMode(true);
         configuration.addSeries(new ListSeries("Beer", 5));
         configuration.addSeries(new ListSeries("Wine", 85));
@@ -220,91 +240,114 @@ public class AdminDashboardView extends Main {
         configuration.addSeries(new ListSeries("Misc", 52));
 
         XAxis x = new XAxis();
-        x.setCategories("Stock Levels");
+        x.setCategories("Stock Level");
+        x.setVisible(false);
         configuration.addxAxis(x);
 
         YAxis y = new YAxis();
         y.setMin(0);
-        y.setMax(100);
-        AxisTitle yTitle = new AxisTitle();
-        yTitle.setText("Percentage of Stock Remaining");
-        yTitle.setAlign(VerticalAlign.HIGH);
-        y.setTitle(yTitle);
+        y.setMax(101);
+        y.setVisible(false);
         configuration.addyAxis(y);
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setValueSuffix(" %");
+        tooltip.setValueSuffix("%");
         configuration.setTooltip(tooltip);
         
-        
-        PlotOptionsBar plotOptions = new PlotOptionsBar();
         DataLabels dataLabels = new DataLabels();
         dataLabels.setEnabled(true);
+        dataLabels.setFormat("{y}%");
+        
+        PlotOptionsBar plotOptions = new PlotOptionsBar();
+        plotOptions.setPointWidth(10);
         plotOptions.setDataLabels(dataLabels);
+       
         configuration.setPlotOptions(plotOptions);
 
-        VerticalLayout layout = new VerticalLayout(chart);
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.addClassName("rounded-rectangle");
-        layout.setHeight("30%");
-        layout.setWidth("100%");
-        return layout;
+        chart.setHeight("auto");
+
+        H6 h6 = new H6("Stock Levels by Category");
+        h6.addClassNames(TextColor.SECONDARY);
+
+        VerticalLayout layout = new VerticalLayout(h6, chart);
+        // layout.addClassName(Padding.LARGE);
+        // layout.setPadding(false);
+        layout.addClassNames("rounded-rectangle", "stock-levels");
+        // layout.setHeight("30%");
+        // layout.setWidth("100%");
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassNames("rounded-rectangle-wrapper", "stock-levels-wrapper");
+        return layout_wrapper;
 
     }
 
     private Component createLowStockItemsGrid() {
-    Grid<StockItem> grid = new Grid<>(StockItem.class, false);
-    // <theme-editor-local-classname>
-    grid.addClassName("admin-dashboard-view-grid-1");
+        Grid<StockItem> grid = new Grid<>(StockItem.class, false);
+        // <theme-editor-local-classname>
+        grid.addClassName("admin-dashboard-view-grid-1");
 
-    // Custom renderer for status column
-    grid.addColumn(new ComponentRenderer<>(stockItem -> {
-        Span statusCircle = new Span();
-        statusCircle.getElement().getStyle().set("display", "inline-block");
-        statusCircle.getElement().getStyle().set("width", "10px");
-        statusCircle.getElement().getStyle().set("height", "10px");
-        statusCircle.getElement().getStyle().set("border-radius", "50%");
+        // Custom renderer for status column
+        grid.addColumn(new ComponentRenderer<>(stockItem -> {
+            Span statusCircle = new Span();
+            statusCircle.getElement().getStyle().set("display", "inline-block");
+            statusCircle.getElement().getStyle().set("width", "14px");
+            statusCircle.getElement().getStyle().set("height", "14px");
+            statusCircle.getElement().getStyle().set("border-radius", "50%");
+            statusCircle.getElement().getStyle().set("display", "flex");
+            statusCircle.getElement().getStyle().set("justify-content", "center");
+            statusCircle.getElement().getStyle().set("align-items", "center");
+
+            Span statusInnerCircle = new Span();
+            statusInnerCircle.getElement().getStyle().set("display", "inline-block");
+            statusInnerCircle.getElement().getStyle().set("width", "6px");
+            statusInnerCircle.getElement().getStyle().set("height", "6px");
+            statusInnerCircle.getElement().getStyle().set("border-radius", "50%");
+
+            statusCircle.add(statusInnerCircle);
+            
+            if (stockItem.getQtyRemaining() > 100) {
+                statusCircle.getElement().getStyle().set("background-color", "#1688464D");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-success-color)");
+            } else if (stockItem.getQtyRemaining() > 50) {
+                statusCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color-10pct)");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color)");
+            } else {
+                statusCircle.getElement().getStyle().set("background-color", "#E71D134D");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-error-color)");
+            }
+
+            return statusCircle;
+        })).setHeader("Status").setTextAlign(ColumnTextAlign.CENTER).setAutoWidth(true).setFlexGrow(0).addClassName("status-column");
+
+        grid.addColumn(StockItem::getItemName).setHeader("Item Name").setTextAlign(ColumnTextAlign.START);
+        grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining").setTextAlign(ColumnTextAlign.END).setAutoWidth(true).setFlexGrow(0);
+
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
+        grid.setItems(
+                new StockItem(" ", "Smirnoff: Ice Double Black", 296),
+                new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
+                new StockItem(" ", "Suntory: -196 Double Lemon", 156),
+                new StockItem(" ", "Good Day: Watermelon", 46),
+                new StockItem(" ", "Absolut: Vodka 1L", 9),
+                new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
+                new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
+                new StockItem(" ", "Moët & Chandon: Impérial", 250),
+                new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
+                new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
+        );
         
-        if (stockItem.getQtyRemaining() > 100) {
-            statusCircle.getElement().getStyle().set("background-color", "green");
-        } else if (stockItem.getQtyRemaining() > 50) {
-            statusCircle.getElement().getStyle().set("background-color", "yellow");
-        } else {
-            statusCircle.getElement().getStyle().set("background-color", "red");
-        }
+        grid.setHeight("auto");
 
-        return statusCircle;
-    })).setHeader("Status");
+        H6 h6 = new H6("Low Stock Items");
+        h6.addClassNames(TextColor.SECONDARY);
+        
+        VerticalLayout layout = new VerticalLayout(h6, grid);
+        layout.addClassName("rounded-rectangle");
 
-    grid.addColumn(StockItem::getItemName).setHeader("Item Name");
-    grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
-
-    grid.addThemeVariants(GridVariant.LUMO_COMPACT);
-    grid.setItems(
-            new StockItem(" ", "Smirnoff: Ice Double Black", 296),
-            new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
-            new StockItem(" ", "Suntory: -196 Double Lemon", 156),
-            new StockItem(" ", "Good Day: Watermelon", 46),
-            new StockItem(" ", "Absolut: Vodka 1L", 9),
-            new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
-            new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
-            new StockItem(" ", "Moët & Chandon: Impérial", 250),
-            new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
-            new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
-    );
-
-    HorizontalLayout head = createHeader("Low Stock Items", "");
-    Icon icon = LumoIcon.UNORDERED_LIST.create();
-    icon.getElement().getThemeList().add("badge pill cir");
-    
-    head.add(icon);
-    head.setAlignItems(FlexComponent.Alignment.CENTER);
-    VerticalLayout layout = new VerticalLayout(head, grid);
-    layout.addClassName(Padding.LARGE);
-    layout.setPadding(false);
-    layout.addClassName("rounded-rectangle");
-    return layout;
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
