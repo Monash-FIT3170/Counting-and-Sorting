@@ -22,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -55,6 +56,7 @@ public class NewShoppingListView extends Div {
     int currentList = shoppingListInstance.getShoppingListLength() + 1;
     private BigDecimal totalPrice;
     private Text shoppingListPriceText;
+    private TextField searchField;
 
     private WebScrapedProductService webScrapedProductService;
     
@@ -84,6 +86,12 @@ public class NewShoppingListView extends Div {
         ShoppingListName.setClearButtonVisible(true);
         ShoppingListName.setPrefixComponent(VaadinIcon.CART.create());
         ShoppingListName.addValueChangeListener(event -> setShoppingListName(event.getValue()));
+
+        searchField = new TextField();
+        searchField.setPlaceholder("Search products...");
+        searchField.setClearButtonVisible(true);
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(event -> filterProducts(event.getValue()));
 
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName,shoppingListPriceText);
         dateAndShoppingListName.setSpacing(true);
@@ -159,7 +167,7 @@ public class NewShoppingListView extends Div {
             }
         });
 
-        VerticalLayout productLayout = new VerticalLayout(new H3("Products"), productGrid);
+        VerticalLayout productLayout = new VerticalLayout(new H3("Products"),searchField, productGrid);
         productLayout.addClassName("dynamic-style");
 
         VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping List Items"), shoppingListGrid);
@@ -177,6 +185,18 @@ public class NewShoppingListView extends Div {
         layout.addClassName("dynamic-style");
         
         add(layout);
+    }
+
+    private void filterProducts(String searchTerm) {
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            productDataProvider.clearFilters();
+        } else {
+            productDataProvider.setFilter(product ->
+                    product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getCategory().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getPrice().toString().contains(searchTerm.toLowerCase())
+            );
+        }
     }
 
     private void getProducts() {
