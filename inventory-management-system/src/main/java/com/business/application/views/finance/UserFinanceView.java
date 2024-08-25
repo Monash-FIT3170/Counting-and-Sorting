@@ -225,7 +225,7 @@ public class UserFinanceView extends Div {
         Chart chart = new Chart(ChartType.SPLINE);
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
-        conf.setTitle("Cumulative Sum of Transactions Over Time");
+        conf.setTitle("Bank Balance Over Time");
         chart.setWidth("97%");
 
         XAxis xAxis = new XAxis();
@@ -233,15 +233,15 @@ public class UserFinanceView extends Div {
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
-        yAxis.setTitle("Cumulative Sum ($)");
+        yAxis.setTitle("Balance ($)");
         conf.addyAxis(yAxis);
 
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setMarker(new Marker(true));
+        plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
 
-        conf.addSeries(new ListSeries("Cumulative Sum", cumulativeSumArray));
+        conf.addSeries(new ListSeries("Balance", cumulativeSumArray));
 
         return chart;
     }

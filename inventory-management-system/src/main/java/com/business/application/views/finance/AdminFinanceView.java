@@ -136,12 +136,12 @@ public class AdminFinanceView extends Div {
         storeSpecificLayout.add(highlightsLayout);
 
         // Toggle Button to switch views
-        Button toggleViewButton = new Button("Switch to Finance Overview");
+        Button toggleViewButton = new Button("Hide Detailed Store View");
         toggleViewButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         toggleViewButton.addClickListener(e -> {
             boolean isIndividualStoreView = contentContainer.isVisible();
             contentContainer.setVisible(!isIndividualStoreView);
-            toggleViewButton.setText(isIndividualStoreView ? "Switch to Store View" : "Switch to Finance Overview");
+            toggleViewButton.setText(isIndividualStoreView ? "Switch to Detailed Store View" : "Hide Detailed Store View");
         });
         storeSpecificLayout.add(toggleViewButton);
 
@@ -534,7 +534,7 @@ public class AdminFinanceView extends Div {
     
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setMarker(new Marker(true));
+        plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
     
         conf.addSeries(new ListSeries("Cumulative Sum", cumulativeSumArray));
