@@ -7,10 +7,10 @@ import jakarta.persistence.Entity;
 
 @Entity
 @Table(name = "webscraped_products")
-public class WebScrapedProduct {
-    @Id
-    private String name;
-    private String category;
+public class WebScrapedProduct extends AbstractEntity {
+    
+    private String title;
+    private String type;
     private Double price;
     private String supplier;
 
@@ -19,19 +19,19 @@ public class WebScrapedProduct {
 
 //Getters and setters
 public String getName() {
-    return name;
+    return title;
 }
 
-public void setName(String name) {
-    this.name = name;
+public void setName(String title) {
+    this.title = title;
 }
 
 public String getCategory() {
-    return category;
+    return type;
 }
 
 public void setCategory(String category) {
-    this.category = category;
+    this.type = category;
 }
 
 public Double getPrice() {
