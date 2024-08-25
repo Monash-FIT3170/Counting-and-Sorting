@@ -59,7 +59,7 @@ public class ApiKeyManagementView extends VerticalLayout {
     }
 
     private HorizontalLayout createToolbar() {
-        Button addButton = new Button("Add API Key", click -> addApiKey());
+        Button addButton = new Button("Create New API Key", click -> addApiKey());
         addButton.setIcon(new Icon("lumo", "plus"));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -142,7 +142,7 @@ public class ApiKeyManagementView extends VerticalLayout {
 
     private void addApiKey() {
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Add New API Key");
+        dialog.setHeaderTitle("Create New API Key");
 
         FormLayout formLayout = new FormLayout();
 
@@ -158,12 +158,9 @@ public class ApiKeyManagementView extends VerticalLayout {
         accessLevelGroup.setItems("Admin", "Manager");
         accessLevelGroup.setRequired(true);
 
-        Button generateButton = new Button("Generate API Key", event -> {
-            String apiKey = generateRandomApiKey();
-            // Save the generated API key or display it
-        });
 
-        Button saveButton = new Button("Save", event -> {
+
+        Button generateButton = new Button("Generate API Key", event -> {
             if (!storeIdField.isEmpty() && !descriptionField.isEmpty() && accessLevelGroup.getValue() != null) {
                 ApiKey newApiKey = new ApiKey();
                 newApiKey.setStoreId(storeIdField.getValue());
@@ -172,18 +169,19 @@ public class ApiKeyManagementView extends VerticalLayout {
                 newApiKey.setKey(generateRandomApiKey());
                 apiKeyService.save(newApiKey);
                 updateList();
+                Notification.show("API Key generated: " + newApiKey.getKey(), 3000, Notification.Position.BOTTOM_CENTER);
                 dialog.close();
             } else {
                 Notification.show("Please ensure all fields are correctly filled", 3000, Notification.Position.BOTTOM_CENTER);
             }
         });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        generateButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         formLayout.add(storeIdField, descriptionField, accessLevelGroup);
-        HorizontalLayout buttonsLayout = new HorizontalLayout(generateButton, saveButton, cancelButton);
+        HorizontalLayout buttonsLayout = new HorizontalLayout(generateButton, cancelButton);
         buttonsLayout.setJustifyContentMode(JustifyContentMode.END);
 
         dialog.add(formLayout, buttonsLayout);
