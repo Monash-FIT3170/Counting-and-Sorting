@@ -2,6 +2,7 @@ package com.business.application.views;
 
 import com.business.application.domain.User;
 import com.business.application.security.AuthenticatedUser;
+import com.business.application.views.adminapi.ApiKeyManagementView;
 import com.business.application.views.admindashboard.AdminDashboardView;
 import com.business.application.views.adminforecast.AdminForecastView;
 import com.business.application.views.adminstock.AdminStockView;
@@ -301,6 +302,12 @@ public class MainLayout extends AppLayout {
             nav.addItem(
                     new SideNavItem("Stores", StoreView.class, LineAwesomeIcon.STORE_SOLID.create()));
         }
+        if (accessChecker.hasAccess(ApiKeyManagementView.class)) {
+            nav.addItem(new SideNavItem("API Keys", ApiKeyManagementView.class, LineAwesomeIcon.KEY_SOLID.create()));
+            
+        }
+
+        
         // ADD LOGOUT SECTION
         SideNav logoutNav = new SideNav();
         SideNavItem signInOut;

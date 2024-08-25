@@ -73,6 +73,7 @@ public class AdminFinanceView extends Div {
 
         mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
+        mainLayout.addClassName("admin-finance-view");
 
 
 

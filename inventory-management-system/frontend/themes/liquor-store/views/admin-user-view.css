@@ -1,0 +1,29 @@
+.admin-user-view {
+  padding-top: var(--lumo-space-xl);
+  background-color: var(--lumo-base-color);
+}
+.admin-user-view-border {
+  border: 1px solid var(--lumo-contrast-20pct); /* Adding a border */
+  border-radius: 8px;
+  padding: var(--lumo-space-m); /* Adjust padding if needed */
+  background-color: var(--lumo-base-color);
+}
+
+/* Borders */
+.admin-user-view vaadin-board-row > * {
+  border-bottom: 1px solid var(--lumo-contrast-10pct);
+  border-right: 1px solid var(--lumo-contrast-10pct);
+}
+
+.admin-user-view vaadin-board-row.small > * {
+  border-right: none;
+}
+
+.admin-user-view vaadin-board-row.medium > *:nth-child(even),
+.admin-user-view vaadin-board-row.medium > *:only-child {
+  border-right: none;
+}
+
+.admin-user-view vaadin-board-row.large > *:last-child {
+  border-right: none;
+}
