@@ -7,6 +7,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import com.business.application.domain.ShoppingList;
 import com.business.application.domain.User;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.services.StoreService;
+import com.business.application.services.TransactionService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
@@ -53,11 +56,18 @@ import jakarta.annotation.security.RolesAllowed;
 public class DashboardView extends Main {
 private AuthenticatedUser authenticatedUser;
 private StoreService storeService;
+private final TransactionService transactionService;
 private Store store; 
-    public DashboardView( AuthenticatedUser authenticatedUser,StoreService storeService) {
+    public DashboardView( AuthenticatedUser authenticatedUser,StoreService storeService, TransactionService transactionService) {
         addClassName("dashboard-view");
         this.authenticatedUser = authenticatedUser;
         this.storeService = storeService;
+        this.transactionService = transactionService;
+
+        int storeId = 1;
+
+        BigDecimal totalSales = transactionService.getTotalSalesForStore(storeId);
+        BigDecimal profit = transactionService.getProfitForStore(storeId);
 
         // HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         // add(storeInfoLayout);
@@ -86,7 +96,12 @@ private Store store;
         highlightsLayout.add(createHighlight("Monthly Revenue",String.valueOf(store.getBudget()), 11.0),
                 createHighlight("Total Inventory Count", "12,345,340", 11.0));
 
-        leftColumn.add(highlightsLayout);
+        HorizontalLayout highlightsLayout2 = new HorizontalLayout();
+        highlightsLayout2.setWidthFull();
+        highlightsLayout2.add(createHighlight("Profit", formatCurrency(profit), 0.0),
+        createHighlight("Total Sales", formatCurrency(totalSales), 0.0));        
+
+        leftColumn.add(highlightsLayout, highlightsLayout2);
         leftColumn.add(createViewSalesQty());
         leftColumn.add(createStockLevelsByCategory());
 
@@ -98,6 +113,11 @@ private Store store;
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
     }
+
+    private String formatCurrency(BigDecimal accountBalance) {
+        return String.format("$%,.2f", accountBalance);
+    }
+
     private Component createNotifications() {
         HorizontalLayout head = createHeader("NOTIFICATIONS", "");
         head.add(LumoIcon.BELL.create());
