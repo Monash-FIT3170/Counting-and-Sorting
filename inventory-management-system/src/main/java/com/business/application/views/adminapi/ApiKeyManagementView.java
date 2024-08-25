@@ -71,26 +71,31 @@ public class ApiKeyManagementView extends VerticalLayout {
     private void configureGrid() {
         grid = new Grid<>(ApiKey.class, false);
         grid.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10);
-
+    
         grid.addColumn(ApiKey::getKey)
             .setHeader("API Key")
             .setAutoWidth(true);
-
+    
         grid.addColumn(ApiKey::getStoreId)
             .setHeader("Store ID")
             .setAutoWidth(true)
             .setSortable(true);
-
+    
         grid.addColumn(ApiKey::getDescription)
             .setHeader("Description")
             .setAutoWidth(true);
-
+    
         grid.addColumn(ApiKey::getAccessLevel)
             .setHeader("Access Level")
             .setAutoWidth(true);
-
-        grid.addComponentColumn(apiKey -> createRemoveButton(grid, apiKey)).setHeader("Actions");
-
+    
+        // Combine actions into a single horizontal layout
+        grid.addComponentColumn(apiKey -> {
+            HorizontalLayout actionsLayout = new HorizontalLayout();
+            actionsLayout.add(createRemoveButton(grid, apiKey), createCopyButton(apiKey));
+            return actionsLayout;
+        }).setHeader("Actions").setAutoWidth(true);
+    
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
         updateList();
@@ -120,6 +125,38 @@ public class ApiKeyManagementView extends VerticalLayout {
         return button;
     }
 
+    private Button createCopyButton(ApiKey apiKey) {
+        // Initialize the button with an icon
+        Button button = new Button(new Icon(VaadinIcon.CLIPBOARD));
+        
+        // Set the click listener for the button
+        button.addClickListener(clickEvent -> handleCopyButtonClick(button, apiKey));
+        
+        // Add consistent styling for the button
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_PRIMARY);
+        button.getStyle().set("border", "1px solid var(--lumo-contrast-20pct)");
+        button.getStyle().set("padding", "0.5em");
+        
+        return button;
+    }
+    
+    private void handleCopyButtonClick(Button button, ApiKey apiKey) {
+        // Get the API key and encode it in Base64
+        String key = apiKey.getKey();
+    
+        // JavaScript snippet to copy the text to the clipboard
+        String script = "navigator.clipboard.writeText('" + key + "').then(function() {" +
+                        "   console.log('Copied to clipboard');" +
+                        "}, function(err) {" +
+                        "   console.error('Failed to copy: ', err);" +
+                        "});";
+    
+        // Get the UI and execute the JavaScript code if the UI is present
+        button.getUI().ifPresent(ui -> ui.getPage().executeJs(script));
+    
+        // Show a notification to the user
+        Notification.show("API Key copied to clipboard");
+    }
     private void configureFilter() {
         Icon searchIcon = VaadinIcon.SEARCH.create();
         storeIdFilter.setSuffixComponent(searchIcon);
@@ -133,7 +170,7 @@ public class ApiKeyManagementView extends VerticalLayout {
             PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
             (root, criteriaQuery, criteriaBuilder) -> {
                 if (storeIdFilter.getValue() == null || storeIdFilter.getValue().isEmpty()) {
-                    return null; // No filter applied if the input is empty.
+                    return null;
                 }
                 String filter = "%" + storeIdFilter.getValue().toLowerCase() + "%";
                 return criteriaBuilder.like(criteriaBuilder.lower(root.get("storeId")), filter);
@@ -152,13 +189,10 @@ public class ApiKeyManagementView extends VerticalLayout {
         TextField descriptionField = new TextField("Description");
         descriptionField.setRequiredIndicatorVisible(true);
 
-        // Access Level selector using Radio Buttons
         RadioButtonGroup<String> accessLevelGroup = new RadioButtonGroup<>();
         accessLevelGroup.setLabel("Access Level");
         accessLevelGroup.setItems("Admin", "Manager");
         accessLevelGroup.setRequired(true);
-
-
 
         Button generateButton = new Button("Generate API Key", event -> {
             if (!storeIdField.isEmpty() && !descriptionField.isEmpty() && accessLevelGroup.getValue() != null) {

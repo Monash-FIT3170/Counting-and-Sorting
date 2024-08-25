@@ -59,7 +59,8 @@ public class UserFinanceView extends Div {
     @Autowired
     public UserFinanceView(TransactionService transactionService) {
         this.transactionService = transactionService;
-        addClassName("store-finance-view");
+        addClassName("manager-finance-view");
+
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
