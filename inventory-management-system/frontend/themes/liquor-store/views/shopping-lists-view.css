@@ -72,6 +72,7 @@
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 5px;
+  
 }
 
 .shopping-lists-view .date {
@@ -90,6 +91,12 @@
   .shopping-lists-view .card {
       flex: 1 1 99%; 
   }
+}
+
+[theme~="dark"] .shopping-lists-view .card {
+  background-color: var(--lumo-base-color);
+  border: solid 1px var(--lumo-contrast-10pct);
+  box-shadow: 0 6px 6px rgba(0,0,0,0.1);
 }
 
 
