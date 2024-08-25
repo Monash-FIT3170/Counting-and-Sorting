@@ -215,6 +215,7 @@ public class AdminFinanceView extends Div {
     private Chart createProfitPieChart() {
         Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Profit Distribution Among Stores");
 
         // Get the profit data for all stores
@@ -255,6 +256,7 @@ public class AdminFinanceView extends Div {
         // Bar Chart
         Chart chart = new Chart(ChartType.COLUMN);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Yearly Financial Analysis");
         chart.setWidth("97%");
     
@@ -394,6 +396,7 @@ public class AdminFinanceView extends Div {
         // Chart for cumulative sum
         Chart chart = new Chart(ChartType.SPLINE);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Cumulative Sum of Transactions Over Time");
         chart.setWidth("97%");
     
