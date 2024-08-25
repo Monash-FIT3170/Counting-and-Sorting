@@ -7,10 +7,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
+import com.business.application.services.TransactionService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
@@ -42,8 +45,13 @@ import jakarta.annotation.security.RolesAllowed;
 
 public class AdminDashboardView extends Main {
 
-    public AdminDashboardView() {
+    private final TransactionService transactionService;
+
+    public AdminDashboardView(TransactionService transactionService) {
         addClassName("admin-dashboard-view");
+        this.transactionService = transactionService;
+
+
 
         HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         add(storeInfoLayout);
@@ -56,10 +64,15 @@ public class AdminDashboardView extends Main {
 
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue", "$213,434.40", 11.0),
-                createHighlight("Total Inventory Count", "12,345,340", 11.0));
+        highlightsLayout.add(createHighlight("Average Store Monthly Revenue", formatCurrency(getTotalRevenue().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 9.0),
+                createHighlight("Total Inventory Count", "37,345,340", 8.0));
 
-        leftColumn.add(highlightsLayout);
+        HorizontalLayout highlightsLayout2 = new HorizontalLayout();
+        highlightsLayout2.setWidthFull();
+        highlightsLayout2.add(createHighlight("Total Stores Profit", formatCurrency(getTotalProfit()), 0.0),
+        createHighlight("Total Stores Revenue", formatCurrency(getTotalRevenue()), 0.0));
+
+        leftColumn.add(highlightsLayout, highlightsLayout2);
         leftColumn.add(createViewSalesQty());
         leftColumn.add(createStockLevelsByCategory());
 
@@ -70,6 +83,20 @@ public class AdminDashboardView extends Main {
 
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
+    }
+
+    private BigDecimal getTotalRevenue() {
+        return transactionService.getTotalSalesForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal getTotalProfit() {
+        return transactionService.getProfitsForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private String formatCurrency(BigDecimal accountBalance) {
+        return String.format("$%,.2f", accountBalance);
     }
 
     private Component createShoppingListRequests() {

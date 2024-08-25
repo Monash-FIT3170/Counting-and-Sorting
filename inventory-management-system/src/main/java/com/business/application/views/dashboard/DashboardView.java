@@ -95,7 +95,7 @@ private Store store;
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
         highlightsLayout.add(createHighlight("Monthly Revenue",formatCurrency(totalSales.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 11.0),
-                createHighlight("Total Inventory Count", "12,345,340", 11.0));
+                createHighlight("Inventory Count", "12,345,340", 11.0));
 
         HorizontalLayout highlightsLayout2 = new HorizontalLayout();
         highlightsLayout2.setWidthFull();
