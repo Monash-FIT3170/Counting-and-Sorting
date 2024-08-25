@@ -10,12 +10,15 @@ vaadin-app-layout {
 
 vaadin-app-layout::part(navbar) {
   border: 0 solid;
-  border-radius: var(--lumo-border-radius-xl) 0 0 0;
   padding: var(--lumo-space-m) var(--lumo-space-xl) var(--lumo-space-m) var(--lumo-space-l);
 
   /* Glass Effects */
   box-shadow: var(--lumo-box-shadow-m);
   backdrop-filter: var(--lumo-blur);
+}
+
+vaadin-app-layout:not([overlay])[drawer-opened]::part(navbar) {
+  border-radius: var(--lumo-border-radius-xl) 0 0 0;
 }
 
 vaadin-horizontal-layout[slot="navbar"] .left-layout {
@@ -55,7 +58,7 @@ vaadin-scroller[slot="drawer"] {
 
 [slot="drawer"]:is(header, footer) {
   display: flex;
-  align-items: center;
+  justify-content: center;
   min-height: var(--lumo-size-xl);
   box-sizing: border-box;
   background: transparent;
@@ -63,8 +66,9 @@ vaadin-scroller[slot="drawer"] {
 }
 
 .logo {
-  width: 75%;
-  padding-left: var(--lumo-space-m);
+  width: calc(147px * 1.2);
+  height: calc(30px * 1.2);
+  color: var(--lumo-body-text-color);
 }
 
 [slot="drawer"]:is(header, footer):is(:empty) {
