@@ -264,7 +264,7 @@ public class InventoryView extends Div {
         filterRow.getCell(nameColumn).setComponent(nameFilter);
 
         ComboBox<String> categoryFilter = new ComboBox<>();
-        categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
+        categoryFilter.setItems("Beer", "Wine", "Spirits", "Premix", "Misc");
         categoryFilter.setPlaceholder("Filter");
         categoryFilter.setClearButtonVisible(true);
         categoryFilter.setWidth("100%");
