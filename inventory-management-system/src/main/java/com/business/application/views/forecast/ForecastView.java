@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -43,8 +46,10 @@ public class ForecastView extends Main {
     private Set<String> displayedItems = new HashSet<>();
     private Chart chart;
     private MultiSelectListBox<String> multiSelectListBox;
+    private WebScrapedProductService webScrapedProductService;
 
-    public ForecastView() {
+    @Autowired
+    public ForecastView(WebScrapedProductService webScrapedProductService) {
         addClassName("forecast-view");
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.addClassName("forecast-view-layout");
@@ -54,6 +59,8 @@ public class ForecastView extends Main {
         board.addRow(createViewStockForecast());
         mainLayout.add(board);
         add(mainLayout);
+        this.webScrapedProductService = webScrapedProductService;
+
     }
 
     private Component createViewStockForecast() {
