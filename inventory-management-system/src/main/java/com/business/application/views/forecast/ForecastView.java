@@ -256,12 +256,4 @@ public class ForecastView extends Main {
         header.setWidthFull();
         return header;
     }
-
-        // Method to clear the graph and untick all selected items
-        // private void clearGraph() {
-        //     // Clear the chart
-        //     chart.getConfiguration().getSeries().clear();
-        //     // Untick all selected items
-        //     multiSelectListBox.deselectAll();
-        // }
 }
