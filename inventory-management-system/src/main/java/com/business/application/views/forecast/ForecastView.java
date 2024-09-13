@@ -35,6 +35,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
+import scala.collection.mutable.HashMap;
+
 import com.business.application.domain.WebScrapedProduct;
 import com.business.application.services.WebScrapedProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,12 +225,13 @@ public class ForecastView extends Main {
         return mainLayout;
     }
 
+    
     // Method to update chart data based on selected items
     private void updateChartData(Configuration conf, ArrayList<String> selectedItems) {
         Random random = new Random();
-    
         // Add new series
         for (String item : selectedItems) {
+            System.out.println("Adding series for: " + item);
             if (!displayedItems.contains(item)) {
                 // Generate random data points for the product
                 List<Integer> randomData = new ArrayList<>();
@@ -248,15 +251,20 @@ public class ForecastView extends Main {
                 displayedItems.add(item);
             }
         }
-    
+       
+
         // Remove series for items that are no longer selected
         displayedItems.removeIf(item -> {
+            System.out.println("Removing series for: " + item);
             if (!selectedItems.contains(item)) {
                 conf.getSeries().removeIf(series -> series.getName().equals(item));
+                System.out.println("Removing series for: " + item);
                 return true;
             }
             return false;
         });
+
+        // Redraw chart
         conf.getChart();
     }
 
