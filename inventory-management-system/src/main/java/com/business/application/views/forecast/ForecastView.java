@@ -2,7 +2,9 @@ package com.business.application.views.forecast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.business.application.views.MainLayout;
@@ -33,18 +35,27 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
-
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Forecast")
 @Route(value = "forecast", layout = MainLayout.class)
 @RolesAllowed("USER")
 
 public class ForecastView extends Main {
+
     private Set<String> displayedItems = new HashSet<>();
     private Chart chart;
     private MultiSelectListBox<String> multiSelectListBox;
+    private List<WebScrapedProduct> suppliers;
 
-    public ForecastView() {
+    private final WebScrapedProductService webScrapedProductService;
+
+    @Autowired
+    public ForecastView(WebScrapedProductService webScrapedProductService) {
+        this.webScrapedProductService = webScrapedProductService;
+        this.suppliers = new ArrayList<>();
         addClassName("forecast-view");
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.addClassName("forecast-view-layout");
@@ -53,78 +64,93 @@ public class ForecastView extends Main {
         Board board = new Board();
         board.addRow(createViewStockForecast());
         mainLayout.add(board);
+        
         add(mainLayout);
+
+        // Accessing webScrapedProductService in the constructor
+        suppliers = webScrapedProductService.getAllWebscrapedProducts();
     }
 
-    private Component createViewStockForecast() {
-        // Header
-        HorizontalLayout header = createHeader("", "");
+        private List<String> getProductNamesByCategory(String category) {
+        return suppliers.stream()
+            .filter(product -> product.getCategory().equalsIgnoreCase(category))
+            .map(WebScrapedProduct::getName)
+            .collect(Collectors.toList());
+        }
+        private Component createViewStockForecast() {
+            // Header
+            HorizontalLayout header = createHeader("", "");
+        
+            // Create buttons
+            Button allCategoriesBtn = new Button("All Categories");
+            Button beerBtn = new Button("Beer");
+            Button wineBtn = new Button("Wine");
+            Button spiritsBtn = new Button("Spirits");
+            Button premixBtn = new Button("Premix");
+            Button miscBtn = new Button("Misc");
+        
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
+            buttonLayout.setAlignItems(FlexComponent.Alignment.START);
+        
+            // Create ComboBox for search
+            ComboBox<String> searchComboBox = new ComboBox<>();
+            searchComboBox.setLabel("Select Items");
+            searchComboBox.setPlaceholder("Type to search...");
+            searchComboBox.setItems(suppliers.stream().map(WebScrapedProduct::getName).collect(Collectors.toList()));
+        
+            MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
+            multiSelectListBox.setItems(suppliers.stream().map(WebScrapedProduct::getName).collect(Collectors.toList()));
+        
+            // Set fixed height and make the list scrollable
+            multiSelectListBox.setHeight("50vh");
+            multiSelectListBox.getStyle().set("overflow-y", "auto"); // Enables vertical scrolling
+        
+            // VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
+            // selectLayout.setPadding(false);
+            // selectLayout.setSpacing(false);
+            // selectLayout.setAlignItems(FlexComponent.Alignment.START);
+            // selectLayout.setHeight("100%"); // Or any appropriate height based on your layout
 
-        // Create buttons
-        Button allCategoriesBtn = new Button("All Categories");
-        Button beerBtn = new Button("Beer");
-        Button wineBtn = new Button("Wine");
-        Button spiritsBtn = new Button("Spirits");
-        Button premixBtn = new Button("Premix");
-        Button miscBtn = new Button("Misc");
-        // Button clearGraphBtn = new Button("Clear Graph"); // Clear graph button
 
-        // Add buttons to a HorizontalLayout
-        HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
-        buttonLayout.setAlignItems(FlexComponent.Alignment.START);
-
-        // Create ComboBox for search
-        ComboBox<String> searchComboBox = new ComboBox<>();
-        searchComboBox.setLabel("Select Items");
-        searchComboBox.setPlaceholder("Type to search...");
-
-        // Define the items for each button
-        String[] beerItems = {"Absolut: Vodka 1L", "Fireball: Cinnamon Flavoured Whisky 1.14L"};
-        String[] wineItems = {"Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Moët & Chandon: Impérial Brut", "Moët & Chandon: Rosé Impérial"};
-        String[] spiritsItems = {"Fireball: Cinnamon Flavoured Whisky 1.14L", "Good Day: Watermelon Soju"};
-        String[] premixItems = {"Vodka Cruiser: Wild Raspberry 275mL", "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Brookvale Union: Vodka Lemon Squash Cans 330mL","Vodka Cruiser: Lush Guava 275mL"};
-        String[] miscItems = {"Good Day: Watermelon Soju", "Vodka Cruiser: Juicy Watermelon 275mL", "Smirnoff: Ice Double Black Cans 10 Pack 375mL"};
-
-        String[] allCategoriesItems = Stream.of(beerItems, wineItems, spiritsItems, premixItems, miscItems).flatMap(Stream::of).toArray(String[]::new);
-
-        // Set initial items for the search ComboBox
-        searchComboBox.setItems(allCategoriesItems);
-
-        // MultiSelectListBox for multi-selector
-        MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
-        multiSelectListBox.setItems(allCategoriesItems);
-        multiSelectListBox.setHeightFull(); // Make MultiSelectListBox take full height
-
-        // Add click listeners to each button to update the items in the search ComboBox and MultiSelectListBox
         allCategoriesBtn.addClickListener(event -> {
+            List<String> allCategoriesItems = suppliers.stream()
+                .map(WebScrapedProduct::getName)
+                .collect(Collectors.toList());
             searchComboBox.setItems(allCategoriesItems);
             multiSelectListBox.setItems(allCategoriesItems);
         });
+        
         beerBtn.addClickListener(event -> {
+            List<String> beerItems = getProductNamesByCategory("Beer");
             searchComboBox.setItems(beerItems);
             multiSelectListBox.setItems(beerItems);
         });
+        
         wineBtn.addClickListener(event -> {
+            List<String> wineItems = getProductNamesByCategory("Wine");
             searchComboBox.setItems(wineItems);
             multiSelectListBox.setItems(wineItems);
         });
+
         spiritsBtn.addClickListener(event -> {
+            List<String> spiritsItems = getProductNamesByCategory("Spirits");
             searchComboBox.setItems(spiritsItems);
             multiSelectListBox.setItems(spiritsItems);
         });
+
         premixBtn.addClickListener(event -> {
+            List<String> premixItems = getProductNamesByCategory("Premix");
             searchComboBox.setItems(premixItems);
             multiSelectListBox.setItems(premixItems);
         });
+        
         miscBtn.addClickListener(event -> {
+            List<String> miscItems = getProductNamesByCategory("Misc");
             searchComboBox.setItems(miscItems);
             multiSelectListBox.setItems(miscItems);
         });
-        // // Add clear graph button listener
-        // clearGraphBtn.addClickListener(event -> {
-        //     clearGraph();
-        // }); // Add clear graph button listener
-
+        
+        System.out.println("HEY");
         // Layout for ComboBox and MultiSelectListBox
         VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
         selectLayout.setPadding(false);
@@ -192,6 +218,7 @@ public class ForecastView extends Main {
          
 
         // Add mainLayout to the ForecastView component
+        System.out.println("Checking mainLayout: " + mainLayout);
         add(mainLayout);
 
         return mainLayout;
