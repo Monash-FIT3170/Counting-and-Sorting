@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import java.util.Random;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -90,26 +90,20 @@ public class ForecastView extends Main {
             Button miscBtn = new Button("Misc");
         
             HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
-            buttonLayout.setAlignItems(FlexComponent.Alignment.START);
+            buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+            buttonLayout.getStyle().set("justify-content", "center");
         
             // Create ComboBox for search
             ComboBox<String> searchComboBox = new ComboBox<>();
             searchComboBox.setLabel("Select Items");
             searchComboBox.setPlaceholder("Type to search...");
-            searchComboBox.setItems(suppliers.stream().map(WebScrapedProduct::getName).collect(Collectors.toList()));
         
             MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
-            multiSelectListBox.setItems(suppliers.stream().map(WebScrapedProduct::getName).collect(Collectors.toList()));
-        
+            
             // Set fixed height and make the list scrollable
             multiSelectListBox.setHeight("50vh");
             multiSelectListBox.getStyle().set("overflow-y", "auto"); // Enables vertical scrolling
-        
-            // VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
-            // selectLayout.setPadding(false);
-            // selectLayout.setSpacing(false);
-            // selectLayout.setAlignItems(FlexComponent.Alignment.START);
-            // selectLayout.setHeight("100%"); // Or any appropriate height based on your layout
+            
 
 
         allCategoriesBtn.addClickListener(event -> {
@@ -157,6 +151,11 @@ public class ForecastView extends Main {
         selectLayout.setSpacing(false);
         selectLayout.setAlignItems(FlexComponent.Alignment.START);
         selectLayout.setHeightFull(); // Make this layout take full height
+        //can you give it a bright white background?
+        selectLayout.getStyle().set("background-color", "white");
+        // is there anything more we can do to make it stand out?
+        selectLayout.getStyle().set("border", "1px solid #e0e0e0");
+       
 
         // Chart configuration
         Chart chart = new Chart(ChartType.LINE);
@@ -226,36 +225,30 @@ public class ForecastView extends Main {
 
     // Method to update chart data based on selected items
     private void updateChartData(Configuration conf, ArrayList<String> selectedItems) {
+        Random random = new Random();
+    
         // Add new series
         for (String item : selectedItems) {
             if (!displayedItems.contains(item)) {
-                if ("Absolut: Vodka 1L".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 100, 95, 85, 80, 75, 70, 65, 60, 55, 50, 45));
-                } else if ("Fireball: Cinnamon Flavoured Whisky 1.14L".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40));
-                } else if ("Suntory: -196 Double Lemon 10 Pack Cans 330mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 100, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
-                } else if ("Moët & Chandon: Impérial Brut".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 100, 92, 85, 78, 64, 50, 49, 42, 37, 27, 22));
-                } else if ("Moët & Chandon: Rosé Impérial".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 98, 90, 82, 75, 68, 60, 52, 45, 38, 30, 25));
-                } else if ("Good Day: Watermelon Soju".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 96, 90, 82, 75, 70, 65, 55, 47, 42, 37, 20));
-                } else if ("Vodka Cruiser: Wild Raspberry 275mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 100, 92, 82, 78, 68, 63, 52, 45, 40, 30, 20));
-                } else if ("Smirnoff: Ice Double Black Cans 10 Pack 375mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 99, 94, 88, 77, 66, 60, 50, 48, 38, 33, 19));
-                } else if ("Brookvale Union: Vodka Lemon Squash Cans 330mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 93, 88, 85, 80, 68, 64, 61, 50, 33, 27, 21));
-                } else if ("Vodka Cruiser: Lush Guava 275mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 92, 87, 80, 75, 70, 68, 60, 46, 34, 26, 25));
-                } else if ("Vodka Cruiser: Juicy Watermelon 275mL".equals(item)) {
-                    conf.addSeries(new ListSeries(item, 88, 80, 75, 70, 64, 57, 55, 42, 35, 32, 20));
+                // Generate random data points for the product
+                List<Integer> randomData = new ArrayList<>();
+                for (int i = 0; i < 11; i++) {
+                    randomData.add(random.nextInt(101)); // Random integer between 0 and 100
                 }
+    
+                // Create a new ListSeries and set its data
+                ListSeries series = new ListSeries();
+                series.setName(item);
+                series.setData(randomData.toArray(new Number[0])); // Convert List<Integer> to Number[]
+    
+                // Add series to the chart configuration
+                conf.addSeries(series);
+    
+                // Add item to displayedItems to keep track of displayed series
                 displayedItems.add(item);
             }
         }
-
+    
         // Remove series for items that are no longer selected
         displayedItems.removeIf(item -> {
             if (!selectedItems.contains(item)) {
@@ -264,8 +257,6 @@ public class ForecastView extends Main {
             }
             return false;
         });
-
-        // Redraw chart
         conf.getChart();
     }
 
