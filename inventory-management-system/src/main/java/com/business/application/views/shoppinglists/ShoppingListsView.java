@@ -106,14 +106,14 @@ public class ShoppingListsView extends Div {
         Div card = new Div();
         card.addClassName("card");
 
-        Label nameLabel = new Label("List " + item.getListId() + " - " + item.getName());
+        Span nameLabel = new Span("List " + item.getListId() + " - " + item.getName());
         nameLabel.addClassName("name");
 
-        Label priceLabel = new Label("Order cost: $" + item.getTotalPrice().toString());
+        Span priceLabel = new Span("Order cost: $" + item.getTotalPrice().toString());
         priceLabel.addClassName("price");
 
 
-        Label dateLabel = new Label(item.getDateString()); 
+        Span dateLabel = new Span(item.getDateString()); 
         dateLabel.addClassName("date");
 
         Span statusLabel = createStatusLabel(item.getStatus());
@@ -176,9 +176,9 @@ public class ShoppingListsView extends Div {
         // Adding a component renderer to the grid
         grid.addColumn(new ComponentRenderer<>(item -> {
             VerticalLayout layout = new VerticalLayout();
-            layout.add(new Label("ID: " + item.getListId()));
-            layout.add(new Label("Date: " + item.getDateString()));
-            layout.add(new Label("Status: " + item.getStatus()));
+            layout.add(new Span("ID: " + item.getListId()));
+            layout.add(new Span("Date: " + item.getDateString()));
+            layout.add(new Span("Status: " + item.getStatus()));
             return layout;
         })).setHeader("Details");
     }
