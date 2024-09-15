@@ -195,7 +195,7 @@ public class ForecastView extends Main {
             conf.addyAxis(yAxis);
 
             // Initial chart data update
-            updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
+            conf.addSeries(new ListSeries("No Data", new Number[]{})); // Pass an empty list to display no lines initially
 
             // Change listener for MultiSelectListBox
             multiSelectListBox.addSelectionListener(event -> {
