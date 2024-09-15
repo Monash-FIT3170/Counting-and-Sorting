@@ -113,12 +113,16 @@ public class ForecastView extends Main {
             searchBar.addValueChangeListener(event -> updateItemList()); 
 
              // Create Clear Button
-            Button clearBtn = new Button("Clear");
-            clearBtn.getStyle().set("background-color", "#FF0000"); // Red color
-            clearBtn.getStyle().set("color", "#FFFFFF"); // White text
-            clearBtn.getStyle().set("border", "none");
-            clearBtn.getStyle().set("border-radius", "4px");
-            clearBtn.getStyle().set("padding", "10px");
+            Button clearBtn = new Button("Clear Graph");
+            // Create Clear Button
+            clearBtn.getStyle().set("margin-left", "40px");
+
+
+            // clearBtn.getStyle().set("background-color", "#FF0000"); // Red color
+            // clearBtn.getStyle().set("color", "#FFFFFF"); // White text
+            // clearBtn.getStyle().set("border", "none");
+            // clearBtn.getStyle().set("border-radius", "4px");
+            // clearBtn.getStyle().set("padding", "10px");
             clearBtn.addClickListener(event -> {
                 multiSelectListBox.deselectAll(); // Deselect all items
                 searchBar.clear();
