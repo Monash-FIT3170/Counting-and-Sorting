@@ -91,14 +91,16 @@ public class ForecastView extends Main {
             Button premixBtn = new Button("Premix");
             Button miscBtn = new Button("Misc");
         
-            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
-            buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-            buttonLayout.getStyle().set("justify-content", "center");
-        
             // Create ComboBox for search
             ComboBox<String> searchComboBox = new ComboBox<>();
-            searchComboBox.setLabel("Select Items");
+            searchComboBox.setWidth("200px");
+            // searchComboBox.getStyle().set("margin-left", "auto");
             searchComboBox.setPlaceholder("Type to search...");
+
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchComboBox);
+            buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+            buttonLayout.getStyle().set("justify-content", "center");
+            buttonLayout.getStyle().set("margin-bottom", "20px");
         
             MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
             
@@ -150,13 +152,13 @@ public class ForecastView extends Main {
         
         System.out.println("HEY");
         // Layout for ComboBox and MultiSelectListBox
-        VerticalLayout selectLayout = new VerticalLayout(searchComboBox, multiSelectListBox);
+        VerticalLayout selectLayout = new VerticalLayout(multiSelectListBox);
         selectLayout.setPadding(false);
         selectLayout.setSpacing(false);
         selectLayout.setAlignItems(FlexComponent.Alignment.START);
         selectLayout.setHeight("70vh"); 
 
-        selectLayout.getStyle().set("border", "1px solid #e0e0e0");
+        // selectLayout.getStyle().set("border", "1px solid #e0e0e0");
        
 
         // Chart configuration
@@ -206,7 +208,7 @@ public class ForecastView extends Main {
         mainContentLayout.setSizeFull();
         mainContentLayout.setHeightFull(); // Make this layout take full height
         mainContentLayout.setPadding(false);
-        mainContentLayout.setSpacing(false);
+        mainContentLayout.setSpacing(true);
 
         // Main layout combining everything
         VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
