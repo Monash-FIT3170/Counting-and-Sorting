@@ -38,6 +38,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.HashMap;
 import java.util.Map;
+import com.vaadin.flow.component.textfield.TextField; 
+import com.vaadin.flow.data.value.ValueChangeMode; 
 
 // import scala.collection.mutable.HashMap;
 
@@ -56,6 +58,8 @@ public class ForecastView extends Main {
     private MultiSelectListBox<String> multiSelectListBox;
     private List<WebScrapedProduct> suppliers;
     private Button allCategoriesBtn;
+    private String selectedCategory = "All";  
+    private TextField searchBar;  
 
     private final WebScrapedProductService webScrapedProductService;
     private Map<String, List<Number>> itemDataMap = new HashMap<>();
@@ -101,10 +105,12 @@ public class ForecastView extends Main {
             Button miscBtn = new Button("Misc");
         
             // Create ComboBox for search
-            ComboBox<String> searchComboBox = new ComboBox<>();
-            searchComboBox.setWidth("200px");
-            searchComboBox.setPlaceholder("Type to search...");
-            searchComboBox.setClearButtonVisible(true);
+            searchBar = new TextField();
+            searchBar.setPlaceholder("Search items...");
+            searchBar.setWidth("300px");
+            searchBar.setClearButtonVisible(true);
+            searchBar.setValueChangeMode(ValueChangeMode.EAGER); 
+            searchBar.addValueChangeListener(event -> updateItemList()); 
 
              // Create Clear Button
             Button clearBtn = new Button("Clear");
@@ -115,50 +121,44 @@ public class ForecastView extends Main {
             clearBtn.getStyle().set("padding", "10px");
             clearBtn.addClickListener(event -> {
                 multiSelectListBox.deselectAll(); // Deselect all items
-                updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
+                searchBar.clear();
+                updateItemList();
+                // updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
             });
 
-            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchComboBox, clearBtn);
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchBar, clearBtn);
             buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             buttonLayout.getStyle().set("justify-content", "center");
             buttonLayout.getStyle().set("margin-bottom", "20px");
 
             allCategoriesBtn.addClickListener(event -> {
-                List<String> allCategoriesItems = suppliers.stream()
-                    .map(WebScrapedProduct::getName)
-                    .collect(Collectors.toList());
-                searchComboBox.setItems(allCategoriesItems);
-                multiSelectListBox.setItems(allCategoriesItems);
+                selectedCategory = "All";
+                updateItemList();  // Update list when category is clicked
             });
             
             beerBtn.addClickListener(event -> {
-                List<String> beerItems = getProductNamesByCategory("Beer");
-                searchComboBox.setItems(beerItems);
-                multiSelectListBox.setItems(beerItems);
+                selectedCategory = "Beer";
+                updateItemList();  // Update list when category is clicked
             });
             
             wineBtn.addClickListener(event -> {
-                List<String> wineItems = getProductNamesByCategory("Wine");
-                searchComboBox.setItems(wineItems);
-                multiSelectListBox.setItems(wineItems);
+                selectedCategory = "Wine";
+                updateItemList();  // Update list when category is clicked
             });
-
+    
             spiritsBtn.addClickListener(event -> {
-                List<String> spiritsItems = getProductNamesByCategory("Spirits");
-                searchComboBox.setItems(spiritsItems);
-                multiSelectListBox.setItems(spiritsItems);
+                selectedCategory = "Spirits";
+                updateItemList();  // Update list when category is clicked
             });
-
+    
             premixBtn.addClickListener(event -> {
-                List<String> premixItems = getProductNamesByCategory("Premix");
-                searchComboBox.setItems(premixItems);
-                multiSelectListBox.setItems(premixItems);
+                selectedCategory = "Premix";
+                updateItemList();  // Update list when category is clicked
             });
-            
+    
             miscBtn.addClickListener(event -> {
-                List<String> miscItems = getProductNamesByCategory("Misc");
-                searchComboBox.setItems(miscItems);
-                multiSelectListBox.setItems(miscItems);
+                selectedCategory = "Misc";
+                updateItemList();  // Update list when category is clicked
             });
 
             multiSelectListBox = new MultiSelectListBox<>();        
@@ -238,6 +238,17 @@ public class ForecastView extends Main {
             // Add mainLayout to the ForecastView component
             add(mainLayout);
             return mainLayout;
+    }
+
+    private void updateItemList() {
+        String filterText = searchBar.getValue().toLowerCase();
+        List<String> filteredItems = suppliers.stream()
+            .filter(product -> (selectedCategory.equals("All") || product.getCategory().equalsIgnoreCase(selectedCategory)) &&
+                               product.getName().toLowerCase().contains(filterText))
+            .map(WebScrapedProduct::getName)
+            .collect(Collectors.toList());
+
+        multiSelectListBox.setItems(filteredItems);
     }
 
     
