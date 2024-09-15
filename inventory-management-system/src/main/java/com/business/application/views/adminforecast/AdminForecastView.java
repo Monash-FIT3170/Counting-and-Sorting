@@ -86,7 +86,10 @@ public class AdminForecastView extends Main {
 
         // Add buttons to a HorizontalLayout
         HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn);
-        buttonLayout.setAlignItems(FlexComponent.Alignment.START);
+        
+        buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        buttonLayout.getStyle().set("justify-content", "center");
+
 
         // Create ComboBox for search
         ComboBox<String> searchComboBox = new ComboBox<>();
