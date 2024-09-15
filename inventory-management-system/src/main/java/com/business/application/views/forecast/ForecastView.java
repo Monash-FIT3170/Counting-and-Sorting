@@ -106,7 +106,19 @@ public class ForecastView extends Main {
             searchComboBox.setPlaceholder("Type to search...");
             searchComboBox.setClearButtonVisible(true);
 
-            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchComboBox);
+             // Create Clear Button
+            Button clearBtn = new Button("Clear");
+            clearBtn.getStyle().set("background-color", "#FF0000"); // Red color
+            clearBtn.getStyle().set("color", "#FFFFFF"); // White text
+            clearBtn.getStyle().set("border", "none");
+            clearBtn.getStyle().set("border-radius", "4px");
+            clearBtn.getStyle().set("padding", "10px");
+            clearBtn.addClickListener(event -> {
+                multiSelectListBox.deselectAll(); // Deselect all items
+                updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
+            });
+
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchComboBox, clearBtn);
             buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             buttonLayout.getStyle().set("justify-content", "center");
             buttonLayout.getStyle().set("margin-bottom", "20px");
