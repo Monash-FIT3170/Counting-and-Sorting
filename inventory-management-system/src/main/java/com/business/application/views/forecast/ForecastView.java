@@ -250,20 +250,29 @@ public class ForecastView extends Main {
         
         // Add new series for selected items that are not already displayed
         for (String item : selectedItems) {
+            System.out.println("Processing series for: " + item);
             
             List<Number> data;
             if (itemDataMap.containsKey(item)) {
                 // Reuse existing data if available
                 data = itemDataMap.get(item);
             } else {
-                // Generate random data points for the item
-                List<Number> randomData = new ArrayList<>();
+                // Generate trend-based data points for the item
+                List<Number> trendData = new ArrayList<>();
+                int initialValue = random.nextInt(101); // Random starting value
+                int trendDirection = random.nextBoolean() ? 1 : -1; // Randomly decide trend direction
+                
                 for (int i = 0; i < 11; i++) {
-                    randomData.add(random.nextInt(101)); // Random integer between 0 and 100
+                    trendData.add(initialValue);
+                    initialValue += trendDirection * random.nextInt(5); // Increment or decrement by a small value
+                    // Ensure values stay within a reasonable range
+                    if (initialValue < 0) initialValue = 0;
+                    if (initialValue > 100) initialValue = 100;
                 }
+                
                 // Save generated data to map
-                itemDataMap.put(item, randomData);
-                data = randomData;
+                itemDataMap.put(item, trendData);
+                data = trendData;
             }
         
             // Create a new series and add it to the temporary list
