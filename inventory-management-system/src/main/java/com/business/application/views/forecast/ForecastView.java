@@ -51,6 +51,7 @@ public class ForecastView extends Main {
     private Chart chart;
     private MultiSelectListBox<String> multiSelectListBox;
     private List<WebScrapedProduct> suppliers;
+    private Button allCategoriesBtn;
 
     private final WebScrapedProductService webScrapedProductService;
 
@@ -71,8 +72,10 @@ public class ForecastView extends Main {
 
         // Accessing webScrapedProductService in the constructor
         suppliers = webScrapedProductService.getAllWebscrapedProducts();
-    }
 
+        allCategoriesBtn.click();
+    }
+        
         private List<String> getProductNamesByCategory(String category) {
         return suppliers.stream()
             .filter(product -> product.getCategory().equalsIgnoreCase(category))
@@ -84,7 +87,7 @@ public class ForecastView extends Main {
             HorizontalLayout header = createHeader("", "");
         
             // Create buttons
-            Button allCategoriesBtn = new Button("All Categories");
+            allCategoriesBtn = new Button("All Categories");
             Button beerBtn = new Button("Beer");
             Button wineBtn = new Button("Wine");
             Button spiritsBtn = new Button("Spirits");
@@ -94,137 +97,131 @@ public class ForecastView extends Main {
             // Create ComboBox for search
             ComboBox<String> searchComboBox = new ComboBox<>();
             searchComboBox.setWidth("200px");
-            // searchComboBox.getStyle().set("margin-left", "auto");
             searchComboBox.setPlaceholder("Type to search...");
+            searchComboBox.setClearButtonVisible(true);
 
             HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchComboBox);
             buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             buttonLayout.getStyle().set("justify-content", "center");
             buttonLayout.getStyle().set("margin-bottom", "20px");
-        
-            MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
+
+            allCategoriesBtn.addClickListener(event -> {
+                List<String> allCategoriesItems = suppliers.stream()
+                    .map(WebScrapedProduct::getName)
+                    .collect(Collectors.toList());
+                searchComboBox.setItems(allCategoriesItems);
+                multiSelectListBox.setItems(allCategoriesItems);
+            });
             
-            // Set fixed height and make the list scrollable'
-        
-            // multiSelectListBox.setHeight("60vh");
+            beerBtn.addClickListener(event -> {
+                List<String> beerItems = getProductNamesByCategory("Beer");
+                searchComboBox.setItems(beerItems);
+                multiSelectListBox.setItems(beerItems);
+            });
+            
+            wineBtn.addClickListener(event -> {
+                List<String> wineItems = getProductNamesByCategory("Wine");
+                searchComboBox.setItems(wineItems);
+                multiSelectListBox.setItems(wineItems);
+            });
+
+            spiritsBtn.addClickListener(event -> {
+                List<String> spiritsItems = getProductNamesByCategory("Spirits");
+                searchComboBox.setItems(spiritsItems);
+                multiSelectListBox.setItems(spiritsItems);
+            });
+
+            premixBtn.addClickListener(event -> {
+                List<String> premixItems = getProductNamesByCategory("Premix");
+                searchComboBox.setItems(premixItems);
+                multiSelectListBox.setItems(premixItems);
+            });
+            
+            miscBtn.addClickListener(event -> {
+                List<String> miscItems = getProductNamesByCategory("Misc");
+                searchComboBox.setItems(miscItems);
+                multiSelectListBox.setItems(miscItems);
+            });
+
+            multiSelectListBox = new MultiSelectListBox<>();        
             multiSelectListBox.setHeightFull();
             multiSelectListBox.getStyle().set("overflow-y", "auto"); // Enables vertical scrolling
+
             
-                
+            System.out.println("HEY");
+            // Layout for ComboBox and MultiSelectListBox
+            VerticalLayout selectLayout = new VerticalLayout(multiSelectListBox);
+            selectLayout.setPadding(false);
+            selectLayout.setSpacing(false);
+            selectLayout.setAlignItems(FlexComponent.Alignment.START);
+            selectLayout.setHeight("70vh"); 
 
-        allCategoriesBtn.addClickListener(event -> {
-            List<String> allCategoriesItems = suppliers.stream()
-                .map(WebScrapedProduct::getName)
-                .collect(Collectors.toList());
-            searchComboBox.setItems(allCategoriesItems);
-            multiSelectListBox.setItems(allCategoriesItems);
-        });
+            // selectLayout.getStyle().set("border", "1px solid #e0e0e0");
         
-        beerBtn.addClickListener(event -> {
-            List<String> beerItems = getProductNamesByCategory("Beer");
-            searchComboBox.setItems(beerItems);
-            multiSelectListBox.setItems(beerItems);
-        });
-        
-        wineBtn.addClickListener(event -> {
-            List<String> wineItems = getProductNamesByCategory("Wine");
-            searchComboBox.setItems(wineItems);
-            multiSelectListBox.setItems(wineItems);
-        });
 
-        spiritsBtn.addClickListener(event -> {
-            List<String> spiritsItems = getProductNamesByCategory("Spirits");
-            searchComboBox.setItems(spiritsItems);
-            multiSelectListBox.setItems(spiritsItems);
-        });
+            // Chart configuration
+            chart = new Chart(ChartType.LINE);
+            chart.setHeight("70vh"); 
+            Configuration conf = chart.getConfiguration();
+            conf.getChart().setStyledMode(true);
+            conf.getChart().setType(ChartType.LINE);
 
-        premixBtn.addClickListener(event -> {
-            List<String> premixItems = getProductNamesByCategory("Premix");
-            searchComboBox.setItems(premixItems);
-            multiSelectListBox.setItems(premixItems);
-        });
-        
-        miscBtn.addClickListener(event -> {
-            List<String> miscItems = getProductNamesByCategory("Misc");
-            searchComboBox.setItems(miscItems);
-            multiSelectListBox.setItems(miscItems);
-        });
-        
-        System.out.println("HEY");
-        // Layout for ComboBox and MultiSelectListBox
-        VerticalLayout selectLayout = new VerticalLayout(multiSelectListBox);
-        selectLayout.setPadding(false);
-        selectLayout.setSpacing(false);
-        selectLayout.setAlignItems(FlexComponent.Alignment.START);
-        selectLayout.setHeight("70vh"); 
+            // Setup X and Y Axes
+            XAxis xAxis = new XAxis();
+            xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
+            conf.addxAxis(xAxis);
 
-        // selectLayout.getStyle().set("border", "1px solid #e0e0e0");
-       
+            YAxis yAxis = new YAxis();
+            yAxis.setTitle("Sales");
+            yAxis.setMin(0);
+            yAxis.setMax(100);
+            conf.addyAxis(yAxis);
 
-        // Chart configuration
-        Chart chart = new Chart(ChartType.LINE);
-        chart.setHeight("70vh"); 
-        Configuration conf = chart.getConfiguration();
-        conf.getChart().setStyledMode(true);
-        conf.getChart().setType(ChartType.LINE);
+            // Initial chart data update
+            updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
 
-        // Setup X and Y Axes
-        XAxis xAxis = new XAxis();
-        xAxis.setCategories("5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "Yesterday", "Today", "Tomorrow", "In 2 Days", "In 3 Days", "In 4 Days", "In 5 Days");
-        conf.addxAxis(xAxis);
+            // Change listener for MultiSelectListBox
+            multiSelectListBox.addSelectionListener(event -> {
+                updateChartData(conf, new ArrayList<>(event.getValue()));
+            });
 
-        YAxis yAxis = new YAxis();
-        yAxis.setTitle("Sales");
-        yAxis.setMin(0);
-        yAxis.setMax(100);
-        conf.addyAxis(yAxis);
+            // Legend Configuration
+            Legend legend = new Legend();
+            legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
+            legend.setAlign(HorizontalAlign.CENTER); // Align to the center horizontally
+            legend.setVerticalAlign(VerticalAlign.BOTTOM); // Align to the bottom vertically
+            conf.setLegend(legend);
 
-        // Initial chart data update
-        updateChartData(conf, new ArrayList<>()); // Pass an empty list to display no lines initially
+            // Layout for chart and selector
+            HorizontalLayout chartAndSelectLayout = new HorizontalLayout(selectLayout, chart);
+            chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+            chartAndSelectLayout.setWidthFull();
+            chartAndSelectLayout.setHeightFull(); // Make this layout take full height
+            chartAndSelectLayout.setPadding(false);
+            chartAndSelectLayout.setSpacing(false);
 
-        // Change listener for MultiSelectListBox
-        multiSelectListBox.addSelectionListener(event -> {
-            updateChartData(conf, new ArrayList<>(event.getValue()));
-        });
+            // Layout for buttons and chartAndSelectLayout
+            VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
+            mainContentLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+            mainContentLayout.setSizeFull();
+            mainContentLayout.setHeightFull(); // Make this layout take full height
+            mainContentLayout.setPadding(false);
+            mainContentLayout.setSpacing(true);
 
-        // Legend Configuration
-        Legend legend = new Legend();
-        legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
-        legend.setAlign(HorizontalAlign.CENTER); // Align to the center horizontally
-        legend.setVerticalAlign(VerticalAlign.BOTTOM); // Align to the bottom vertically
-        conf.setLegend(legend);
+            // Main layout combining everything
+            VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
+            mainLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
+            mainLayout.setSizeFull();
+            mainLayout.setHeightFull(); // Make this layout take full height
+            mainLayout.setPadding(false);
+            mainLayout.setSpacing(false);
 
-        // Layout for chart and selector
-        HorizontalLayout chartAndSelectLayout = new HorizontalLayout(selectLayout, chart);
-        chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        chartAndSelectLayout.setWidthFull();
-        chartAndSelectLayout.setHeightFull(); // Make this layout take full height
-        chartAndSelectLayout.setPadding(false);
-        chartAndSelectLayout.setSpacing(false);
+            
 
-        // Layout for buttons and chartAndSelectLayout
-        VerticalLayout mainContentLayout = new VerticalLayout(buttonLayout, chartAndSelectLayout);
-        mainContentLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        mainContentLayout.setSizeFull();
-        mainContentLayout.setHeightFull(); // Make this layout take full height
-        mainContentLayout.setPadding(false);
-        mainContentLayout.setSpacing(true);
-
-        // Main layout combining everything
-        VerticalLayout mainLayout = new VerticalLayout(header, mainContentLayout);
-        mainLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        mainLayout.setSizeFull();
-        mainLayout.setHeightFull(); // Make this layout take full height
-        mainLayout.setPadding(false);
-        mainLayout.setSpacing(false);
-
-         
-
-        // Add mainLayout to the ForecastView component
-        System.out.println("Checking mainLayout: " + mainLayout);
-        add(mainLayout);
-
-        return mainLayout;
+            // Add mainLayout to the ForecastView component
+            System.out.println("Checking mainLayout: " + mainLayout);
+            add(mainLayout);
+            return mainLayout;
     }
 
     
