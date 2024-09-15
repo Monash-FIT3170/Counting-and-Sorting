@@ -102,11 +102,13 @@ public class ForecastView extends Main {
         
             MultiSelectListBox<String> multiSelectListBox = new MultiSelectListBox<>();
             
-            // Set fixed height and make the list scrollable
-            multiSelectListBox.setHeight("50vh");
+            // Set fixed height and make the list scrollable'
+        
+            // multiSelectListBox.setHeight("60vh");
+            multiSelectListBox.setHeightFull();
             multiSelectListBox.getStyle().set("overflow-y", "auto"); // Enables vertical scrolling
             
-
+                
 
         allCategoriesBtn.addClickListener(event -> {
             List<String> allCategoriesItems = suppliers.stream()
@@ -152,14 +154,14 @@ public class ForecastView extends Main {
         selectLayout.setPadding(false);
         selectLayout.setSpacing(false);
         selectLayout.setAlignItems(FlexComponent.Alignment.START);
-        selectLayout.setHeightFull(); // Make this layout take full height
+        selectLayout.setHeight("70vh"); 
 
         selectLayout.getStyle().set("border", "1px solid #e0e0e0");
        
 
         // Chart configuration
         Chart chart = new Chart(ChartType.LINE);
-        chart.setHeightFull(); // Make the chart take full height
+        chart.setHeight("70vh"); 
         Configuration conf = chart.getConfiguration();
         conf.getChart().setStyledMode(true);
         conf.getChart().setType(ChartType.LINE);
@@ -191,7 +193,7 @@ public class ForecastView extends Main {
         conf.setLegend(legend);
 
         // Layout for chart and selector
-        HorizontalLayout chartAndSelectLayout = new HorizontalLayout(chart, selectLayout);
+        HorizontalLayout chartAndSelectLayout = new HorizontalLayout(selectLayout, chart);
         chartAndSelectLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
         chartAndSelectLayout.setWidthFull();
         chartAndSelectLayout.setHeightFull(); // Make this layout take full height
