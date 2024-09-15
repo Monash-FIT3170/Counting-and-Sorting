@@ -35,7 +35,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
-import scala.collection.mutable.HashMap;
+// import scala.collection.mutable.HashMap;
 
 import com.business.application.domain.WebScrapedProduct;
 import com.business.application.services.WebScrapedProductService;
