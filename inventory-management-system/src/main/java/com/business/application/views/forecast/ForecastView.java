@@ -21,6 +21,7 @@ import com.vaadin.flow.component.charts.model.VerticalAlign;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Series;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
@@ -35,6 +36,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.RolesAllowed;
+import java.util.HashMap;
+import java.util.Map;
+
 // import scala.collection.mutable.HashMap;
 
 import com.business.application.domain.WebScrapedProduct;
@@ -54,6 +58,8 @@ public class ForecastView extends Main {
     private Button allCategoriesBtn;
 
     private final WebScrapedProductService webScrapedProductService;
+    private Map<String, List<Number>> itemDataMap = new HashMap<>();
+
 
     @Autowired
     public ForecastView(WebScrapedProductService webScrapedProductService) {
@@ -228,45 +234,57 @@ public class ForecastView extends Main {
     // Method to update chart data based on selected items
     private void updateChartData(Configuration conf, ArrayList<String> selectedItems) {
         Random random = new Random();
-        // Add new series
+        
+        // Temporary list for adding new series
+        List<Series> updatedSeriesList = new ArrayList<>();
+        
+        // Add new series for selected items that are not already displayed
         for (String item : selectedItems) {
-            System.out.println("Adding series for: " + item);
-            if (!displayedItems.contains(item)) {
-                // Generate random data points for the product
-                List<Integer> randomData = new ArrayList<>();
+            System.out.println("Processing series for: " + item);
+            
+            List<Number> data;
+            if (itemDataMap.containsKey(item)) {
+                // Reuse existing data if available
+                data = itemDataMap.get(item);
+            } else {
+                // Generate random data points for the item
+                List<Number> randomData = new ArrayList<>();
                 for (int i = 0; i < 11; i++) {
                     randomData.add(random.nextInt(101)); // Random integer between 0 and 100
                 }
-    
-                // Create a new ListSeries and set its data
-                ListSeries series = new ListSeries();
-                series.setName(item);
-                series.setData(randomData.toArray(new Number[0])); // Convert List<Integer> to Number[]
-    
-                // Add series to the chart configuration
-                conf.addSeries(series);
-    
-                // Add item to displayedItems to keep track of displayed series
-                displayedItems.add(item);
+                // Save generated data to map
+                itemDataMap.put(item, randomData);
+                data = randomData;
             }
+        
+            // Create a new series and add it to the temporary list
+            ListSeries newSeries = new ListSeries(item, data.toArray(new Number[0]));
+            updatedSeriesList.add(newSeries);
+        
+            // Track the displayed series
+            displayedItems.add(item);
         }
-       
-
-        // Remove series for items that are no longer selected
+        
+        // Remove items from displayedItems that are no longer selected
         displayedItems.removeIf(item -> {
-            System.out.println("Removing series for: " + item);
             if (!selectedItems.contains(item)) {
-                conf.getSeries().removeIf(series -> series.getName().equals(item));
-                System.out.println("Removing series for: " + item);
+                System.out.println("Removing series for item: " + item);
+                // Create a new series with no data (effectively removing it)
+                ListSeries removedSeries = new ListSeries(item, new Number[0]);
+                updatedSeriesList.add(removedSeries);
                 return true;
             }
             return false;
         });
-
-        // Redraw chart
-        conf.getChart();
+        
+        // Clear existing series and set updated series list        
+        conf.setSeries(updatedSeriesList);
+        
+        // Force chart redraw
+        System.out.println("Redrawing chart");
+        chart.drawChart(); // Ensure this method fully clears and redraws the chart
     }
-
+    
     private HorizontalLayout createHeader(String title, String subtitle) {
         H2 h2 = new H2(title);
         h2.addClassNames(FontSize.XLARGE, Margin.NONE);
