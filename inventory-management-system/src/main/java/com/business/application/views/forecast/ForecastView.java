@@ -153,9 +153,7 @@ public class ForecastView extends Main {
         selectLayout.setSpacing(false);
         selectLayout.setAlignItems(FlexComponent.Alignment.START);
         selectLayout.setHeightFull(); // Make this layout take full height
-        //can you give it a bright white background?
-        selectLayout.getStyle().set("background-color", "white");
-        // is there anything more we can do to make it stand out?
+
         selectLayout.getStyle().set("border", "1px solid #e0e0e0");
        
 
