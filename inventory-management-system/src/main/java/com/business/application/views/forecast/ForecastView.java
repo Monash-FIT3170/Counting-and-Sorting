@@ -166,7 +166,6 @@ public class ForecastView extends Main {
             multiSelectListBox.getStyle().set("overflow-y", "auto"); // Enables vertical scrolling
 
             
-            System.out.println("HEY");
             // Layout for ComboBox and MultiSelectListBox
             VerticalLayout selectLayout = new VerticalLayout(multiSelectListBox);
             selectLayout.setPadding(false);
@@ -237,7 +236,6 @@ public class ForecastView extends Main {
             
 
             // Add mainLayout to the ForecastView component
-            System.out.println("Checking mainLayout: " + mainLayout);
             add(mainLayout);
             return mainLayout;
     }
@@ -252,7 +250,6 @@ public class ForecastView extends Main {
         
         // Add new series for selected items that are not already displayed
         for (String item : selectedItems) {
-            System.out.println("Processing series for: " + item);
             
             List<Number> data;
             if (itemDataMap.containsKey(item)) {
@@ -280,7 +277,6 @@ public class ForecastView extends Main {
         // Remove items from displayedItems that are no longer selected
         displayedItems.removeIf(item -> {
             if (!selectedItems.contains(item)) {
-                System.out.println("Removing series for item: " + item);
                 // Create a new series with no data (effectively removing it)
                 ListSeries removedSeries = new ListSeries(item, new Number[0]);
                 updatedSeriesList.add(removedSeries);
@@ -293,7 +289,6 @@ public class ForecastView extends Main {
         conf.setSeries(updatedSeriesList);
         
         // Force chart redraw
-        System.out.println("Redrawing chart");
         chart.drawChart(); // Ensure this method fully clears and redraws the chart
     }
     
