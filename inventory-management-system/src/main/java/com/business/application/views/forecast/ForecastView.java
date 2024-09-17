@@ -314,7 +314,7 @@ public class ForecastView extends Main {
                 // Create a new series with no data (effectively removing it)
                 // ListSeries removedSeries = new ListSeries(item, new Number[0]);
                 // updatedSeriesList.add(removedSeries);
-                updatedSeriesList.removeIf(series -> series.getName().equals(item));
+                // updatedSeriesList.removeIf(series -> series.getName().equals(item));
                 return true;
             }
             return false;
