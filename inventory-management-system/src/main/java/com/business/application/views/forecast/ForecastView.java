@@ -40,9 +40,6 @@ import java.util.HashMap;
 import java.util.Map;
 import com.vaadin.flow.component.textfield.TextField; 
 import com.vaadin.flow.data.value.ValueChangeMode; 
-
-// import scala.collection.mutable.HashMap;
-
 import com.business.application.domain.WebScrapedProduct;
 import com.business.application.services.WebScrapedProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,7 +174,7 @@ public class ForecastView extends Main {
             selectLayout.setAlignItems(FlexComponent.Alignment.START);
             selectLayout.setHeight("70vh"); 
 
-            // selectLayout.getStyle().set("border", "1px solid #e0e0e0");
+
         
 
             // Chart configuration
@@ -262,7 +259,8 @@ public class ForecastView extends Main {
         
         // Temporary list for adding new series
         List<Series> updatedSeriesList = new ArrayList<>();
-        
+        conf.getLegend().setEnabled(true);
+
         // Add new series for selected items that are not already displayed
         for (String item : selectedItems) {
             System.out.println("Processing series for: " + item);
@@ -311,7 +309,7 @@ public class ForecastView extends Main {
         
         // Clear existing series and set updated series list        
         conf.setSeries(updatedSeriesList);
-        
+
         // Force chart redraw
         chart.drawChart(); // Ensure this method fully clears and redraws the chart
     }
