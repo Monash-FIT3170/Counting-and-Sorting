@@ -256,7 +256,7 @@ public class ForecastView extends Main {
     // Method to update chart data based on selected items
     private void updateChartData(Configuration conf, ArrayList<String> selectedItems) {
         Random random = new Random();
-        
+
         // Temporary list for adding new series
         List<Series> updatedSeriesList = new ArrayList<>(conf.getSeries());
 
@@ -275,6 +275,7 @@ public class ForecastView extends Main {
             }
 
             if (!seriesExists) {
+
                 if (itemDataMap.containsKey(item)) {
                 // Reuse existing data if available
                 data = itemDataMap.get(item);
@@ -311,17 +312,13 @@ public class ForecastView extends Main {
         displayedItems.removeIf(item -> {
             if (!selectedItems.contains(item)) {
                 // Create a new series with no data (effectively removing it)
-                ListSeries removedSeries = new ListSeries(item, new Number[0]);
-                updatedSeriesList.add(removedSeries);
+                // ListSeries removedSeries = new ListSeries(item, new Number[0]);
+                // updatedSeriesList.add(removedSeries);
+                updatedSeriesList.removeIf(series -> series.getName().equals(item));
                 return true;
             }
             return false;
         });
-
-        if (conf.getSeries().size() > 1 && "No Data".equals(conf.getSeries().get(conf.getSeries().size() - 1).getName())) {
-            // Remove the "No Data" series if it exists
-            conf.getSeries().remove(conf.getSeries().get(conf.getSeries().size() - 1));
-        }
         
         // Clear existing series and set updated series list        
         conf.setSeries(updatedSeriesList);
