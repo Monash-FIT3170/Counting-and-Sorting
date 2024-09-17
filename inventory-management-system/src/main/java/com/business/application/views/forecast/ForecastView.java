@@ -120,14 +120,14 @@ public class ForecastView extends Main {
             // clearBtn.getStyle().set("border", "none");
             // clearBtn.getStyle().set("border-radius", "4px");
             // clearBtn.getStyle().set("padding", "10px");
-            clearBtn.addClickListener(event -> {
-                multiSelectListBox.deselectAll(); // Deselect all items
-                searchBar.clear();
-                updateItemList();
-                // updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
-            });
+            // clearBtn.addClickListener(event -> {
+            //     multiSelectListBox.deselectAll(); // Deselect all items
+            //     searchBar.clear();
+            //     updateItemList();
+            //     updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
+            // });
 
-            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, searchBar, clearBtn);
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, searchBar);
             buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             buttonLayout.getStyle().set("justify-content", "center");
             buttonLayout.getStyle().set("margin-bottom", "20px");
@@ -203,6 +203,22 @@ public class ForecastView extends Main {
                 updateChartData(conf, new ArrayList<>(event.getValue()));
             });
 
+            clearBtn.addClickListener(event -> {
+                System.out.println("Clearing graph");
+                multiSelectListBox.deselectAll(); // Deselect all items
+                searchBar.clear();
+                updateItemList();
+                conf.getSeries().clear();
+                updateChartData(conf, new ArrayList<>()); // Clear the chart
+                // conf.setSeries(new ListSeries("No Data", new Number[]{}));
+                // chart.drawChart();
+                // ArrayList<String> clear = new ArrayList<>();
+                // clear.add("clear");
+                // updateChartData(conf, clear); // Clear the chart
+            });
+
+            buttonLayout.add(clearBtn);
+
             // Legend Configuration
             Legend legend = new Legend();
             legend.setLayout(LayoutDirection.HORIZONTAL); // Change layout direction to HORIZONTAL
@@ -259,6 +275,13 @@ public class ForecastView extends Main {
 
         // Temporary list for adding new series
         List<Series> updatedSeriesList = new ArrayList<>(conf.getSeries());
+
+        // if (selectedItems.get(0).equals("clear")) {
+        //     updatedSeriesList.clear();
+        //     conf.setSeries(updatedSeriesList);
+        //     chart.drawChart();
+        //     return;
+        // }
 
         // Add new series for selected items that are not already displayed
         for (String item : selectedItems) {
