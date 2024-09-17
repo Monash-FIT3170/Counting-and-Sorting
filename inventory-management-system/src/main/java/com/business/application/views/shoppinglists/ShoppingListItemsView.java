@@ -64,6 +64,8 @@ public class ShoppingListItemsView extends Div implements BeforeEnterObserver {
         // Layout setup
         VerticalLayout layout = new VerticalLayout(backButton, header,totalPrice ,grid);
         layout.setSizeFull();
+        layout.getStyle().set("background-color", "var(--lumo-base-color)");
+        layout.getStyle().set("height", "91vh");
         add(layout);
     }
 
