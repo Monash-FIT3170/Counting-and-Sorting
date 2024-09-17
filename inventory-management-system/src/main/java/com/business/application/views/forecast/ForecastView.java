@@ -99,7 +99,7 @@ public class ForecastView extends Main {
             Button wineBtn = new Button("Wine");
             Button spiritsBtn = new Button("Spirits");
             Button premixBtn = new Button("Premix");
-            Button miscBtn = new Button("Misc");
+            // Button miscBtn = new Button("Misc");
         
             // Create ComboBox for search
             searchBar = new TextField();
@@ -127,7 +127,7 @@ public class ForecastView extends Main {
                 // updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
             });
 
-            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchBar, clearBtn);
+            HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, searchBar, clearBtn);
             buttonLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             buttonLayout.getStyle().set("justify-content", "center");
             buttonLayout.getStyle().set("margin-bottom", "20px");
@@ -157,10 +157,10 @@ public class ForecastView extends Main {
                 updateItemList();  // Update list when category is clicked
             });
     
-            miscBtn.addClickListener(event -> {
-                selectedCategory = "Misc";
-                updateItemList();  // Update list when category is clicked
-            });
+            // miscBtn.addClickListener(event -> {
+            //     selectedCategory = "Misc";
+            //     updateItemList();  // Update list when category is clicked
+            // });
 
             multiSelectListBox = new MultiSelectListBox<>();        
             multiSelectListBox.setHeightFull();
