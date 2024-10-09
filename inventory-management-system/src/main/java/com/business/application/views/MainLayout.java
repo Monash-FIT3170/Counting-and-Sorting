@@ -243,7 +243,7 @@ public class MainLayout extends AppLayout {
 
         }
         if (accessChecker.hasAccess(StoreLocatorView.class)) {
-            nav.addItem(new SideNavItem("Store Locator", StoreLocatorView.class, VaadinIcon.MAP_MARKER.create()));
+            nav.addItem(new SideNavItem("Supplier Locator", StoreLocatorView.class, VaadinIcon.MAP_MARKER.create()));
         }
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
             nav.addItem(
