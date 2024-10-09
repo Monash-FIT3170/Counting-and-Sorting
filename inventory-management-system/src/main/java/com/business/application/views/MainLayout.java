@@ -14,6 +14,7 @@ import com.business.application.views.inventory.InventoryView;
 import com.business.application.views.login.LoginView;
 import com.business.application.views.requests.RequestsView;
 import com.business.application.views.shoppinglists.ShoppingListsView;
+import com.business.application.views.storelocator.StoreLocatorView;
 import com.business.application.views.suppliers.SuppliersView;
 import com.business.application.views.finance.UserFinanceView;
 import com.business.application.views.finance.AdminFinanceView;
@@ -83,7 +84,7 @@ public class MainLayout extends AppLayout {
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
-        
+
     }
 
     private void addHeaderContent() {
@@ -91,18 +92,18 @@ public class MainLayout extends AppLayout {
         mainLayout.setWidthFull();
         mainLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
         mainLayout.setAlignItems(Alignment.CENTER);
-    
+
         // Left-aligned components
         HorizontalLayout leftLayout = new HorizontalLayout();
         leftLayout.addClassName("left-layout");
-        
+
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
-    
-        viewTitle = new H6();  // Set a title or leave it dynamic as needed
+
+        viewTitle = new H6(); // Set a title or leave it dynamic as needed
         leftLayout.add(toggle, viewTitle);
         leftLayout.setAlignItems(Alignment.CENTER);
-    
+
         // Right-aligned components
         HorizontalLayout rightLayout = new HorizontalLayout();
         rightLayout.addClassName("right-layout");
@@ -110,11 +111,10 @@ public class MainLayout extends AppLayout {
 
         rightLayout.add(createThemeToggleButton(), createUserMenu());
         // rightLayout.setSpacing(true);
-        // rightLayout.getStyle().set("padding-right", "40px"); 
+        // rightLayout.getStyle().set("padding-right", "40px");
 
-    
         mainLayout.add(leftLayout, rightLayout);
-        mainLayout.expand(leftLayout);  
+        mainLayout.expand(leftLayout);
 
         addToNavbar(true, mainLayout);
     }
@@ -130,18 +130,15 @@ public class MainLayout extends AppLayout {
             Avatar avatar = new Avatar(user.getName());
             avatar.setThemeName("medium");
 
-
             Span name = new Span(user.getName());
             name.addClassNames(
-                LumoUtility.FontSize.SMALL, 
-                LumoUtility.TextColor.BODY
-                );
+                    LumoUtility.FontSize.SMALL,
+                    LumoUtility.TextColor.BODY);
 
             Span username = new Span(user.getUsername());
             username.addClassNames(
-                LumoUtility.FontSize.XXSMALL,
-                LumoUtility.TextColor.SECONDARY
-            );
+                    LumoUtility.FontSize.XXSMALL,
+                    LumoUtility.TextColor.SECONDARY);
 
             VerticalLayout innerLayout = new VerticalLayout();
             innerLayout.setPadding(false);
@@ -152,7 +149,7 @@ public class MainLayout extends AppLayout {
         }
 
         return outerLayout;
-}
+    }
 
     private Component createThemeToggleButton() {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
@@ -165,23 +162,23 @@ public class MainLayout extends AppLayout {
         themeToggleButton.addClassName("theme-toggle");
         // Set button margin to align with user menu
         // Set button size to be 40 pixels to match the user menu
-        // themeToggleButton.getElement().getStyle().set("width", "40px").set("height", "40px");
+        // themeToggleButton.getElement().getStyle().set("width", "40px").set("height",
+        // "40px");
         // themeToggleButton.getElement().getStyle().set("margin-right", "20px");
 
         return themeToggleButton;
     }
 
-
     private void addDrawerContent() {
         // updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
-        
+
         Image logoImage = new Image("VAADIN/themes/liquor-store/img/logo-full.svg", "logo");
         logoImage.addClassName("logo");
 
         Header header = new Header(logoImage);
 
         Scroller scroller = new Scroller(createNavigation());
-        
+
         addToDrawer(header, scroller);
 
         // Set Drawer content to dark mode
@@ -197,33 +194,33 @@ public class MainLayout extends AppLayout {
             if (details.getWindowInnerWidth() < 800) {
                 scroller.getElement().setAttribute("theme", Lumo.LIGHT);
             } else {
-                scroller.getElement().setAttribute("theme", Lumo.DARK); 
+                scroller.getElement().setAttribute("theme", Lumo.DARK);
             }
         });
 
         page.addBrowserWindowResizeListener(
-        event -> {
-            if (event.getWidth() < 800) {
-                scroller.getElement().setAttribute("theme", Lumo.LIGHT);
-            } else {
-                scroller.getElement().setAttribute("theme", Lumo.DARK); 
-            }          
-        });
+                event -> {
+                    if (event.getWidth() < 800) {
+                        scroller.getElement().setAttribute("theme", Lumo.LIGHT);
+                    } else {
+                        scroller.getElement().setAttribute("theme", Lumo.DARK);
+                    }
+                });
     }
 
     private void updateLogo(boolean darkTheme) {
         // TODO: fix colour of logo in small view
-        String logoPath = darkTheme ? 
-            "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoLight.png" : 
-            "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoDark.png";
+        String logoPath = darkTheme
+                ? "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoLight.png"
+                : "inventory-management-system/src/main/resources/META-INF/resources/img/CSLogoDark.png";
         StreamResource logoResource = new StreamResource(darkTheme ? "CSLogoLight.png" : "CSLogoDark.png",
-            () -> {
-                try {
-                    return new ByteArrayInputStream(Files.readAllBytes(Paths.get(logoPath)));
-                } catch (IOException e) {
-                    return new ByteArrayInputStream(new byte[0]); // Fallback to empty content on error
-                }
-            });
+                () -> {
+                    try {
+                        return new ByteArrayInputStream(Files.readAllBytes(Paths.get(logoPath)));
+                    } catch (IOException e) {
+                        return new ByteArrayInputStream(new byte[0]); // Fallback to empty content on error
+                    }
+                });
 
         if (logoImage == null) {
             logoImage = new Image(logoResource, "Theme Logo");
@@ -234,7 +231,7 @@ public class MainLayout extends AppLayout {
 
     private Component createNavigation() {
         SideNav nav = new SideNav();
-        
+
         // Manager - Menu
         if (accessChecker.hasAccess(DashboardView.class)) {
             nav.addItem(new SideNavItem("Dashboard", DashboardView.class, VaadinIcon.GRID_SMALL.create()));
@@ -245,6 +242,9 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Inventory", InventoryView.class, VaadinIcon.LIST_UL.create()));
 
         }
+        if (accessChecker.hasAccess(StoreLocatorView.class)) {
+            nav.addItem(new SideNavItem("Store Locator", StoreLocatorView.class, VaadinIcon.MAP_MARKER.create()));
+        }
         if (accessChecker.hasAccess(ShoppingListsView.class)) {
             nav.addItem(
                     new SideNavItem("Shopping Lists", ShoppingListsView.class, VaadinIcon.CART.create()));
@@ -254,7 +254,7 @@ public class MainLayout extends AppLayout {
             nav.addItem(
                     new SideNavItem("Forecasts", ForecastView.class, VaadinIcon.BAR_CHART_H.create()));
 
-        }/* working to connect to new view */
+        } /* working to connect to new view */
         /* working to connect to new view */
         if (accessChecker.hasAccess(UserFinanceView.class)) {
             nav.addItem(
@@ -265,7 +265,7 @@ public class MainLayout extends AppLayout {
         // Admin - Menu
         if (accessChecker.hasAccess(AdminDashboardView.class)) {
             nav.addItem(new SideNavItem("Dashboard", AdminDashboardView.class,
-            VaadinIcon.GRID_SMALL.create()));
+                    VaadinIcon.GRID_SMALL.create()));
         }
         if (accessChecker.hasAccess(SuppliersView.class)) {
             nav.addItem(new SideNavItem("Suppliers", SuppliersView.class, VaadinIcon.CLIPBOARD_USER.create()));
@@ -281,13 +281,13 @@ public class MainLayout extends AppLayout {
             notificationCounter.getElement().setAttribute("aria-label", numRequests + " unread messages");
 
             notificationNavItem.setSuffixComponent(notificationCounter);
-            
+
             nav.addItem(notificationNavItem);
 
         }
         if (accessChecker.hasAccess(AdminForecastView.class)) {
             nav.addItem(new SideNavItem("Forecasts", AdminForecastView.class,
-            VaadinIcon.BAR_CHART_H.create()));
+                    VaadinIcon.BAR_CHART_H.create()));
         }
         if (accessChecker.hasAccess(UserManagementView.class)) {
             nav.addItem(new SideNavItem("Team", UserManagementView.class, VaadinIcon.USERS.create()));
@@ -295,7 +295,8 @@ public class MainLayout extends AppLayout {
 
         if (accessChecker.hasAccess(AdminFinanceView.class)) {
             nav.addItem(
-            new SideNavItem("Store Finances", AdminFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+                    new SideNavItem("Store Finances", AdminFinanceView.class,
+                            LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
         }
 
         if (accessChecker.hasAccess(StoreView.class)) {
@@ -304,34 +305,31 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(ApiKeyManagementView.class)) {
             nav.addItem(new SideNavItem("API Keys", ApiKeyManagementView.class, LineAwesomeIcon.KEY_SOLID.create()));
-            
+
         }
 
-        
         // ADD LOGOUT SECTION
         SideNav logoutNav = new SideNav();
         SideNavItem signInOut;
-        
+
         Optional<User> maybeUser = authenticatedUser.get();
 
         if (maybeUser.isPresent()) {
             signInOut = new SideNavItem("Log Out");
             signInOut.setPrefixComponent(VaadinIcon.SIGN_OUT.create());
-            
+
             signInOut.getElement().addEventListener(
-                "click", e -> authenticatedUser.logout()
-                );
+                    "click", e -> authenticatedUser.logout());
         } else {
             signInOut = new SideNavItem("Log In");
             signInOut.setPrefixComponent(VaadinIcon.SIGN_IN.create());
-            
+
             signInOut.getElement().addEventListener(
-                "click", e -> UI.getCurrent().navigate("login")
-                );
+                    "click", e -> UI.getCurrent().navigate("login"));
         }
 
         logoutNav.addItem(signInOut);
-        
+
         // WRAP NAV SECTIONS IN VERTICAL LAYOUT
         VerticalLayout navWrapper = new VerticalLayout(nav, logoutNav);
         navWrapper.setSpacing(true);
@@ -343,6 +341,7 @@ public class MainLayout extends AppLayout {
 
         return navWrapper;
     }
+
     private void toggleTheme(Icon icon) {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
         if (themeList.contains(Lumo.DARK)) {
@@ -354,11 +353,11 @@ public class MainLayout extends AppLayout {
         }
         // Immediately reflect the new theme state on the UI without full page refresh
 
-        // UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme', $0)",
-        //                                     themeList.contains(Lumo.DARK) ? "dark" : "light");
-        //                                     updateLogo(themeList.contains(Lumo.DARK));
+        // UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme',
+        // $0)",
+        // themeList.contains(Lumo.DARK) ? "dark" : "light");
+        // updateLogo(themeList.contains(Lumo.DARK));
     }
-
 
     @Override
     protected void afterNavigation() {

@@ -17,6 +17,7 @@
 @import url('./views/manager-finance-view.css');
 @import url('./views/forecast-view.css');
 @import url('./views/stores-view.css');
+@import url('./views/store-locator-view.css');
 
 
 vaadin-dev-tools {
