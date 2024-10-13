@@ -1,6 +1,15 @@
 .stores-view {
+    padding: var(--lumo-space-l);
     padding-top: var(--lumo-space-xl);
     background-color: var(--lumo-base-color);
     height: 100%;
     width: 100%;
 }
+
+.stores-view vaadin-button[theme="primary"]{
+    background: var(--lumo-contrast-5pct);
+    box-shadow: none;
+    cursor: pointer;
+    color: var(--lumo-primary-color);
+    text-shadow: none;
+  }
