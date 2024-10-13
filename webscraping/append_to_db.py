@@ -70,7 +70,6 @@ def insert_product(conn, product):
     try:
         cursor.execute(sql_insert, (product['title'], product['type'], product['price'], product['supplier']))
         conn.commit()
-        print(f"Inserted/Updated: {product['title']} from {product['supplier']}")
     except Error as e:
         print(f"Error inserting/updating: {product['title']} from {product['supplier']} - {e}")
 
@@ -86,7 +85,6 @@ def insert_store(conn, store, supplier):
     try:
         cursor.execute(sql_insert, (store['title'], store['address'], supplier))
         conn.commit()
-        print(f"Inserted/Updated: {store['title']} from {supplier}")
     except Error as e:
         print(f"Error inserting/updating: {store['title']} from {supplier} - {e}")
 
@@ -101,6 +99,7 @@ def load_json_and_insert(conn, json_files, is_store=False):
                 else:
                     insert_product(conn, item)
         print(f"Data from {file} inserted/updated successfully")
+        
 
 def main():
     # JSON files for products

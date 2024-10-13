@@ -1,42 +1,62 @@
 [
     {
-        "name": "Melbourne Central Express",
+        "title": "LiquorLand Melbourne Central Express",
         "address": "211 Latrobe Street, Melbourne 3000"
     },
     {
-        "name": "Elizabeth St",
+        "title": "LiquorLand Elizabeth St",
         "address": "26 Elizabeth Street, Melbourne 3000"
     },
     {
-        "name": "Spencer St Cbd",
+        "title": "LiquorLand Spencer St Cbd",
         "address": "201 Spencer St, Melbourne 3008"
     },
     {
-        "name": "South Melbourne",
+        "title": "LiquorLand South Melbourne",
         "address": "265 Clarendon Street, South Melbourne 3205"
     },
     {
-        "name": "Collingwood",
+        "title": "LiquorLand Collingwood",
         "address": "150 Smith Street, Collingwood 3066"
     },
     {
-        "name": "Fitzroy",
+        "title": "LiquorLand Fitzroy",
         "address": "282 Brunswick Street, Fitzroy 3065"
     },
     {
-        "name": "Sth Melbourne Normanby Rd",
+        "title": "LiquorLand Sth Melbourne Normanby Rd",
         "address": "259-273 Normanby Road, South Melbourne 3205"
     },
     {
-        "name": "Richmond - Swan Street",
+        "title": "LiquorLand Richmond - Swan Street",
         "address": "140-160 Swan Street, Richmond 3121"
     },
     {
-        "name": "Abbotsford",
+        "title": "LiquorLand Abbotsford",
         "address": "501 Victoria Street, Abbortsford 3067"
     },
     {
-        "name": "Victoria Gardens",
+        "title": "LiquorLand Victoria Gardens",
         "address": "Corner Victoria Street And Burnley Street, Richmond 3121"
+    },
+    {
+        "title": "Dan Murphy's Prahran",
+        "address": "282 Chapel Street, Prahran 3181"
+    },
+    {
+        "title": "Dan Murphy's Richmond",
+        "address": "292 Bridge Road, Richmond 3121"
+    },
+    {
+        "title": "Dan Murphy's South Melbourne",
+        "address": "147 Cecil Street, South Melbourne 3205"
+    },
+    {
+        "title": "Dan Murphy's Fitzroy",
+        "address": "223 Brunswick Street, Fitzroy 3065"
+    },
+    {
+        "title": "Dan Murphy's Hawthorn East",
+        "address": "736-742 Burke Road, Hawthorn East 3123"
     }
 ]
