@@ -1,4 +1,5 @@
 .admin-user-view {
+  padding: var(--lumo-space-l);
   padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
 }
@@ -20,4 +21,20 @@
 
 .admin-user-view vaadin-board-row.large > *:last-child {
   border-right: none;
+}
+
+.admin-user-view vaadin-button[theme="primary"]{
+  background: var(--lumo-contrast-5pct);
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-primary-color);
+  text-shadow: none;
+}
+
+.admin-user-view vaadin-button[theme~="small"]{
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-error-color);
+  text-shadow: none;
 }
