@@ -123,3 +123,9 @@ vaadin-platform-javadoc/pom.xml
 vaadin-dev-bundle/pom.xml
 vaadin-prod-bundle/pom.xml
 inventory-management-system/node_modules/
+.venv/
+.env
+inventory-management-system/src/main/bundles/dev.bundle
+inventory-management-system/node_modules/.vaadin/vaadin.json
+requirements.txt
+geocoding_errors.log
