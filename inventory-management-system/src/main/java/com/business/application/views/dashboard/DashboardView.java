@@ -27,11 +27,15 @@ import com.business.application.services.TransactionService;
 import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -91,35 +95,46 @@ private List<WebScrapedProduct> products;
             System.out.println("No user present");
         }
 
+                Board board = new Board();
+        
+        Row mainRow = new Row();
 
+        Board leftBoard = new Board();
+        leftBoard.addRow(
+            createHighlight(
+                "Monthly Revenue",
+                formatCurrency(totalSales.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 
+                11.0
+                ),
+            createHighlight(
+                "Inventory Count", 
+                "12,345,340", 
+                11.0
+                )).addClassName("board-top-left");
+        leftBoard.addRow(
+            createHighlight(
+                "Profit", 
+                formatCurrency(profit), 
+                0.0
+                ),
+            createHighlight(
+                "Total Sales", 
+                formatCurrency(totalSales), 
+                0.0
+                )).addClassName("board-top-left");
+        leftBoard.addRow(createViewSalesQty());
+        leftBoard.addRow(createStockLevelsByCategory()).addClassName("stock-levels-row");
 
-        HorizontalLayout mainLayout = new HorizontalLayout();
-        mainLayout.setWidthFull();
+        Board rightBoard = new Board();
+        rightBoard.addRow(createLowStockItemsGrid());
+        rightBoard.addRow(createNotifications());
+        
+        mainRow.add(leftBoard);
+        mainRow.add(rightBoard);
 
-        VerticalLayout leftColumn = new VerticalLayout();
-        leftColumn.setWidth("calc(55% - 16px)");
+        board.add(mainRow);
 
-        HorizontalLayout highlightsLayout = new HorizontalLayout();
-        highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue",formatCurrency(totalSales.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 11.0),
-                createHighlight("Inventory Count", "12,345,340", 11.0));
-
-        HorizontalLayout highlightsLayout2 = new HorizontalLayout();
-        highlightsLayout2.setWidthFull();
-        highlightsLayout2.add(createHighlight("Profit", formatCurrency(profit), 0.0),
-        createHighlight("Total Sales", formatCurrency(totalSales), 0.0));        
-
-        leftColumn.add(highlightsLayout, highlightsLayout2);
-        leftColumn.add(createViewSalesQty());
-        leftColumn.add(createStockLevelsByCategory());
-
-        VerticalLayout rightColumn = new VerticalLayout();
-        rightColumn.setWidth("calc(45% - 16px)");
-        rightColumn.add(createLowStockItemsGrid());
-        rightColumn.add(createNotifications());
-
-        mainLayout.add(leftColumn, rightColumn);
-        add(mainLayout);
+        add(board);
     }
 
     private String formatCurrency(BigDecimal accountBalance) {
@@ -127,16 +142,16 @@ private List<WebScrapedProduct> products;
     }
 
     private Component createNotifications() {
-        HorizontalLayout head = createHeader("NOTIFICATIONS", "");
-        head.add(LumoIcon.BELL.create());
-        VerticalLayout notificationsLayout = new VerticalLayout(head);
-        notificationsLayout.addClassName(Padding.LARGE);
-        notificationsLayout.setPadding(false);
-        notificationsLayout.setSpacing(false);
-        notificationsLayout.addClassName("rounded-rectangle");
+        // Header
+        H6 h6 = new H6("Requests");
+        h6.addClassNames(TextColor.SECONDARY);
+
+        // Add it all together
+        VerticalLayout request_wrapper = new VerticalLayout();
+        request_wrapper.addClassName("notification-wrapper");
 
         for (String notificationText : new String[]{"Request #219 Edited", "Request #224 Approved",
-                "Request #256 Declined", "Request #214 Approved"}) {
+        "Request #256 Declined", "Request #214 Approved"}) {
 
             Button viewButton = new Button("View");
             viewButton.addClickListener(clickEvent -> {
@@ -145,7 +160,9 @@ private List<WebScrapedProduct> products;
                 notification.setText(notificationText);
 
                 Button closeButton = new Button("Close", e -> notification.close());
-                notification.add(new HorizontalLayout(new Span(notificationText), closeButton));
+                HorizontalLayout notification_modal = new HorizontalLayout(new Span(notificationText), closeButton);
+                notification_modal.addClassName("notification-modal");
+                notification.add(notification_modal);
                 notification.setDuration(5000);
                 notification.open();
             });
@@ -154,9 +171,17 @@ private List<WebScrapedProduct> products;
             notificationItem.addClassName("notification-item");
             notificationItem.setWidthFull();
             notificationItem.setAlignItems(FlexComponent.Alignment.CENTER);
-            notificationsLayout.add(notificationItem);
+            request_wrapper.add(notificationItem);
         }
-        return notificationsLayout;
+
+        // Add it all together
+        VerticalLayout layout = new VerticalLayout(h6, request_wrapper);
+        layout.addClassNames("rounded-rectangle", "requests");
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        
+        return layout_wrapper;
     }
 
     // private Component createShoppingListRequests() {
@@ -231,11 +256,8 @@ private List<WebScrapedProduct> products;
             theme += " error";
         }
 
-        H2 h2 = new H2(title);
-        h2.addClassNames(FontWeight.NORMAL, Margin.NONE, TextColor.SECONDARY, FontSize.XSMALL);
-
-        Span span = new Span(value);
-        span.addClassNames(FontWeight.SEMIBOLD, FontSize.XXXLARGE);
+        H6 h6 = new H6(title);
+        h6.addClassNames(TextColor.SECONDARY);
 
         Icon i = icon.create();
         i.addClassNames(BoxSizing.BORDER, Padding.XSMALL);
@@ -243,12 +265,17 @@ private List<WebScrapedProduct> products;
         Span badge = new Span(i, new Span(prefix + percentage.toString()));
         badge.getElement().getThemeList().add(theme);
 
-        VerticalLayout layout = new VerticalLayout(h2, span, badge);
+        HorizontalLayout header = new HorizontalLayout(h6, badge);
+        header.setPadding(false);
+
+        H2 h2 = new H2(value);
+
+        VerticalLayout layout = new VerticalLayout(header, h2);
         layout.addClassName("rounded-rectangle");
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        return layout;
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private Component createViewSalesQty() {
@@ -260,9 +287,11 @@ private List<WebScrapedProduct> products;
         year.setMin(1970);
         year.setMax(2024);
 
-        HorizontalLayout header = createHeader("View Sales Qty", "");
-        header.add(year);
-        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        H6 h6 = new H6("View Sales Qty");
+        h6.addClassNames(TextColor.SECONDARY);
+
+        HorizontalLayout header = new HorizontalLayout(h6, year);
+        header.setPadding(false);
 
         // Chart
         Chart chart = new Chart(ChartType.SPLINE);
@@ -273,7 +302,7 @@ private List<WebScrapedProduct> products;
         xAxis.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         conf.addxAxis(xAxis);
 
-        conf.getyAxis().setTitle("Values");
+        conf.getyAxis().setTitle("Quantity");
 
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
@@ -285,20 +314,18 @@ private List<WebScrapedProduct> products;
         conf.addSeries(new ListSeries("Spirits", 65, 65, 166, 171, 293, 302, 308, 317, 427, 429, 535, 636));
 
         // Add it all together
-        VerticalLayout viewEvents = new VerticalLayout(header, chart);
-        viewEvents.addClassName(Padding.LARGE);
-        viewEvents.setPadding(false);
-        viewEvents.setSpacing(false);
-        viewEvents.getElement().getThemeList().add("spacing-l");
-        viewEvents.addClassName("rounded-rectangle");
-        return viewEvents;
+        VerticalLayout layout = new VerticalLayout(header, chart);
+        layout.addClassName("rounded-rectangle");
+        
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassName("rounded-rectangle-wrapper");
+        return layout_wrapper;
     }
 
     private Component createStockLevelsByCategory(){
         Chart chart = new Chart(ChartType.BAR);
 
         Configuration configuration = chart.getConfiguration();
-        configuration.setTitle("Stock Levels by Category");
         configuration.getChart().setStyledMode(true);
         configuration.addSeries(new ListSeries("Beer", 5));
         configuration.addSeries(new ListSeries("Wine", 85));
@@ -307,82 +334,117 @@ private List<WebScrapedProduct> products;
         configuration.addSeries(new ListSeries("Misc", 52));
 
         XAxis x = new XAxis();
-        x.setCategories("Stock Levels");
+        x.setCategories("Stock Level");
+        x.setVisible(false);
         configuration.addxAxis(x);
 
         YAxis y = new YAxis();
         y.setMin(0);
-        y.setMax(100);
-        AxisTitle yTitle = new AxisTitle();
-        yTitle.setText("Percentage of Stock Remaining");
-        yTitle.setAlign(VerticalAlign.HIGH);
-        y.setTitle(yTitle);
+        y.setMax(101);
+        y.setVisible(false);
         configuration.addyAxis(y);
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setValueSuffix(" %");
+        tooltip.setValueSuffix("%");
         configuration.setTooltip(tooltip);
         
-        
-        PlotOptionsBar plotOptions = new PlotOptionsBar();
         DataLabels dataLabels = new DataLabels();
         dataLabels.setEnabled(true);
+        dataLabels.setFormat("{y}%");
+        
+        PlotOptionsBar plotOptions = new PlotOptionsBar();
+        plotOptions.setPointWidth(10);
         plotOptions.setDataLabels(dataLabels);
+       
         configuration.setPlotOptions(plotOptions);
 
-        VerticalLayout layout = new VerticalLayout(chart);
-        layout.addClassName(Padding.LARGE);
-        layout.setPadding(false);
-        layout.addClassName("rounded-rectangle");
-        layout.setHeight("30%");
-        layout.setWidth("100%");
-        return layout;
+        chart.setHeight("auto");
+
+        H6 h6 = new H6("Stock Levels by Category");
+        h6.addClassNames(TextColor.SECONDARY);
+
+        VerticalLayout layout = new VerticalLayout(h6, chart);
+        // layout.addClassName(Padding.LARGE);
+        // layout.setPadding(false);
+        layout.addClassNames("rounded-rectangle", "stock-levels");
+        // layout.setHeight("30%");
+        // layout.setWidth("100%");
+
+        VerticalLayout layout_wrapper = new VerticalLayout(layout);
+        layout_wrapper.addClassNames("rounded-rectangle-wrapper", "stock-levels-wrapper");
+        return layout_wrapper;
 
     }
 
     private Component createLowStockItemsGrid() {
-    Grid<WebScrapedProduct> grid = new Grid<>(WebScrapedProduct.class, false);
+        Grid<WebScrapedProduct> grid = new Grid<>(WebScrapedProduct.class, false);
     // <theme-editor-local-classname>
     grid.addClassName("admin-dashboard-view-grid-1");
 
-    // Custom renderer for status column
-    grid.addColumn(new ComponentRenderer<>(stockItem -> {
-        Span statusCircle = new Span();
-        statusCircle.getElement().getStyle().set("display", "inline-block");
-        statusCircle.getElement().getStyle().set("width", "10px");
-        statusCircle.getElement().getStyle().set("height", "10px");
-        statusCircle.getElement().getStyle().set("border-radius", "50%");
-        
-        if (stockItem.getQuantity() > 100) {
-            statusCircle.getElement().getStyle().set("background-color", "green");
-        } else if (stockItem.getQuantity() > 50) {
-            statusCircle.getElement().getStyle().set("background-color", "yellow");
-        } else {
-            statusCircle.getElement().getStyle().set("background-color", "red");
-        }
+        // Custom renderer for status column
+        grid.addColumn(new ComponentRenderer<>(stockItem -> {
+            Span statusCircle = new Span();
+            statusCircle.getElement().getStyle().set("display", "inline-block");
+            statusCircle.getElement().getStyle().set("width", "14px");
+            statusCircle.getElement().getStyle().set("height", "14px");
+            statusCircle.getElement().getStyle().set("border-radius", "50%");
+            statusCircle.getElement().getStyle().set("display", "flex");
+            statusCircle.getElement().getStyle().set("justify-content", "center");
+            statusCircle.getElement().getStyle().set("align-items", "center");
 
-        return statusCircle;
-    })).setHeader("Status");
+            Span statusInnerCircle = new Span();
+            statusInnerCircle.getElement().getStyle().set("display", "inline-block");
+            statusInnerCircle.getElement().getStyle().set("width", "6px");
+            statusInnerCircle.getElement().getStyle().set("height", "6px");
+            statusInnerCircle.getElement().getStyle().set("border-radius", "50%");
 
-    grid.addColumn(WebScrapedProduct::getName).setHeader("Item Name");
-    grid.addColumn(WebScrapedProduct::getQuantity).setHeader("Qty Remaining");
+            statusCircle.add(statusInnerCircle);
+            
+            if (stockItem.getQuantity() > 100) {
+                statusCircle.getElement().getStyle().set("background-color", "#1688464D");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-success-color)");
+            } else if (stockItem.getQuantity() > 50) {
+                statusCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color-10pct)");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color)");
+            } else {
+                statusCircle.getElement().getStyle().set("background-color", "#E71D134D");
+                statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-error-color)");
+            }
 
-    grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+            return statusCircle;
+        })).setHeader("Status").setTextAlign(ColumnTextAlign.CENTER).setAutoWidth(true).setFlexGrow(0).addClassName("status-column");
+
+    grid.addColumn(WebScrapedProduct::getName).setHeader("Item Name").setTextAlign(ColumnTextAlign.START);
+    grid.addColumn(WebScrapedProduct::getQuantity).setHeader("Qty Remaining").setTextAlign(ColumnTextAlign.END).setAutoWidth(true).setFlexGrow(0);
+
+    grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
     grid.setItems(
         products.stream().filter(product -> product.getQuantity() < 100).collect(Collectors.toList())
     );
 
-    HorizontalLayout head = createHeader("Low Stock Items", "");
-    Icon icon = LumoIcon.UNORDERED_LIST.create();
-    icon.getElement().getThemeList().add("badge pill cir");
+    grid.setHeight("auto");
+
+    H6 h6 = new H6("Low Stock Items");
+    h6.addClassNames(TextColor.SECONDARY);
     
-    head.add(icon);
-    head.setAlignItems(FlexComponent.Alignment.CENTER);
-    VerticalLayout layout = new VerticalLayout(head, grid);
-    layout.addClassName(Padding.LARGE);
-    layout.setPadding(false);
+    VerticalLayout layout = new VerticalLayout(h6, grid);
     layout.addClassName("rounded-rectangle");
-    return layout;
+
+    VerticalLayout layout_wrapper = new VerticalLayout(layout);
+    layout_wrapper.addClassName("rounded-rectangle-wrapper");
+
+    // HorizontalLayout head = createHeader("Low Stock Items", "");
+    // Icon icon = LumoIcon.UNORDERED_LIST.create();
+    // icon.getElement().getThemeList().add("badge pill cir");
+    
+    // head.add(icon);
+    // head.setAlignItems(FlexComponent.Alignment.CENTER);
+    // VerticalLayout layout = new VerticalLayout(head, grid);
+    // layout.addClassName(Padding.LARGE);
+    // layout.setPadding(false);
+    // layout.addClassName("rounded-rectangle");
+
+    return layout_wrapper;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
