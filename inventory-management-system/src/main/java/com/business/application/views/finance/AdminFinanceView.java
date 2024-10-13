@@ -133,6 +133,7 @@ public class AdminFinanceView extends Div {
         // Highlights for the selected store
         highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
+        highlightsLayout.addClassName("horizontal-scroll");
         storeSpecificLayout.add(highlightsLayout);
 
         // Toggle Button to switch views

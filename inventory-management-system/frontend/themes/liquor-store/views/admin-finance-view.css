@@ -1,7 +1,7 @@
 .admin-finance-view {
   padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
-  overflow: scroll; /* TODO: add in better overflow mechanism/fix layout */
+  overflow: hidden; /* TODO: add in better overflow mechanism/fix layout */
 }
 
 /* Borders */
@@ -21,4 +21,16 @@
 
 .admin-finance-view vaadin-board-row.large > *:last-child {
   border-right: none;
+}
+
+.admin-finance-view .horizontal-scroll {
+  overflow-x: scroll;
+}
+
+.admin-finance-view vaadin-button[theme="primary"]{
+  background: var(--lumo-contrast-5pct);
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-primary-color);
+  text-shadow: none;
 }
