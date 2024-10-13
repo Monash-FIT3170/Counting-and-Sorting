@@ -4,6 +4,7 @@
     flex-grow: 1;
     height: 100%;
     width: 100%;
+    padding: var(--lumo-space-l);
     padding-top: var(--lumo-space-xl);
     background-color: var(--lumo-base-color);
 }
@@ -14,4 +15,13 @@
     padding-bottom: 5%;
     box-sizing: border-box;
     background-color: var(--lumo-base-color);
+    padding: var(--lumo-space-l);
+    padding-top: var(--lumo-space-s);
+}
+
+.forecast-view vaadin-button {
+    background: var(--lumo-contrast-10pct);
+    box-shadow: none;
+    cursor: pointer;
+
 }
