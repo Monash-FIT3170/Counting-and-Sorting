@@ -108,11 +108,9 @@ public class StoreLocatorView extends VerticalLayout {
     private void loadLeafletLibraryAndInitializeMap() {
         // Fetch store data
         List<WebScrapedStore> stores = webscrapedStoreService.getAllWebscrapedStores();
-        System.out.println("Stores: " + stores);
 
         // Serialize store data to JSON using Jackson
         String storeDataJson = serializeStoreDataToJson(stores);
-        System.out.println("Serialized Store Data JSON: " + storeDataJson); // For debugging
 
         // Pass store data to JavaScript and initialize the map
         getElement().executeJs(
@@ -135,7 +133,7 @@ public class StoreLocatorView extends VerticalLayout {
             "           subdomains: 'abcd'," +
             "           maxZoom: 19" +
             "       }).addTo(map);" +
-            // Create a custom divIcon for the user's current location marker
+            // Add current location marker
             "       var currentLocationMarker = L.divIcon({" +
             "           className: 'current-location-marker'," +
             "           iconSize: [25, 25]," +
@@ -143,7 +141,7 @@ public class StoreLocatorView extends VerticalLayout {
             "       });" +
             "       L.marker([latitude, longitude], { icon: currentLocationMarker }).addTo(map);" +
             // Add store markers
-            "       var storeData = $0;" + // Pass store data
+            "       var storeData = JSON.parse($0);" + // Parse store data JSON string
             "       storeData.forEach(function(store) {" +
             "           if (store.latitude && store.longitude) {" +
             "               var marker = L.marker([store.latitude, store.longitude]).addTo(map);" +
@@ -177,7 +175,7 @@ public class StoreLocatorView extends VerticalLayout {
             "       transform: translate(-75%, -75%);" +
             "   }';" +
             "head.appendChild(style);",
-            storeDataJson // Pass the store data as parameter
+            storeDataJson // Pass the serialized JSON string
         );
     }
 
