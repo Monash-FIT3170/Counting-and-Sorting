@@ -1,7 +1,6 @@
 .admin-finance-view {
   padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
-  overflow: hidden; /* TODO: add in better overflow mechanism/fix layout */
 }
 
 /* Borders */
@@ -23,7 +22,7 @@
   border-right: none;
 }
 
-.admin-finance-view .horizontal-scroll {
+.horizontal-scroll {
   overflow-x: scroll;
 }
 
