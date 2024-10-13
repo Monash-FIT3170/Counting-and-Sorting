@@ -4,3 +4,10 @@
     background-color: var(--lumo-base-color);
     padding-top: var(--lumo-space-xl);
   }
+
+  .custom-marker .marker-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;  /* Make the marker circular */
+    border: 2px solid white;  /* Optional: add a white border */
+}
