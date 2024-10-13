@@ -173,7 +173,7 @@ public class MainLayout extends AppLayout {
     private void addDrawerContent() {
         // updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
         
-        SvgIcon logoImage = new SvgIcon("VAADIN/themes/liquor-store/img/logo-full.svg");
+        SvgIcon logoImage = new SvgIcon("VAADIN/themes/liquor-store/img/logo.svg");
         logoImage.addClassName("logo");
 
         Header header = new Header(logoImage);
