@@ -5,7 +5,7 @@
   }
 
 vaadin-login-overlay-wrapper::part(backdrop) {
-    background: url("VAADIN/themes/liquor-store/img/nav-bg.png") lightgray 0% / cover no-repeat;
+    background: url("VAADIN/themes/liquor-store/img/bg-dark.png") lightgray 0% / cover no-repeat;
 }
 
 vaadin-login-form-wrapper,
