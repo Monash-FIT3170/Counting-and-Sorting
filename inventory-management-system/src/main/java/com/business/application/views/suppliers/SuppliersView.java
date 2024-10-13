@@ -14,6 +14,7 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -31,6 +32,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoIcon;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
@@ -194,33 +196,29 @@ public class SuppliersView extends Div {
         });
 
         // Create the layout for the label and search field
-        HorizontalLayout toolbar = createHeader("SUPPLIERS", "");
+        HorizontalLayout toolbar = createHeader("Suppliers");
         toolbar.add(searchBar);
-        toolbar.setWidthFull();
-        toolbar.setHeight("50px");
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        toolbar.addClassName(Padding.LARGE);
-        toolbar.addClassName("search-top-section");
         return toolbar;
     }
 
-    private HorizontalLayout createHeader(String title, String subtitle) {
-        H2 h2 = new H2(title);
-        h2.addClassName("admin-dashboard-view-h2-1");
-        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
-
-        Span span = new Span(subtitle);
-        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
-
-        VerticalLayout column = new VerticalLayout(h2, span);
-        column.setPadding(false);
-        column.setSpacing(false);
-
-        HorizontalLayout header = new HorizontalLayout(column);
-        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        header.setSpacing(false);
+    private HorizontalLayout createHeader(String title) {
+        // Header container
+        HorizontalLayout header = new HorizontalLayout();
+        
+        header.addClassName("search-top-section");
         header.setWidthFull();
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.addClassNames(
+            LumoUtility.Padding.Left.XLARGE,
+            LumoUtility.Padding.Right.XLARGE
+            );
+        
+        H6 title_txt = new H6(title);
+        
+        title_txt.addClassNames(LumoUtility.TextColor.SECONDARY);
+
+        header.add(title_txt);
         return header;
     }
 

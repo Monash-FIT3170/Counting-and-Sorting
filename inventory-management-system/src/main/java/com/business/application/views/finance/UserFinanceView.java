@@ -86,6 +86,7 @@ public class UserFinanceView extends Div {
                 createHighlight("Total Sales", formatCurrency(totalSales), 8.3),
                 createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0)
         );
+        highlightsLayout.addClassName("horizontal-scroll");
 
         // Cost and Revenue breakdown section side by side
         HorizontalLayout breakdownLayout = new HorizontalLayout();

@@ -9,6 +9,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.*;
@@ -16,6 +17,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -145,19 +148,23 @@ public class StoreLocatorView extends VerticalLayout {
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
-        H2 h2 = new H2(title);
-        h2.addClassName("admin-dashboard-view-h2-1");
-
-        Span span = new Span(subtitle);
-
-        VerticalLayout column = new VerticalLayout(h2, span);
-        column.setPadding(false);
-        column.setSpacing(false);
-
-        HorizontalLayout header = new HorizontalLayout(column);
-        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        header.setSpacing(false);
+        // Header container
+        HorizontalLayout header = new HorizontalLayout();
+        
+        header.addClassName("search-top-section");
         header.setWidthFull();
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.addClassNames(
+            LumoUtility.Padding.Left.XLARGE,
+            LumoUtility.Padding.Right.XLARGE
+            );
+        
+        H6 title_txt = new H6(title);
+        
+        title_txt.addClassNames(LumoUtility.TextColor.SECONDARY);
+
+        header.add(title_txt);
         return header;
     }
 

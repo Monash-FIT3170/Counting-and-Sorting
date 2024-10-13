@@ -2,6 +2,7 @@
   display: block;
   height: 100%;
   background-color: var(--lumo-base-color);
+  padding: var(--lumo-space-l);
   padding-top: var(--lumo-space-xl);
 }
 .inventory-view vaadin-grid-pro {

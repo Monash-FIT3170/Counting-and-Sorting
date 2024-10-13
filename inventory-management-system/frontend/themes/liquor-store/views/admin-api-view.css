@@ -1,10 +1,9 @@
 .admin-api-view {
+  padding: var(--lumo-space-l);
   padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
 }
 .admin-api-view-border {
-  border: 1px solid var(--lumo-contrast-20pct); /* Adding a border */
-  border-radius: 8px;
   padding: var(--lumo-space-m); /* Adjust padding if needed */
   background-color: var(--lumo-base-color);
 }
@@ -26,4 +25,29 @@
 
 .admin-api-view vaadin-board-row.large > *:last-child {
   border-right: none;
+}
+
+.admin-api-view vaadin-button[theme="primary"]{
+  background: var(--lumo-contrast-5pct);
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-primary-color);
+  text-shadow: none;
+}
+
+.admin-api-view vaadin-button[theme="small icon error"]{
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-error-color);
+  text-shadow: none;
+}
+
+.admin-api-view vaadin-button[theme="small icon tertiary primary"]{
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-primary-color);
+  text-shadow: none;
+  border: none !important;
 }

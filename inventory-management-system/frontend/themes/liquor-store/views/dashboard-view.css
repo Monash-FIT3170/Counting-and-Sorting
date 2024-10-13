@@ -1,12 +1,13 @@
 .dashboard-view {
+  padding-top: var(--lumo-space-xl);
   background-color: var(--lumo-base-color);
 }
 
 /* Borders */
-.dashboard-view vaadin-board-row > * {
+/* .dashboard-view vaadin-board-row > * {
   border-bottom: 1px solid var(--lumo-contrast-10pct);
   border-right: 1px solid var(--lumo-contrast-10pct);
-}
+} */
 
 .dashboard-view vaadin-board-row.small > * {
   border-right: none;
@@ -21,30 +22,90 @@
   border-right: none;
 }
 
-
-/* Adds a bottom and right border with soft rounded corners to all child elements */
-.dashboard-view vaadin-board-row > * {
-
-  border-radius: 12px; /* Adjust as per the desired roundness */
-
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow for depth */
+.dashboard-view-store-search::part(input-field) {
+  background: var(--lumo-contrast-10pct);
+  box-shadow: none;
 }
 
-/* Specific adjustments for 'small' board rows, if needed */
-.dashboard-view vaadin-board-row.small > * {
-  border-right: none;
-  /* Add border-radius only for specific corners if needed */
+.dashboard-view vaadin-board-row {
+  height: 100%;
+  --vaadin-board-width-small: 650px;
 }
 
-/* For 'medium' board rows, removing the right border and adding radius to even children and the only child */
-.dashboard-view vaadin-board-row.medium > *:nth-child(even),
-.dashboard-view vaadin-board-row.medium > *:only-child {
-  border-right: none;
-  /* Add border-radius only for specific corners if needed */
+.dashboard-view vaadin-board-row vaadin-board {
+  display: flex;
+  flex-direction: column;
 }
 
-/* For 'large' board rows, removing the right border and adding radius to the last child element */
-.dashboard-view vaadin-board-row.large > *:last-child {
-  border-right: none;
-  /* Add border-radius only for specific corners if needed */
+.dashboard-view .board-top-left {
+  height: auto;
+}
+
+.dashboard-view vaadin-board-row vaadin-board vaadin-board-row {
+  --vaadin-board-width-small: 500px;
+}
+
+.dashboard-view > vaadin-board {
+  padding: var(--lumo-space-m) var(--lumo-space-xl);
+  box-sizing: border-box;
+}
+
+.dashboard-view .rounded-rectangle {
+  background: var(--lumo-base-color);
+  border-radius: var(--lumo-border-radius-l);
+  border: 1px solid var(--lumo-contrast-10pct);
+  box-shadow: var(--lumo-box-shadow-s);
+  
+  height: 100%;
+  justify-content: space-between;
+  gap: var(--lumo-space-s);
+}
+
+.dashboard-view .rounded-rectangle-wrapper {
+  padding: var(--lumo-space-s);
+}
+
+.dashboard-view .rounded-rectangle vaadin-horizontal-layout {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--lumo-space-s);
+}
+
+.dashboard-view .stock-levels {
+  box-sizing: border-box;
+  height: 220px;
+  gap: 0;
+}
+
+.dashboard-view .notification-item {
+  padding: var(--lumo-space-xs) var(--lumo-space-m);
+}
+
+.dashboard-view .notification-item vaadin-button {
+  background: var(--lumo-contrast-5pct);
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-primary-color);
+}
+
+.dashboard-view .notification-wrapper {
+  gap: var(--lumo-space-xs);
+  padding: 0;
+}
+
+.dashboard-view .requests {
+  justify-content: normal;
+  gap: var(--lumo-space-m);
+}
+
+.notification-modal vaadin-button {
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--lumo-base-color);
+}
+
+.notification-modal {
+  align-items: center;
 }
