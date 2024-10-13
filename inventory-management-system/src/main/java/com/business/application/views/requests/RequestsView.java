@@ -1,8 +1,15 @@
 package com.business.application.views.requests;
 
+import com.business.application.domain.Inventory;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
 import com.business.application.domain.ShoppingListItem;
+import com.business.application.domain.Store;
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.repository.InventoryRepository;
+import com.business.application.services.InventoryService;
+import com.business.application.services.StoreService;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -22,6 +29,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @PageTitle("Requests")
@@ -31,12 +39,22 @@ public class RequestsView extends Div implements AfterNavigationObserver {
 
     private Grid<ShoppingList> grid;
     private List<ShoppingList> pendingShoppingLists;
+    private StoreService storeService;
+    private InventoryService inventoryService;
+    private WebScrapedProductService webScrapedProductService;
 
-    public RequestsView() {
+    private InventoryRepository inventoryRepository;
+
+
+    public RequestsView(InventoryService inventoryService, StoreService storeService, WebScrapedProductService webScrapedProductService, InventoryRepository inventoryRepository) {
+        this.inventoryService = inventoryService;
+        this.webScrapedProductService = webScrapedProductService;
+
         addClassName("requests-view");
         setSizeFull();
         pendingShoppingLists = getPendingShoppingLists();
-    
+        this.storeService = storeService;
+
         grid = new Grid<>(ShoppingList.class, false);
         configureGrid();
     
@@ -103,6 +121,7 @@ public class RequestsView extends Div implements AfterNavigationObserver {
 
     private void handleApprove(ShoppingList shoppingList) {
         shoppingList.setStatus("Approved");
+        updateInventory(shoppingList);
         Notification.show("Shopping List " + shoppingList.getListId() + " approved.");
         refreshGrid();
     }
@@ -122,6 +141,21 @@ public class RequestsView extends Div implements AfterNavigationObserver {
         return ListOfShoppingList.getInstance().getShoppingLists().stream()
             .filter(list -> "Pending".equals(list.getStatus()))
             .collect(Collectors.toList());
+    }
+
+    private void updateInventory(ShoppingList shoppingList) {
+        int storeId = shoppingList.getStoreId();
+        
+        //Add products in shopping list to inventory
+        Inventory inventory = inventoryService.getOrCreateInventory(storeId);
+        List<WebScrapedProduct> products = shoppingList.getProducts().stream()
+            .map(item -> webScrapedProductService.getWebscrapedProductById(item.getProductId()))
+            .collect(Collectors.toList());
+
+        for (WebScrapedProduct product : products) {
+            inventoryService.addProductToInventory(inventory.getInventoryId(), product.getId());
+        }        
+
     }
 
     @Override

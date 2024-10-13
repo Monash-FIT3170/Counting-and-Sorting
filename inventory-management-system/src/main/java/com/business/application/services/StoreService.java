@@ -19,6 +19,12 @@ public class StoreService {
         this.storeRepository = storeRepository;
     }
 
+    public Store createStore(Store store) {
+        store.setInventory(new Inventory());
+        store.getInventory().setStore(store);
+        return storeRepository.save(store);
+    }
+
     public List<Store> findAllStores() {
         List<Store> stores = storeRepository.findAll();
         System.out.println("Number of stores found: " + stores.size());
@@ -41,6 +47,16 @@ public class StoreService {
     public Store getStoreByManagerId(Long userId) {
         return storeRepository.findByManagerId(userId);
         
+    }
+
+    public void ensureInventoryForAllStores() {
+        List<Store> stores = storeRepository.findAll();
+        for (Store store : stores) {
+            if (store.getInventory() == null) {
+                store.ensureInventory();
+                storeRepository.save(store);
+            }
+        }
     }
     
 }
