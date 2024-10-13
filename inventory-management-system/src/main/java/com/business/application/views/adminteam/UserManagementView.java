@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
 @RolesAllowed("ADMIN")
 public class UserManagementView extends VerticalLayout {
 
+
     private Grid<User> grid;
     private final UserService userService;
     private final TextField usernameFilter = new TextField();
@@ -62,14 +63,33 @@ public class UserManagementView extends VerticalLayout {
     public UserManagementView(UserService userService) {
         this.userService = userService;
         setSizeFull();
+        addClassName("admin-user-view");
+    
         configureGrid();
         configureFilter();
-        add(createToolbar(), grid);
+    
+        HorizontalLayout toolbar = createToolbar();
+        grid.addClassName("admin-user-view-border"); // Apply border style to the grid
+    
+        add(toolbar, grid);
     }
+
+    private HorizontalLayout createToolbar() {
+        Button addButton = new Button("Add User", click -> addUser());
+        addClassName("admin-user-view-border");
+        addButton.setIcon(new Icon("lumo", "plus"));
+        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    
+        HorizontalLayout toolbar = new HorizontalLayout(usernameFilter, addButton);
+        toolbar.setAlignItems(FlexComponent.Alignment.END);
+        return toolbar;
+    }
+
+
 
     private void configureGrid() {
         grid = new Grid<>(User.class, false);
-
+        grid.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10);
         grid.addColumn(new ComponentRenderer<>(user -> {
             HorizontalLayout hl = new HorizontalLayout();
             Icon profileIcon;
@@ -154,17 +174,6 @@ public class UserManagementView extends VerticalLayout {
                 String filter = "%" + usernameFilter.getValue().toLowerCase() + "%";
                 return criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), filter);
             }).stream());
-    }
-
-    private Component createToolbar() {
-        Button addButton = new Button("Add User", click -> addUser());
-        addButton.setIcon(new Icon("lumo", "plus"));
-        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        HorizontalLayout toolbar = new HorizontalLayout(usernameFilter, addButton);
-        toolbar.addClassName("toolbar");
-        toolbar.setAlignItems(FlexComponent.Alignment.END);
-        return toolbar;
     }
 
     private void addUser() {

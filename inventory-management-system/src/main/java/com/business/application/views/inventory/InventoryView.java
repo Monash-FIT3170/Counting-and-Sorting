@@ -1,5 +1,7 @@
 package com.business.application.views.inventory;
 
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -8,9 +10,12 @@ import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,36 +25,67 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 import jakarta.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
 
 import com.business.application.views.inventory.ProductFrontend;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Inventory")
 @Route(value = "inventory", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class InventoryView extends Div {
+    private List<WebScrapedProduct> suppliers = new ArrayList<>();
 
-    private Grid<ProductFrontend> grid;
-    private GridListDataView<ProductFrontend> gridListDataView;
+    private Grid<WebScrapedProduct> grid;
+    private GridListDataView<WebScrapedProduct> gridListDataView;
 
-    private Grid.Column<ProductFrontend> itemIDColumn;
-    private Grid.Column<ProductFrontend> nameColumn;
-    private Grid.Column<ProductFrontend> categoryColumn;
-    private Grid.Column<ProductFrontend> quantityColumn;
-    private Grid.Column<ProductFrontend> stockLevelColumn;
+    private Grid.Column<WebScrapedProduct> itemIDColumn;
+    private Grid.Column<WebScrapedProduct> nameColumn;
+    private Grid.Column<WebScrapedProduct> categoryColumn;
+    private Grid.Column<WebScrapedProduct> quantityColumn;
+    private Grid.Column<WebScrapedProduct> stockLevelColumn;
 
-    public InventoryView() {
+    private WebScrapedProductService webScrapedProductService;
+
+    @Autowired
+    public InventoryView(WebScrapedProductService webScrapedProductService) {
+        this.webScrapedProductService = webScrapedProductService;
         addClassName("inventory-view");
-        setSizeFull();
+        // Create the toolbar
+        HorizontalLayout toolbar = createToolbar();
+
+        // Create the grid
         createGrid();
-        add(grid);
+        createInventory();
+
+        // Layout
+        VerticalLayout mainLayout = new VerticalLayout(toolbar, grid);
+        mainLayout.setSizeFull();
+        mainLayout.setPadding(false);
+        mainLayout.setSpacing(false);
+        grid.getElement().getStyle().set("margin-top", "16px");
+
+        // Add to the view
+        add(mainLayout);
+
+        
+    }
+
+    private void createInventory() {
+        suppliers = webScrapedProductService.getAllWebscrapedProducts();
+        gridListDataView = grid.setItems(suppliers);
     }
 
     private void createGrid() {
@@ -59,13 +95,11 @@ public class InventoryView extends Div {
     }
 
     private void createGridComponent() {
-        grid = new Grid<>();
-        grid.setSelectionMode(SelectionMode.NONE);
+        grid = new GridPro<>();
+        grid.setSelectionMode(SelectionMode.SINGLE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
-
-        List<ProductFrontend> products = getProducts();
-        gridListDataView = grid.setItems(products);
+        gridListDataView = grid.setItems(suppliers);
     }
 
     private void addColumnsToGrid() {
@@ -78,14 +112,14 @@ public class InventoryView extends Div {
 
     private void createItemIDColumn() {
         itemIDColumn = grid
-                .addColumn(ProductFrontend::getItemID)
+                .addColumn(WebScrapedProduct::getId)
                 .setHeader("Item ID")
                 .setSortable(true);
     }
 
     private void createNameColumn() {
         nameColumn = grid
-                .addColumn(ProductFrontend::getName)
+                .addColumn(WebScrapedProduct::getName)
                 .setAutoWidth(true)
                 .setHeader("Item Name")
                 .setSortable(true);
@@ -93,18 +127,18 @@ public class InventoryView extends Div {
 
     private void createCategoryColumn() {
         categoryColumn = grid
-                .addColumn(new ComponentRenderer<>(product -> {
+                .addColumn(new ComponentRenderer<>(supplier -> {
                     Span categorySpan = new Span();
-                    String category = product.getCategory();
+                    String category = supplier.getCategory();
                     categorySpan.setText(category);
                     if ("Wine".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-wine");
                     } else if ("Beer".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-beer");
-                    } else if ("Spirit".equals(category)) {
+                    } else if ("Spirits".equals(category)) {
                         categorySpan.getElement().setAttribute("class", "badge-spirit");
-                    } else if ("Premix".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-premix");
+                    } else if ("Cider".equals(category)) {
+                        categorySpan.getElement().setAttribute("class", "badge-cider");
                     } else {
                         categorySpan.getElement().setAttribute("class", "badge-misc");
                     }
@@ -115,7 +149,7 @@ public class InventoryView extends Div {
 
     private void createQuantityColumn() {
         quantityColumn = grid
-                .addColumn(ProductFrontend::getQuantity)
+                .addColumn(WebScrapedProduct::getQuantity)
                 .setHeader("Current Quantity")
                 .setSortable(true);
     }
@@ -124,18 +158,81 @@ public class InventoryView extends Div {
         stockLevelColumn = grid
                 .addColumn(new ComponentRenderer<>(product -> {
                     Span stockLevel = new Span();
-                    String stockStatus = product.getStockStatus();
+                    int stockQuantity = product.getQuantity();
+                    String stockStatus = "High";
                     stockLevel.setText(stockStatus);
-                    if ("High".equals(stockStatus)) {
+                    if (stockQuantity >= 500) {
+                        stockLevel.setText("High");
                         stockLevel.getElement().setAttribute("theme", "badge success");
-                    } else if ("Medium".equals(stockStatus)) {
+                    } else if (stockQuantity >= 100) {
+                        stockLevel.setText("Medium");
                         stockLevel.getElement().setAttribute("theme", "badge warning");
-                    } else if ("Low".equals(stockStatus)) {
+                    } else {
+                        stockLevel.setText("Low");
                         stockLevel.getElement().setAttribute("theme", "badge error");
                     }
                     return stockLevel;
                 }))
                 .setHeader("Stock Level");
+    }
+
+    private HorizontalLayout createToolbar() {
+        // Create the search bar
+        TextField searchBar = new TextField();
+        searchBar.addClassName("toolbar-search-bar");
+        searchBar.setPlaceholder("Search Items");
+        searchBar.setSuffixComponent(VaadinIcon.SEARCH.create());
+        searchBar.setWidth("300px");
+
+        // Add filters to search bar
+        searchBar.setValueChangeMode(ValueChangeMode.EAGER);
+        searchBar.addValueChangeListener(event -> {
+            String filterText = event.getValue().trim();
+            if (filterText.isEmpty()) {
+                // Clear all filters if the search field is empty
+                gridListDataView.removeFilters();
+            } else {
+                gridListDataView.removeFilters();
+                gridListDataView.addFilter(product -> {
+                    // Filter by name, category, quantity, and stock status
+                    boolean matchesName = StringUtils.containsIgnoreCase(product.getName(), filterText);
+                    boolean matchesCategory = StringUtils.containsIgnoreCase(product.getCategory(), filterText);
+                    boolean matchesQuantity = StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), filterText);
+                    boolean matchesStockStatus = StringUtils.containsIgnoreCase(getStockLevel(product.getQuantity()), filterText);
+                    return matchesName || matchesCategory || matchesQuantity || matchesStockStatus;
+                });
+            }
+        });
+
+        // Create the layout for the label and search field
+        HorizontalLayout toolbar = createHeader("INVENTORY ITEMS", "");
+        toolbar.add(searchBar);
+        toolbar.setWidthFull();
+        toolbar.setHeight("50px");
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        toolbar.addClassName(Padding.LARGE);
+        toolbar.addClassName("search-top-section");
+        return toolbar;
+    }
+
+    private HorizontalLayout createHeader(String title, String subtitle) {
+        H2 h2 = new H2(title);
+        h2.addClassName("admin-dashboard-view-h2-1");
+        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
+
+        Span span = new Span(subtitle);
+        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
+
+        VerticalLayout column = new VerticalLayout(h2, span);
+        column.setPadding(false);
+        column.setSpacing(false);
+
+        HorizontalLayout header = new HorizontalLayout(column);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.setSpacing(false);
+        header.setWidthFull();
+        return header;
     }
 
     private void addFiltersToGrid() {
@@ -146,7 +243,12 @@ public class InventoryView extends Div {
         itemIDFilter.setClearButtonVisible(true);
         itemIDFilter.setWidth("100%");
         itemIDFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getItemID()), itemIDFilter.getValue())));
+        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getId().intValue()), itemIDFilter.getValue())));
+        itemIDFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getId().intValue()), itemIDFilter.getValue()));
+        });
         filterRow.getCell(itemIDColumn).setComponent(itemIDFilter);
 
         TextField nameFilter = new TextField();
@@ -154,21 +256,29 @@ public class InventoryView extends Div {
         nameFilter.setClearButtonVisible(true);
         nameFilter.setWidth("100%");
         nameFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        nameFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue())));
+        nameFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(product.getName(), nameFilter.getValue()));
+        });
         filterRow.getCell(nameColumn).setComponent(nameFilter);
 
         ComboBox<String> categoryFilter = new ComboBox<>();
-        categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
+        categoryFilter.setItems("Beer", "Wine", "Spirits", "Premix", "Misc");
         categoryFilter.setPlaceholder("Filter");
-        categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        categoryFilter.setClearButtonVisible(true);
         categoryFilter.setWidth("100%");
-        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
-            String filterValue = categoryFilter.getValue();
-            if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(product.getCategory());
-            }
-            return true;
-        }));
+        categoryFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> {
+                String filterValue = categoryFilter.getValue();
+                if (filterValue != null) {
+                    return filterValue.equalsIgnoreCase(product.getCategory());
+                }
+                return true;
+            });
+        });
         filterRow.getCell(categoryColumn).setComponent(categoryFilter);
 
         TextField quantityFilter = new TextField();
@@ -176,47 +286,42 @@ public class InventoryView extends Div {
         quantityFilter.setClearButtonVisible(true);
         quantityFilter.setWidth("100%");
         quantityFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        quantityFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue())));
+        quantityFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> StringUtils.containsIgnoreCase(Integer.toString(product.getQuantity()), quantityFilter.getValue()));
+        });
         filterRow.getCell(quantityColumn).setComponent(quantityFilter);
 
         ComboBox<String> stockLevelFilter = new ComboBox<>();
         stockLevelFilter.setItems("Low", "Medium", "High");
         stockLevelFilter.setPlaceholder("Filter");
-        stockLevelFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        stockLevelFilter.setClearButtonVisible(true);
         stockLevelFilter.setWidth("100%");
-        stockLevelFilter.addValueChangeListener(event -> gridListDataView.addFilter(product -> {
-            String filterValue = stockLevelFilter.getValue();
-            if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(product.getStockStatus());
-            }
-            return true;
-        }));
+        stockLevelFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(product -> {
+                String filterValue = stockLevelFilter.getValue();
+                if (filterValue != null) {
+                    return filterValue.equalsIgnoreCase(getStockLevel(product.getQuantity()));
+                }
+                return true;
+            });
+        });
         filterRow.getCell(stockLevelColumn).setComponent(stockLevelFilter);
     }
 
-    private List<ProductFrontend> getProducts() {
-        return Arrays.asList(
-                new ProductFrontend(174926328, "Vodka Cruiser: Wild Raspberry 275mL", "Premix", 375, 600),
-                new ProductFrontend(174036988, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 802, 1000),
-                new ProductFrontend(846302592, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 3079296, 5000000),
-                new ProductFrontend(769035037, "Good Day: Watermelon Soju", "Misc", 3514346, 5000000),
-                new ProductFrontend(185035836, "Absolut: Vodka 1L", "Beer", 542669, 1000000),
-                new ProductFrontend(562784657, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 458, 2000),
-                new ProductFrontend(186538594, "Brookvale Union: Vodka Lemon Squash Cans 330mL", "Premix", 997, 1000),
-                new ProductFrontend(879467856, "Moët & Chandon: Impérial Brut", "Wine", 1700250, 2000000),
-                new ProductFrontend(108767894, "Moët & Chandon: Rosé Impérial", "Wine", 1429048, 2000000),
-                new ProductFrontend(265743940, "Vodka Cruiser: Lush Guava 275mL", "Premix", 472648, 5000000),
-                new ProductFrontend(123454352, "Vodka Cruiser: Juicy Watermelon 275mL", "Misc", 833, 1500),
-                new ProductFrontend(456374567, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 222, 1000),
-                new ProductFrontend(867584756, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 438, 1000),
-                new ProductFrontend(347453482, "Absolut: Vodka 1L", "Beer", 1913750, 2000000),
-                new ProductFrontend(956836417, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 528950, 600000),
-                new ProductFrontend(958403584, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 3750, 8000),
-                new ProductFrontend(239563895, "Good Day: Watermelon Soju", "Spirit", 290600, 500000),
-                new ProductFrontend(375845219, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Misc", 4933400, 5000000),
-                new ProductFrontend(384926414, "Vodka Cruiser: Lush Guava 275mL", "Premix", 2266200, 3000000),
-                new ProductFrontend(194637894, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Beer", 1563450, 2000000)
-        );
+    private String getStockLevel(int quantity) {
+        if (quantity >= 500) {
+            return "High";
+        } else if (quantity >= 100) {
+            return "Medium";
+        } else {
+            return "Low";
+        }
     }
+
+    
 
 }

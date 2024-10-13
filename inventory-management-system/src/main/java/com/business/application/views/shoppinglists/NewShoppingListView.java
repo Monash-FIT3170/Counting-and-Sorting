@@ -4,7 +4,8 @@ import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.Product;
 import com.business.application.domain.ShoppingList;
 import com.business.application.domain.ShoppingListItem;
-
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -35,17 +37,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Stack;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 @PageTitle("Create A New Shopping List")
 @Route(value = "new-shopping-list", layout = MainLayout.class)
 @AnonymousAllowed
 public class NewShoppingListView extends Div {
 
-    private List<Product> productList = getProductList();
     private ArrayList<ShoppingListItem> shoppingListItems = new ArrayList<>();
-    private Grid<Product> productGrid = new Grid<>(Product.class);
+    private Grid<WebScrapedProduct> productGrid = new Grid<>(WebScrapedProduct.class);
     private GridPro<ShoppingListItem> shoppingListGrid = new GridPro<>();
-    private ListDataProvider<Product> productDataProvider;
+    private ListDataProvider<WebScrapedProduct> productDataProvider;
     private ListDataProvider<ShoppingListItem> shoppingListDataProvider;
     private Date chosenDate;
     private String ShoppingListNameEntered;
@@ -53,9 +56,14 @@ public class NewShoppingListView extends Div {
     int currentList = shoppingListInstance.getShoppingListLength() + 1;
     private BigDecimal totalPrice;
     private Text shoppingListPriceText;
-    
+    private TextField searchField;
 
-    public NewShoppingListView() {
+    private WebScrapedProductService webScrapedProductService;
+    
+    @Autowired
+    public NewShoppingListView(WebScrapedProductService webScrapedProductService) {
+        this.webScrapedProductService = webScrapedProductService;
+        addClassName("new-shopping-list-view");
         // Create date picker for order date
         totalPrice = new BigDecimal(0.00);
         shoppingListPriceText = new Text("$" + totalPrice.toString());
@@ -79,18 +87,24 @@ public class NewShoppingListView extends Div {
         ShoppingListName.setPrefixComponent(VaadinIcon.CART.create());
         ShoppingListName.addValueChangeListener(event -> setShoppingListName(event.getValue()));
 
+        searchField = new TextField();
+        searchField.setPlaceholder("Search products...");
+        searchField.setClearButtonVisible(true);
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(event -> filterProducts(event.getValue()));
+
         HorizontalLayout dateAndShoppingListName = new HorizontalLayout(orderDate, ShoppingListName,shoppingListPriceText);
         dateAndShoppingListName.setSpacing(true);
         dateAndShoppingListName.addClassName("dynamic-style");
 
         // Create a grid for all the products
-        productDataProvider = new ListDataProvider<>(productList);
+        productDataProvider = new ListDataProvider<>(webScrapedProductService.getAllWebscrapedProducts());
         productGrid.setDataProvider(productDataProvider);
         //productGrid.setColumns("productId", "name", "salePrice", "category", "description");
         productGrid.removeAllColumns();
-        productGrid.addColumn(Product::getName).setHeader("Product Name").setSortable(true);
-        productGrid.addColumn(Product::getSalePrice).setHeader("Product Sale Price").setSortable(true);
-        productGrid.addColumn(Product::getQuantity).setHeader("Current Stock").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getName).setHeader("Product Name").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getPrice).setHeader("Product Sale Price").setSortable(true);
+        productGrid.addColumn(WebScrapedProduct::getQuantity).setHeader("Current Stock").setSortable(true);
         // Round sale price to 2 decimal places
 
 
@@ -117,7 +131,7 @@ public class NewShoppingListView extends Div {
         TextField quantityField = new TextField("Quantity");
 
         Button addButton = new Button("Add to Shopping List", event -> {
-            Product selectedProduct = productGrid.asSingleSelect().getValue();
+            WebScrapedProduct selectedProduct = productGrid.asSingleSelect().getValue();
             if (selectedProduct != null) {
                 try {
                     String quantityValue = quantityField.getValue();
@@ -153,7 +167,7 @@ public class NewShoppingListView extends Div {
             }
         });
 
-        VerticalLayout productLayout = new VerticalLayout(new H3("Products"), productGrid);
+        VerticalLayout productLayout = new VerticalLayout(new H3("Products"),searchField, productGrid);
         productLayout.addClassName("dynamic-style");
 
         VerticalLayout shoppingListLayout = new VerticalLayout(new H3("Shopping List Items"), shoppingListGrid);
@@ -172,6 +186,19 @@ public class NewShoppingListView extends Div {
         
         add(layout);
     }
+
+    private void filterProducts(String searchTerm) {
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            productDataProvider.clearFilters();
+        } else {
+            productDataProvider.setFilter(product ->
+                    product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getCategory().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    product.getPrice().toString().contains(searchTerm.toLowerCase())
+            );
+        }
+    }
+
 
     public void setChosenDate(Date date) {
         this.chosenDate = date;
@@ -192,8 +219,8 @@ public class NewShoppingListView extends Div {
         this.shoppingListPriceText.setText(string);
     }
 
-    public void updateTotalPrice(Product item,int amount){
-        BigDecimal orderPriceOfItem = item.getSalePrice().multiply(new BigDecimal(amount));
+    public void updateTotalPrice(WebScrapedProduct item,int amount){
+        BigDecimal orderPriceOfItem = BigDecimal.valueOf(item.getPrice()).multiply(new BigDecimal(amount));
         // Round to 2 decimal places
         orderPriceOfItem = orderPriceOfItem.setScale(2, BigDecimal.ROUND_HALF_UP);
         this.totalPrice = totalPrice.add(orderPriceOfItem);
@@ -268,29 +295,4 @@ public class NewShoppingListView extends Div {
         return Math.max(result, 0);
     }
 
-    private List<Product> getProductList() {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product(174926328L, "Vodka Cruiser: Wild Raspberry 275mL", new BigDecimal(4.5), "Premix", "600",50));
-        products.add(new Product(174036988L, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", new BigDecimal(36), "Wine", "1000",900));
-        products.add(new Product(846302592L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(44), "Premix", "5000000",300));
-        products.add(new Product(769035037L, "Good Day: Watermelon Soju", new BigDecimal(5.8), "Misc", "5000000",567));
-        products.add(new Product(185035836L, "Absolut: Vodka 1L", new BigDecimal(67), "Beer", "1000000",123));
-        products.add(new Product(562784657L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(85), "Spirit", "2000",812));
-        products.add(new Product(186538594L, "Brookvale Union: Vodka Lemon Squash Cans 330mL", new BigDecimal(3.6), "Premix", "1000",5000));
-        products.add(new Product(879467856L, "Moët & Chandon: Impérial Brut", new BigDecimal(114), "Wine", "2000000",129));
-        products.add(new Product(108767894L, "Moët & Chandon: Rosé Impérial", new BigDecimal(156), "Wine", "2000000",36));
-        products.add(new Product(265743940L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(5.7), "Premix", "5000000",983));
-        products.add(new Product(123454352L, "Vodka Cruiser: Juicy Watermelon 275mL", new BigDecimal(5.7), "Misc", "1500",0));
-        products.add(new Product(456374567L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(78), "Spirit", "1000",852));
-        products.add(new Product(867584756L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(46), "Premix", "1000",89));
-        products.add(new Product(347453482L, "Absolut: Vodka 1L", new BigDecimal(77), "Beer", "2000000",12));
-        products.add(new Product(956836417L, "Suntory: -196 Double Lemon Can 330mL", new BigDecimal(4.5), "Wine", "600000",982));
-        products.add(new Product(958403584L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(77), "Spirit", "8000",500));
-        products.add(new Product(239563895L, "Good Day: Watermelon Soju", new BigDecimal(6.5), "Spirit", "500000",500));
-        products.add(new Product(375845219L, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", new BigDecimal(55), "Misc", "5000000",500));
-        products.add(new Product(384926414L, "Vodka Cruiser: Lush Guava 275mL", new BigDecimal(4), "Premix", "3000000",500));
-        products.add(new Product(194637894L, "Fireball: Cinnamon Flavoured Whisky 1.14L", new BigDecimal(66), "Beer", "2000000",500));
-
-        return products;
-    }
 }

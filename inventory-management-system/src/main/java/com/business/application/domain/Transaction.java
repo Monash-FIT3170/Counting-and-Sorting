@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "store_transactions")
+@Table(name = "store_transactions_2")
 public class Transaction extends AbstractEntity {
 
     @Column(name = "tx_id", nullable = false, unique = true)

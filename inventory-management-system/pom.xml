@@ -104,6 +104,12 @@
             <artifactId>vaadin-testbench-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+    
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>2.13.0</version>
+      </dependency>
     </dependencies>
 
     <build>
@@ -162,7 +168,27 @@
                         </executions>
                     </plugin>
                 </plugins>
+                <resources>
+                    <!-- Include the main resources directory -->
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>**/*</include>
+                        </includes>
+                    </resource>
+
+                    <!-- Include the frontend theme images directory -->
+                    <resource>
+                        <directory>frontend/themes/liquor-store/img</directory>
+                        <includes>
+                            <include>**/*</include>
+                        </includes>
+                        <!-- Optionally specify a target path where these resources should be copied to -->
+                        <targetPath>VAADIN/themes/liquor-store/img</targetPath>
+                    </resource>
+                </resources>
             </build>
+
         </profile>
 
         <profile>

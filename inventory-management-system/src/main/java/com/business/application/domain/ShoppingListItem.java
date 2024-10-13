@@ -1,22 +1,22 @@
 package com.business.application.domain;
 
 public class ShoppingListItem extends AbstractEntity{
-    private Product product;
+    private WebScrapedProduct product;
     private int quantity = 0;
     private int requestedQuantity;
 
-    public ShoppingListItem(Product product, int quantity) {
+    public ShoppingListItem(WebScrapedProduct product, int quantity) {
         this.product = product;
         this.requestedQuantity = quantity;
         
     }
 
-    public Product getProduct() {
+    public WebScrapedProduct getProduct() {
         return product;
     }
 
     public Long getProductId(){
-        return this.product.getProductId();
+        return this.product.getId();
     }
     public String getProductName(){
         return this.product.getName();
@@ -42,12 +42,12 @@ public class ShoppingListItem extends AbstractEntity{
         return String.valueOf(this.quantity);
     }
 
-    public String getProductPrice() {
-        return this.product.getSalePrice().toString();
+    public double getProductPrice() {
+        return this.product.getPrice();
     }
 
-    public String getRequestedQuantityStr() {
-        return String.valueOf(this.requestedQuantity);
+    public int getRequestedQuantityStr() {
+        return this.requestedQuantity;
     }
 
     public void setQuantity(int quantity) {

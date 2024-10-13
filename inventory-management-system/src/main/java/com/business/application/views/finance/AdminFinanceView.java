@@ -63,8 +63,8 @@ public class AdminFinanceView extends Div {
     private final VerticalLayout mainLayout;
     private final HorizontalLayout highlightsLayout;
     private final ComboBox<Integer> storeSelect;
-    private final VerticalLayout contentContainer;
-    private final ComboBox<String> selectionComboBox;
+    private VerticalLayout contentContainer = new VerticalLayout();
+    private final VerticalLayout storeSpecificLayout;
 
     @Autowired
     public AdminFinanceView(TransactionService transactionService) {
@@ -73,66 +73,186 @@ public class AdminFinanceView extends Div {
 
         mainLayout = new VerticalLayout();
         mainLayout.setPadding(true);
-
-
+        mainLayout.addClassName("admin-finance-view");
 
         // Overall metrics section
         HorizontalLayout overallMetricsLayout = new HorizontalLayout();
         overallMetricsLayout.setWidthFull();
         overallMetricsLayout.add(
-                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 0.0),
-                createHighlight("Total Profit", formatCurrency(getTotalProfit()), 0.0),
-                createHighlight("Total Disbursements", formatCurrency(getTotalDisbursements()), 0.0)
+                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 3.6),
+                createHighlight("Total Store Profits", formatCurrency(getTotalProfit()), -2.4),
+                createHighlight("Total Royalty Fees Collected", formatCurrency(getTotalDisbursements()), 3.6)
         );
-
         mainLayout.add(overallMetricsLayout);
 
-        highlightsLayout = new HorizontalLayout();
-        highlightsLayout.setWidthFull();
-        
-        // Profit Pie Chart for all stores
-        Chart profitPieChart = createProfitPieChart();
-        mainLayout.add(profitPieChart);
+        // Profit and Revenue Pie Charts for all stores
+        HorizontalLayout chartsLayout = new HorizontalLayout();
+        chartsLayout.setWidthFull();
 
+        Chart profitPieChart = createProfitPieChart();
+        Chart revenuePieChart = createRevenuePieChart();
+
+        chartsLayout.add(profitPieChart, revenuePieChart);
+        mainLayout.add(chartsLayout);
+
+        // Profit Margin Chart for all stores
+        Chart profitMarginChart = createProfitMarginChart();
+        mainLayout.add(profitMarginChart);
+
+        // Monthly Revenues of All Stores
+        Chart monthlyRevenueChart = createMonthlyRevenueChart();
+        mainLayout.add(monthlyRevenueChart);
+
+        // Store-specific section in a defined box
+        storeSpecificLayout = new VerticalLayout();
+        storeSpecificLayout.setPadding(true);
+        storeSpecificLayout.addClassName("store-specific-layout");
+        storeSpecificLayout.addClassName("rounded-rectangle"); // Add styles for the defined box
+        storeSpecificLayout.setSpacing(true);
+        storeSpecificLayout.setPadding(true);
+        storeSpecificLayout.setVisible(true);
+
+        // Store Selector with Indicator Box
         storeSelect = new ComboBox<>();
         storeSelect.setLabel("Select Store");
         storeSelect.setPlaceholder("Select Store");
-        storeSelect.addValueChangeListener(event -> updateStoreSpecificData(event.getValue()));
+        storeSelect.setItems(1, 2, 3, 4); // Add store options here
+        storeSelect.setValue(1); // Set Store 1 as the default selected store
+        storeSelect.addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                updateStoreSpecificData(event.getValue());
+            }
+        });
 
         HorizontalLayout storeSelectorLayout = new HorizontalLayout();
         storeSelectorLayout.setWidthFull();
         storeSelectorLayout.add(storeSelect);
 
-        mainLayout.add(storeSelectorLayout, highlightsLayout);
+        storeSpecificLayout.add(storeSelectorLayout);
 
-        VerticalLayout analysisLayout = new VerticalLayout();
-        selectionComboBox = new ComboBox<>("Select View");
-        selectionComboBox.setItems("Graph", "Table");
+        // Highlights for the selected store
+        highlightsLayout = new HorizontalLayout();
+        highlightsLayout.setWidthFull();
+        storeSpecificLayout.add(highlightsLayout);
 
+        // Toggle Button to switch views
+        Button toggleViewButton = new Button("Hide Detailed Store View");
+        toggleViewButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        toggleViewButton.addClickListener(e -> {
+            boolean isIndividualStoreView = contentContainer.isVisible();
+            contentContainer.setVisible(!isIndividualStoreView);
+            toggleViewButton.setText(isIndividualStoreView ? "Switch to Detailed Store View" : "Hide Detailed Store View");
+        });
+        storeSpecificLayout.add(toggleViewButton);
+
+        // Store-specific content container
         contentContainer = new VerticalLayout();
+        storeSpecificLayout.add(contentContainer);
 
-        selectionComboBox.addValueChangeListener(event -> {
-            contentContainer.removeAll();
-            if ("Graph".equals(event.getValue())) {
-                contentContainer.add(createFinancialGraph(storeSelect.getValue()));
-            } else if ("Table".equals(event.getValue())) {
-                contentContainer.add(createTransactionsTable(storeSelect.getValue()));
-            }
+        // Initially load data for the default store
+        updateStoreSpecificData(storeSelect.getValue());
+
+        // Add the store-specific layout to the main layout
+        mainLayout.add(storeSpecificLayout);
+
+        add(mainLayout);
+    }
+
+    // Method to create the Profit Margin Chart
+    private Chart createProfitMarginChart() {
+        Chart chart = new Chart(ChartType.COLUMN);
+        Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
+        conf.setTitle("Profit Margins Across Stores");
+
+        // Get the profit data for all stores
+        java.util.Map<Integer, BigDecimal> profits = transactionService.getProfitsForAllStores();
+        java.util.Map<Integer, BigDecimal> revenues = transactionService.getTotalSalesForAllStores();
+
+        ListSeries series = new ListSeries("Profit Margin (%)");
+
+        profits.forEach((storeId, profit) -> {
+            BigDecimal revenue = revenues.getOrDefault(storeId, BigDecimal.ZERO);
+            double margin = (revenue.compareTo(BigDecimal.ZERO) > 0)
+                    ? profit.divide(revenue, BigDecimal.ROUND_HALF_EVEN).multiply(BigDecimal.valueOf(100)).doubleValue()
+                    : 0.0;
+            series.addData(margin);
         });
 
-        analysisLayout.add(selectionComboBox, contentContainer);
-        add(mainLayout, analysisLayout);
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(profits.keySet().stream().map(storeId -> "Store " + storeId).toArray(String[]::new));
+        conf.addxAxis(xAxis);
 
-        initializeStores();
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Profit Margin (%)");
+        conf.addyAxis(yAxis);
+
+        conf.addSeries(series);
+        chart.setWidth("97%");
+        return chart;
+    }
+
+    // Method to create the Monthly Revenue Chart for all stores
+    private Chart createMonthlyRevenueChart() {
+        Chart chart = new Chart(ChartType.LINE);
+        Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
+        conf.setTitle("Monthly Revenues of All Stores");
+
+        int currentYear = LocalDate.now().getYear();
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+        // Fetch monthly revenue data for each store
+        for (int storeId = 1; storeId <= 4; storeId++) {
+            List<BigDecimal> monthlyRevenues = transactionService.getMonthlyRevenueForStore(storeId, currentYear);
+            ListSeries series = new ListSeries("Store " + storeId, monthlyRevenues.toArray(new Number[0]));
+            conf.addSeries(series);
+        }
+        
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(months);
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Revenue ($)");
+        conf.addyAxis(yAxis);
+
+        chart.setWidth("97%");
+        return chart;
+    }
+
+
+    private Chart createRevenuePieChart() {
+        Chart chart = new Chart(ChartType.PIE);
+        Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
+        conf.setTitle("Revenue Distribution Across Stores");
+    
+        // Get the revenue data for all stores
+        java.util.Map<Integer, BigDecimal> revenues = transactionService.getTotalSalesForAllStores();
+    
+        // Create a series for the pie chart
+        DataSeries series = new DataSeries();
+    
+        revenues.forEach((storeId, revenue) -> {
+            DataSeriesItem item = new DataSeriesItem("Store " + storeId + " (" + formatCurrency(revenue) + ")", revenue.doubleValue());
+            series.add(item);
+        });
+    
+        conf.addSeries(series);
+        chart.setWidth("97%");
+        return chart;
     }
 
     private void initializeStores() {
         storeSelect.setItems(1, 2, 3, 4);
         storeSelect.setValue(1); // Set Store 1 as the default selected store
+        updateStoreSpecificData(1); // Update view for the default store
     }
-
     private void updateStoreSpecificData(Integer storeId) {
-        if (storeId == null) return;
+        if (storeId == null) {
+            return; // Exit if storeId is null
+        }
 
         BigDecimal cashOnHand = transactionService.getAccountBalanceForStore(storeId);
         BigDecimal profit = transactionService.getProfitForStore(storeId);
@@ -213,11 +333,11 @@ public class AdminFinanceView extends Div {
     private Chart createProfitPieChart() {
         Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
-        conf.setTitle("Profit Distribution Among Stores");
+        conf.getChart().setStyledMode(true);
+        conf.setTitle("Profit Distribution Across Stores");
 
         // Get the profit data for all stores
         java.util.Map<Integer, BigDecimal> profits = transactionService.getProfitsForAllStores();
-        profits.putIfAbsent(0, BigDecimal.ZERO);
 
         // Create a series for the pie chart
         DataSeries series = new DataSeries();
@@ -231,6 +351,7 @@ public class AdminFinanceView extends Div {
         chart.setWidth("97%");
         return chart;
     }
+
 
     private Component createFinancialGraph(Integer storeId) {
         // Get the necessary data for the selected store
@@ -253,6 +374,7 @@ public class AdminFinanceView extends Div {
         // Bar Chart
         Chart chart = new Chart(ChartType.COLUMN);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Yearly Financial Analysis");
         chart.setWidth("97%");
     
@@ -300,11 +422,15 @@ public class AdminFinanceView extends Div {
         Grid<Transaction> grid = new Grid<>(Transaction.class);
         List<Transaction> transactions = transactionService.getTransactionsForStore(storeId);
         grid.setItems(transactions);
+        grid.removeAllColumns();
 
         // Add columns
         grid.addColumn(Transaction::getItem).setHeader("Category").setSortable(true);
         grid.addColumn(Transaction::getType).setHeader("Type").setSortable(true);
         grid.addColumn(Transaction::getAmount).setHeader("Amount").setSortable(true);
+        grid.addColumn(Transaction::getDate).setHeader("Date").setSortable(true);
+        grid.addColumn(Transaction::getTxId).setHeader("Transaction ID").setSortable(true);
+
 
         // Add filtering capability
         TextField categoryFilter = new TextField();
@@ -353,10 +479,12 @@ public class AdminFinanceView extends Div {
     private Anchor createDownloadLink(Grid<Transaction> grid) {
         StreamResource resource = new StreamResource("transactions.csv", () -> {
             List<Transaction> transactions = grid.getListDataView().getItems().collect(Collectors.toList());
-            StringBuilder csv = new StringBuilder("Category,Type,Amount\n");
+            StringBuilder csv = new StringBuilder("Category,Type,Amount,Date,Transaction ID\n");
             transactions.forEach(tx -> csv.append(tx.getItem()).append(",")
                     .append(tx.getType()).append(",")
-                    .append(tx.getAmount()).append("\n"));
+                    .append(tx.getAmount()).append(",")
+                    .append(tx.getDate()).append(",")
+                    .append(tx.getTxId()).append("\n"));
             return new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
         });
 
@@ -392,6 +520,7 @@ public class AdminFinanceView extends Div {
         // Chart for cumulative sum
         Chart chart = new Chart(ChartType.SPLINE);
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
         conf.setTitle("Cumulative Sum of Transactions Over Time");
         chart.setWidth("97%");
     
@@ -405,7 +534,7 @@ public class AdminFinanceView extends Div {
     
         PlotOptionsSpline plotOptions = new PlotOptionsSpline();
         plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setMarker(new Marker(true));
+        plotOptions.setMarker(new Marker(false));
         conf.addPlotOptions(plotOptions);
     
         conf.addSeries(new ListSeries("Cumulative Sum", cumulativeSumArray));

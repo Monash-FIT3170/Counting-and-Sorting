@@ -1,5 +1,7 @@
 package com.business.application.views.suppliers;
 
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.business.application.views.inventory.ProductFrontend;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -11,6 +13,7 @@ import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -18,6 +21,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -26,6 +30,12 @@ import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoIcon;
+import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+
 import jakarta.annotation.security.RolesAllowed;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -37,27 +47,49 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import com.vaadin.flow.component.notification.Notification;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Suppliers")
 @Route(value = "data-grid2", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 public class SuppliersView extends Div {
-    private List<Supplier> suppliers = new ArrayList<>();
-    private GridPro<Supplier> grid;
-    private GridListDataView<Supplier> gridListDataView;
-    private Grid.Column<Supplier> IdColumn;
-    private Grid.Column<Supplier> ItemNameColumn;
-    private Grid.Column<Supplier> CategoryColumn;
-    private Grid.Column<Supplier> QtyColumn;
-    private Grid.Column<Supplier> SalePriceColumn;
-    private Grid.Column<Supplier> SupplierColumn;
+    private List<WebScrapedProduct> suppliers = new ArrayList<>();
+    private GridPro<WebScrapedProduct> grid;
+    private GridListDataView<WebScrapedProduct> gridListDataView;
+    private Grid.Column<WebScrapedProduct> IdColumn;
+    private Grid.Column<WebScrapedProduct> ItemNameColumn;
+    private Grid.Column<WebScrapedProduct> CategoryColumn;
+    private Grid.Column<WebScrapedProduct> QtyColumn;
+    private Grid.Column<WebScrapedProduct> SalePriceColumn;
+    private Grid.Column<WebScrapedProduct> SupplierColumn;
 
-    public SuppliersView() {
+    private WebScrapedProductService webscrapedProductService;
+
+    @Autowired
+    public SuppliersView(WebScrapedProductService webscrapedProductService) {
+        this.webscrapedProductService = webscrapedProductService;
         addClassName("suppliers-view");
-        setSizeFull();
+        // Create the toolbar
+        HorizontalLayout toolbar = createToolbar();
+
+        // Create the grid
         createGrid();
         createSuppliers();
-        add(createToolbar(), grid);
+
+        // Layout
+        VerticalLayout mainLayout = new VerticalLayout(toolbar, grid);
+        mainLayout.setSizeFull();
+        mainLayout.setPadding(false);
+        mainLayout.setSpacing(false);
+        grid.getElement().getStyle().set("margin-top", "16px");
+
+        // Add to the view
+        add(mainLayout);
+    }
+
+    private void createSuppliers() {
+        suppliers = webscrapedProductService.getAllWebscrapedProducts();
+        gridListDataView = grid.setItems(suppliers);
     }
 
     private void createGrid() {
@@ -78,20 +110,20 @@ public class SuppliersView extends Div {
         createIdColumn();
         createItemNameColumn();
         createCategoryColumn();
-        createQtyColumn();
         createSalePriceColumn();
         createSupplierColumn();
     }
 
     private void createIdColumn() {
-        IdColumn = grid.addColumn(Supplier::getItemID)
-                .setHeader("Item ID")
+        IdColumn = grid
+                .addColumn(WebScrapedProduct::getId)
+                .setHeader("ID")
                 .setSortable(true);
     }
 
     private void createItemNameColumn() {
         ItemNameColumn = grid
-                .addColumn(Supplier::getName)
+                .addColumn(WebScrapedProduct::getName)
                 .setAutoWidth(true)
                 .setHeader("Item Name")
                 .setSortable(true);
@@ -99,249 +131,167 @@ public class SuppliersView extends Div {
 
     private void createCategoryColumn() {
         CategoryColumn = grid.addColumn(new ComponentRenderer<>(supplier -> {
-                    Span categorySpan = new Span();
-                    String category = supplier.getCategory();
-                    categorySpan.setText(category);
-                    if ("Wine".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-wine");
-                    } else if ("Beer".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-beer");
-                    } else if ("Spirit".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-spirit");
-                    } else if ("Premix".equals(category)) {
-                        categorySpan.getElement().setAttribute("class", "badge-premix");
-                    } else {
-                        categorySpan.getElement().setAttribute("class", "badge-misc");
-                    }
-                    return categorySpan;
-                }))
+            Span categorySpan = new Span();
+            String category = supplier.getCategory();
+            categorySpan.setText(category);
+            if ("Wine".equals(category)) {
+                categorySpan.getElement().setAttribute("class", "badge-wine");
+            } else if ("Beer".equals(category)) {
+                categorySpan.getElement().setAttribute("class", "badge-beer");
+            } else if ("Spirits".equals(category)) {
+                categorySpan.getElement().setAttribute("class", "badge-spirit");
+            } else if ("Cider".equals(category)) {
+                categorySpan.getElement().setAttribute("class", "badge-cider");
+            } else {
+                categorySpan.getElement().setAttribute("class", "badge-misc");
+            }
+            return categorySpan;
+        }))
                 .setHeader("Category");
-    }
-
-    private void createQtyColumn() {
-        QtyColumn = grid
-                .addColumn(Supplier::getQuantity)
-                .setHeader("Qty Per Order")
-                .setSortable(true);
     }
 
     private void createSalePriceColumn() {
         SalePriceColumn = grid
-                .addColumn(Supplier::getSalePrice)
+                .addColumn(WebScrapedProduct::getPrice)
                 .setHeader("Sale Price")
                 .setSortable(true);
-            
     }
 
     private void createSupplierColumn() {
         SupplierColumn = grid
-                .addColumn(Supplier::getSupplier)
+                .addColumn(WebScrapedProduct::getSupplier)
                 .setHeader("Supplier")
                 .setSortable(true);
     }
 
-    
     private HorizontalLayout createToolbar() {
-        TextField searchField = new TextField();
-        searchField.setPlaceholder("Search Items");
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.setWidth("300px");
+        // Create the search bar
+        TextField searchBar = new TextField();
+        searchBar.addClassName("toolbar-search-bar");
+        searchBar.setPlaceholder("Search Items");
+        searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
+        searchBar.setWidth("300px");
 
-        Button filterButton = new Button("Filter", VaadinIcon.FILTER.create());
-        Button addButton = new Button("Add", VaadinIcon.PLUS.create());
-        Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
-        Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
-editButton.addClickListener(event -> {
-    // Get the selected item from the grid
-    Supplier selectedSupplier = grid.asSingleSelect().getValue();
-
-    if (selectedSupplier != null) {
-        // Open the SupplierForm with the data of the selected supplier
-        SupplierForm supplierForm = new SupplierForm();
-        supplierForm.setSupplier(selectedSupplier);
-        supplierForm.open();
-
-        // Add a click listener to the save button in the SupplierForm
-        supplierForm.getSaveButton().addClickListener(e -> {
-            // Get the updated supplier from the form
-            Supplier updatedSupplier = supplierForm.getSupplier();
-
-            // Update the supplier in your data source
-            // This depends on how your data source is implemented
-            // For example, if your data source is a List<Supplier>, you could do:
-            int index = suppliers.indexOf(selectedSupplier);
-            if (index != -1) {
-                suppliers.set(index, updatedSupplier);
-            }
-
-            // Update the grid
-            grid.getDataProvider().refreshAll();
-
-            // Close the form
-            supplierForm.close();
-        });
-    } else {
-        Notification.show("No supplier selected");
-    }
-});
-        deleteButton.addClickListener(event -> {
-            // Get the selected items from the grid
-            Set<Supplier> selectedItems = grid.getSelectedItems();
-
-            // Remove the selected items from the suppliers list
-            suppliers.removeAll(selectedItems);
-
-            // Update the grid data view
-            gridListDataView.refreshAll();
-        });
-
-        addButton.addClickListener(event -> {
-            // Add new supplier I need this to create a new page to add a supplier
-            SupplierForm form = new SupplierForm();
-            form.open();
-        // Add a listener to the form's 'save' button
-        form.getSaveButton().addClickListener(e -> {
-            //gridListDataView.refreshAll();
-            try {
-                // Get the supplier from the form
-                Supplier supplier = form.getSupplier();
-        
-                // Add the supplier to your data source
-                suppliers.add(supplier);
-                 // Update the grid data view
-                gridListDataView.refreshAll();
-                // Close the form
-                form.close();
-            } catch (Exception ex) {
-                // Handle the exception
-                // For example, you could show a notification with the error message
-                Notification.show("An error occurred: " + ex.getMessage());
+        // Add filters to search bar
+        searchBar.setValueChangeMode(ValueChangeMode.EAGER);
+        searchBar.addValueChangeListener(event -> {
+            String filterText = event.getValue().trim();
+            if (filterText.isEmpty()) {
+                // Clear all fsilters if the search field is empty
+                gridListDataView.removeFilters();
+            } else {
+                gridListDataView.removeFilters();
+                gridListDataView.addFilter(supplier -> {
+                    // Filter by name, caetegory, sale price,m and supplier
+                    boolean matchesName = StringUtils.containsIgnoreCase(supplier.getName(), filterText);
+                    boolean matchesCategory = StringUtils.containsIgnoreCase(supplier.getCategory(), filterText);
+                    boolean matchesPrice = StringUtils.containsIgnoreCase(Double.toString(supplier.getPrice()),
+                            filterText);
+                    boolean matchesSupplier = StringUtils.containsIgnoreCase(supplier.getSupplier(), filterText);
+                    return matchesName || matchesCategory || matchesPrice || matchesSupplier;
+                });
             }
         });
-    });
-            
-           
-        
 
-        // Open the form
-        
-
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, filterButton, addButton, deleteButton, editButton);
-        toolbar.setAlignItems(Alignment.BASELINE);
+        // Create the layout for the label and search field
+        HorizontalLayout toolbar = createHeader("SUPPLIERS", "");
+        toolbar.add(searchBar);
         toolbar.setWidthFull();
-        toolbar.setPadding(true);
-        toolbar.setSpacing(true);
-
+        toolbar.setHeight("50px");
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        toolbar.addClassName(Padding.LARGE);
+        toolbar.addClassName("search-top-section");
         return toolbar;
+    }
+
+    private HorizontalLayout createHeader(String title, String subtitle) {
+        H2 h2 = new H2(title);
+        h2.addClassName("admin-dashboard-view-h2-1");
+        h2.addClassNames(FontSize.XLARGE, Margin.NONE);
+
+        Span span = new Span(subtitle);
+        span.addClassNames(TextColor.SECONDARY, FontSize.XSMALL);
+
+        VerticalLayout column = new VerticalLayout(h2, span);
+        column.setPadding(false);
+        column.setSpacing(false);
+
+        HorizontalLayout header = new HorizontalLayout(column);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.setSpacing(false);
+        header.setWidthFull();
+        return header;
     }
 
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
-        TextField itemIDFilter = new TextField();
-        itemIDFilter.setPlaceholder("Filter");
-        itemIDFilter.setClearButtonVisible(true);
-        itemIDFilter.setWidth("100%");
-        itemIDFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        itemIDFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(Integer.toString(supplier.getItemID()), itemIDFilter.getValue())));
-        filterRow.getCell(IdColumn).setComponent(itemIDFilter);
+        //Id filter
+        TextField idFilter = new TextField();
+        idFilter.setPlaceholder("Filter");
+        idFilter.setClearButtonVisible(true);
+        idFilter.setWidth("100%");
+        idFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        idFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(Long.toString(supplier.getId()), idFilter.getValue())));
+        filterRow.getCell(IdColumn).setComponent(idFilter);
 
         TextField nameFilter = new TextField();
-        nameFilter.setPlaceholder("Filter");
+        nameFilter.setPlaceholder("Search");
         nameFilter.setClearButtonVisible(true);
         nameFilter.setWidth("100%");
         nameFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        nameFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(supplier.getName(), nameFilter.getValue())));
+        nameFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView
+                    .addFilter(supplier -> StringUtils.containsIgnoreCase(supplier.getName(), nameFilter.getValue()));
+        });
         filterRow.getCell(ItemNameColumn).setComponent(nameFilter);
 
         ComboBox<String> categoryFilter = new ComboBox<>();
-        categoryFilter.setItems("Beer", "Wine", "Spirit", "Premix", "Misc");
+        categoryFilter.setItems("Beer", "Wine", "Spirits", "Cider", "Misc");
         categoryFilter.setPlaceholder("Filter");
-        categoryFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        categoryFilter.setClearButtonVisible(true);
         categoryFilter.setWidth("100%");
-        categoryFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> {
-            String filterValue = categoryFilter.getValue();
-            if (filterValue != null) {
-                return filterValue.equalsIgnoreCase(supplier.getCategory());
-            }
-            return true;
-        }));
+        categoryFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(supplier -> {
+                String filterValue = categoryFilter.getValue();
+                if (filterValue != null) {
+                    return filterValue.equalsIgnoreCase(supplier.getCategory());
+                }
+                return true;
+            });
+        });
         filterRow.getCell(CategoryColumn).setComponent(categoryFilter);
 
-        TextField quantityFilter = new TextField();
-        quantityFilter.setPlaceholder("Filter");
-        quantityFilter.setClearButtonVisible(true);
-        quantityFilter.setWidth("100%");
-        quantityFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        quantityFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(Integer.toString(supplier.getQuantity()), quantityFilter.getValue())));
-        filterRow.getCell(QtyColumn).setComponent(quantityFilter);
-
         TextField salePriceFilter = new TextField();
-        salePriceFilter.setPlaceholder("Filter");
+        salePriceFilter.setPlaceholder("Search");
         salePriceFilter.setClearButtonVisible(true);
         salePriceFilter.setWidth("100%");
         salePriceFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        salePriceFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(Integer.toString(supplier.getSalePrice()), salePriceFilter.getValue())));
+        salePriceFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(supplier -> StringUtils
+                    .containsIgnoreCase(Double.toString(supplier.getPrice()), salePriceFilter.getValue()));
+        });
         filterRow.getCell(SalePriceColumn).setComponent(salePriceFilter);
 
         TextField supplierFilter = new TextField();
-        supplierFilter.setPlaceholder("Filter");
-        supplierFilter.setClearButtonVisible(true); // This is not actually making button clear and im not sure why
+        supplierFilter.setPlaceholder("Search");
+        supplierFilter.setClearButtonVisible(true);
         supplierFilter.setWidth("100%");
         supplierFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        supplierFilter.addValueChangeListener(event -> gridListDataView.addFilter(supplier -> StringUtils.containsIgnoreCase(supplier.getSupplier(), supplierFilter.getValue())));
+        supplierFilter.addValueChangeListener(event -> {
+            // Clear existing filters before adding the new one
+            gridListDataView.removeFilters();
+            gridListDataView.addFilter(
+                    supplier -> StringUtils.containsIgnoreCase(supplier.getSupplier(), supplierFilter.getValue()));
+        });
         filterRow.getCell(SupplierColumn).setComponent(supplierFilter);
     }
 
-    private void createSuppliers() {
-        // iterate through getProducts() and create a Supplier object for each product
-        List<ProductFrontend> products = getProducts();
-        // return Arrays.asList(
-        //         createSupplier("Dan Murphy", 375, 600, products.get(0)),
-        //         createSupplier("Dan Murphy", 24, 42, products.get(1)),
-        //         createSupplier("Dan Murphy", 24, 42, products.get(2)),
-        //         createSupplier("Dan Murphy", 24, 42, products.get(3)),
-        //         createSupplier("Dan Murphy", 24, 42, products.get(4))
-        // );
-        suppliers.add(createSupplier("Dan Murphy", 375, 600, products.get(0)));
-        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(1)));
-        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(2)));
-        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(3)));
-        suppliers.add(createSupplier("Dan Murphy", 24, 42, products.get(4)));
-    }
-
-    private Supplier createSupplier(String Supplier, int Qty, int SalePrice, ProductFrontend p) {
-        Supplier s = new Supplier();
-        s.setProduct(p);
-        s.setQty(Qty);
-        s.setSalePrice(SalePrice);
-        s.setSupplier(Supplier);
-
-        return s;
-    }
-
-    private List<ProductFrontend> getProducts() {
-        return Arrays.asList(
-                new ProductFrontend(174926328, "Vodka Cruiser: Wild Raspberry 275mL", "Premix", 375, 600),
-                new ProductFrontend(174036988, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 802, 1000),
-                new ProductFrontend(846302592, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 3079296, 5000000),
-                new ProductFrontend(769035037, "Good Day: Watermelon Soju", "Misc", 3514346, 5000000),
-                new ProductFrontend(185035836, "Absolut: Vodka 1L", "Beer", 542669, 1000000),
-                new ProductFrontend(562784657, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 458, 2000),
-                new ProductFrontend(186538594, "Brookvale Union: Vodka Lemon Squash Cans 330mL", "Premix", 997, 1000),
-                new ProductFrontend(879467856, "Moët & Chandon: Impérial Brut", "Wine", 1700250, 2000000),
-                new ProductFrontend(108767894, "Moët & Chandon: Rosé Impérial", "Wine", 1429048, 2000000),
-                new ProductFrontend(265743940, "Vodka Cruiser: Lush Guava 275mL", "Premix", 472648, 5000000),
-                new ProductFrontend(123454352, "Vodka Cruiser: Juicy Watermelon 275mL", "Misc", 833, 1500),
-                new ProductFrontend(456374567, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 222, 1000),
-                new ProductFrontend(867584756, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Premix", 438, 1000),
-                new ProductFrontend(347453482, "Absolut: Vodka 1L", "Beer", 1913750, 2000000),
-                new ProductFrontend(956836417, "Suntory: -196 Double Lemon 10 Pack Cans 330mL", "Wine", 528950, 600000),
-                new ProductFrontend(958403584, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Spirit", 3750, 8000),
-                new ProductFrontend(239563895, "Good Day: Watermelon Soju", "Spirit", 290600, 500000),
-                new ProductFrontend(375845219, "Smirnoff: Ice Double Black Cans 10 Pack 375mL", "Misc", 4933400, 5000000),
-                new ProductFrontend(384926414, "Vodka Cruiser: Lush Guava 275mL", "Premix", 2266200, 3000000),
-                new ProductFrontend(194637894, "Fireball: Cinnamon Flavoured Whisky 1.14L", "Beer", 1563450, 2000000)
-        );
-    }
 };

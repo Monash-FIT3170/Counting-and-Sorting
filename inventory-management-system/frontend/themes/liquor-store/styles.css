@@ -1,4 +1,5 @@
 @import url('./main-layout.css');
+@import url('./theme-editor.css');
 @import url('./views/dashboard-view.css');
 @import url('./views/inventory-view.css');
 @import url('./views/shopping-lists-view.css');
@@ -6,9 +7,19 @@
 @import url('./views/admin-dashboard-view.css');
 @import url('./views/suppliers-view.css');
 @import url('./views/admin-stock-view.css');
+@import url('./views/admin-forecast-view.css');
 @import url('./node_modules/@fontsource/source-code-pro/index.css');    
 @import url('./views/new-shopping-list-view.css');
 @import url('./views/login-view.css');
+@import url('./views/admin-finance-view.css');
+@import url('./views/admin-user-view.css');
+@import url('./views/admin-api-view.css');
+@import url('./views/manager-finance-view.css');
+@import url('./views/forecast-view.css');
+@import url('./views/stores-view.css');
+@import url('./views/store-locator-view.css');
+
+
 
 vaadin-dev-tools {
     visibility: hidden;

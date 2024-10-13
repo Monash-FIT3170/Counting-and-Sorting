@@ -7,17 +7,24 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 import com.business.application.domain.Store;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
 import com.business.application.domain.User;
+import com.business.application.domain.WebScrapedProduct;
 import com.business.application.security.AuthenticatedUser;
 import com.business.application.services.StoreService;
+import com.business.application.services.TransactionService;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.charts.Chart;
@@ -48,16 +55,27 @@ import jakarta.annotation.security.RolesAllowed;
 @Route(value = "dashboard", layout = MainLayout.class)
 @RolesAllowed("USER") // Keep only for the user role
 
-
-
 public class DashboardView extends Main {
 private AuthenticatedUser authenticatedUser;
 private StoreService storeService;
+private final TransactionService transactionService;
 private Store store; 
-    public DashboardView( AuthenticatedUser authenticatedUser,StoreService storeService) {
+private WebScrapedProductService webScrapedProductService;
+private List<WebScrapedProduct> products;
+
+    @Autowired
+    public DashboardView( AuthenticatedUser authenticatedUser,StoreService storeService, TransactionService transactionService, WebScrapedProductService webScrapedProductService) {
         addClassName("dashboard-view");
         this.authenticatedUser = authenticatedUser;
         this.storeService = storeService;
+        this.transactionService = transactionService;
+        this.webScrapedProductService = webScrapedProductService;
+        this.products = webScrapedProductService.getAllWebscrapedProducts();
+
+        int storeId = 1;
+
+        BigDecimal totalSales = transactionService.getTotalSalesForStore(storeId);
+        BigDecimal profit = transactionService.getProfitForStore(storeId);
 
         // HorizontalLayout storeInfoLayout = createStoreInfoLayout();
         // add(storeInfoLayout);
@@ -83,10 +101,15 @@ private Store store;
 
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
-        highlightsLayout.add(createHighlight("Monthly Revenue",String.valueOf(store.getBudget()), 11.0),
-                createHighlight("Total Inventory Count", "12,345,340", 11.0));
+        highlightsLayout.add(createHighlight("Monthly Revenue",formatCurrency(totalSales.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 11.0),
+                createHighlight("Inventory Count", "12,345,340", 11.0));
 
-        leftColumn.add(highlightsLayout);
+        HorizontalLayout highlightsLayout2 = new HorizontalLayout();
+        highlightsLayout2.setWidthFull();
+        highlightsLayout2.add(createHighlight("Profit", formatCurrency(profit), 0.0),
+        createHighlight("Total Sales", formatCurrency(totalSales), 0.0));        
+
+        leftColumn.add(highlightsLayout, highlightsLayout2);
         leftColumn.add(createViewSalesQty());
         leftColumn.add(createStockLevelsByCategory());
 
@@ -98,6 +121,11 @@ private Store store;
         mainLayout.add(leftColumn, rightColumn);
         add(mainLayout);
     }
+
+    private String formatCurrency(BigDecimal accountBalance) {
+        return String.format("$%,.2f", accountBalance);
+    }
+
     private Component createNotifications() {
         HorizontalLayout head = createHeader("NOTIFICATIONS", "");
         head.add(LumoIcon.BELL.create());
@@ -313,7 +341,7 @@ private Store store;
     }
 
     private Component createLowStockItemsGrid() {
-    Grid<StockItem> grid = new Grid<>(StockItem.class, false);
+    Grid<WebScrapedProduct> grid = new Grid<>(WebScrapedProduct.class, false);
     // <theme-editor-local-classname>
     grid.addClassName("admin-dashboard-view-grid-1");
 
@@ -325,9 +353,9 @@ private Store store;
         statusCircle.getElement().getStyle().set("height", "10px");
         statusCircle.getElement().getStyle().set("border-radius", "50%");
         
-        if (stockItem.getQtyRemaining() > 100) {
+        if (stockItem.getQuantity() > 100) {
             statusCircle.getElement().getStyle().set("background-color", "green");
-        } else if (stockItem.getQtyRemaining() > 50) {
+        } else if (stockItem.getQuantity() > 50) {
             statusCircle.getElement().getStyle().set("background-color", "yellow");
         } else {
             statusCircle.getElement().getStyle().set("background-color", "red");
@@ -336,21 +364,12 @@ private Store store;
         return statusCircle;
     })).setHeader("Status");
 
-    grid.addColumn(StockItem::getItemName).setHeader("Item Name");
-    grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining");
+    grid.addColumn(WebScrapedProduct::getName).setHeader("Item Name");
+    grid.addColumn(WebScrapedProduct::getQuantity).setHeader("Qty Remaining");
 
     grid.addThemeVariants(GridVariant.LUMO_COMPACT);
     grid.setItems(
-            new StockItem(" ", "Smirnoff: Ice Double Black", 296),
-            new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
-            new StockItem(" ", "Suntory: -196 Double Lemon", 156),
-            new StockItem(" ", "Good Day: Watermelon", 46),
-            new StockItem(" ", "Absolut: Vodka 1L", 9),
-            new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
-            new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
-            new StockItem(" ", "Moët & Chandon: Impérial", 250),
-            new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
-            new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
+        products.stream().filter(product -> product.getQuantity() < 100).collect(Collectors.toList())
     );
 
     HorizontalLayout head = createHeader("Low Stock Items", "");

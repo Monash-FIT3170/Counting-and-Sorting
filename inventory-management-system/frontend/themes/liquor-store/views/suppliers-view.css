@@ -1,6 +1,8 @@
 .suppliers-view {
   display: block;
   height: 100%;
+  background-color: var(--lumo-base-color);
+  padding-top: var(--lumo-space-xl);
 }
 .suppliers-view vaadin-grid-pro {
   height: 100%;
@@ -17,7 +19,7 @@
 .suppliers-view vaadin-grid-pro img {
   border-radius: 50%;
   flex-shrink: 0;
-  height: var(--lumo-size-m);
+  height: auto;
   width: var(--lumo-size-m);
 }
 .suppliers-view .name {

@@ -3,7 +3,7 @@
 # Step 1: Navigate to your project directory
 cd inventory-management-system
 
-# Step 2: Clean and package the project using Maven
+# Step 2: Clean, build, and package the project using Maven with the production profile
 mvn clean package -Pproduction
 
 # Step 3: Deploy the JAR file to Heroku

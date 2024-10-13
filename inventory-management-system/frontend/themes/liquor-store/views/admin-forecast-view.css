@@ -1,0 +1,17 @@
+.admin-forecast-view {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    padding-top: var(--lumo-space-xl);
+    background-color: var(--lumo-base-color);
+}
+
+.forecast-view-layout {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 5%;
+    box-sizing: border-box;
+    background-color: var(--lumo-base-color);
+}

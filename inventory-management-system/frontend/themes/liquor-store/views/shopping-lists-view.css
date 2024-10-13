@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: var(--lumo-space-m);
+  padding-top: var(--lumo-space-xl);
+  background-color: var(--lumo-base-color);
 }
 
 .shopping-lists-view vaadin-split-layout {
@@ -59,6 +62,7 @@
 .shopping-lists-view .card {
   border-radius: 8px;
   border: solid 1px rgb(234, 234, 234);
+  background-color: white;
   box-shadow: 0 6px 6px rgba(0,0,0,0.1);
   padding: 15px;
   flex: 0 0 calc(33% - 50px); /* Prevents cards from growing and only taking up their exact space */
@@ -71,6 +75,7 @@
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 5px;
+  
 }
 
 .shopping-lists-view .date {
@@ -89,6 +94,12 @@
   .shopping-lists-view .card {
       flex: 1 1 99%; 
   }
+}
+
+[theme~="dark"] .shopping-lists-view .card {
+  background-color: var(--lumo-base-color);
+  border: solid 1px var(--lumo-contrast-10pct);
+  box-shadow: 0 6px 6px rgba(0,0,0,0.1);
 }
 
 

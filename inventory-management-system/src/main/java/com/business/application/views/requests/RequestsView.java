@@ -33,6 +33,7 @@ public class RequestsView extends Div implements AfterNavigationObserver {
     private List<ShoppingList> pendingShoppingLists;
 
     public RequestsView() {
+        addClassName("requests-view");
         setSizeFull();
         pendingShoppingLists = getPendingShoppingLists();
     

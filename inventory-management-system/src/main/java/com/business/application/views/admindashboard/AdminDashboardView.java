@@ -7,10 +7,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.business.application.domain.ListOfShoppingList;
 import com.business.application.domain.ShoppingList;
+import com.business.application.domain.WebScrapedProduct;
+import com.business.application.services.TransactionService;
+import com.business.application.services.WebScrapedProductService;
 import com.business.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ScrollOptions.Alignment;
@@ -51,18 +56,43 @@ import jakarta.annotation.security.RolesAllowed;
 
 public class AdminDashboardView extends Main {
 
-    public AdminDashboardView() {
+    private final TransactionService transactionService;
+    private WebScrapedProductService webScrapedProductService;
+    private List<WebScrapedProduct> webScrapedProducts;
+
+    public AdminDashboardView(TransactionService transactionService, WebScrapedProductService webScrapedProductService) {
         addClassName("admin-dashboard-view");
-        
+        this.transactionService = transactionService;
+        this.webScrapedProductService = webScrapedProductService;
+        this.webScrapedProducts = webScrapedProductService.getAllWebscrapedProducts();
+
         Board board = new Board();
         
         Row mainRow = new Row();
 
         Board leftBoard = new Board();
         leftBoard.addRow(
-            createHighlight("Monthly Revenue", "$213,434.40", 11.0), 
-            createHighlight("Total Inventory Count", "12,345,340", -3.4)
-            ).addClassName("board-top-left");
+            createHighlight(
+                "Average Store Monthly Revenue", 
+                formatCurrency(getTotalRevenue().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 
+                9.0
+                ), 
+            createHighlight(
+                "Total Inventory Count", 
+                "37,345,340", 
+                8.0
+                )).addClassName("board-top-left");
+        leftBoard.addRow(
+            createHighlight(
+                "Total Store Profit", 
+                formatCurrency(getTotalProfit()), 
+                0.0
+                ),
+            createHighlight(
+                "Total Store Revenue", 
+                formatCurrency(getTotalRevenue()), 
+                0.0
+                )).addClassName("board-top-left");
         leftBoard.addRow(createViewSalesQty());
         leftBoard.addRow(createStockLevelsByCategory()).addClassName("stock-levels-row");
 
@@ -76,6 +106,20 @@ public class AdminDashboardView extends Main {
         board.add(mainRow);
 
         add(createStoreInfoLayout(), board);
+    }
+
+    private BigDecimal getTotalRevenue() {
+        return transactionService.getTotalSalesForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal getTotalProfit() {
+        return transactionService.getProfitsForAllStores().values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private String formatCurrency(BigDecimal accountBalance) {
+        return String.format("$%,.2f", accountBalance);
     }
 
     private Component createShoppingListRequests() {
@@ -138,7 +182,7 @@ public class AdminDashboardView extends Main {
         
         // Search bar
         TextField searchBar = new TextField();
-        searchBar.addClassName("admin-dashboard-view-store-search");
+        searchBar.addClassName("toolbar-search-bar");
         searchBar.setPlaceholder("Select Store");
         searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
         searchBar.setWidth("300px"); 
@@ -283,9 +327,9 @@ public class AdminDashboardView extends Main {
     }
 
     private Component createLowStockItemsGrid() {
-        Grid<StockItem> grid = new Grid<>(StockItem.class, false);
-        // <theme-editor-local-classname>
-        grid.addClassName("admin-dashboard-view-grid-1");
+    Grid<WebScrapedProduct> grid = new Grid<>(WebScrapedProduct.class, false);
+    // <theme-editor-local-classname>
+    grid.addClassName("admin-dashboard-view-grid-1");
 
         // Custom renderer for status column
         grid.addColumn(new ComponentRenderer<>(stockItem -> {
@@ -306,10 +350,10 @@ public class AdminDashboardView extends Main {
 
             statusCircle.add(statusInnerCircle);
             
-            if (stockItem.getQtyRemaining() > 100) {
+            if (stockItem.getQuantity() > 100) {
                 statusCircle.getElement().getStyle().set("background-color", "#1688464D");
                 statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-success-color)");
-            } else if (stockItem.getQtyRemaining() > 50) {
+            } else if (stockItem.getQuantity() > 50) {
                 statusCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color-10pct)");
                 statusInnerCircle.getElement().getStyle().set("background-color", "var(--lumo-warning-color)");
             } else {
@@ -320,34 +364,37 @@ public class AdminDashboardView extends Main {
             return statusCircle;
         })).setHeader("Status").setTextAlign(ColumnTextAlign.CENTER).setAutoWidth(true).setFlexGrow(0).addClassName("status-column");
 
-        grid.addColumn(StockItem::getItemName).setHeader("Item Name").setTextAlign(ColumnTextAlign.START);
-        grid.addColumn(StockItem::getQtyRemaining).setHeader("Qty Remaining").setTextAlign(ColumnTextAlign.END).setAutoWidth(true).setFlexGrow(0);
+    grid.addColumn(WebScrapedProduct::getName).setHeader("Item Name").setTextAlign(ColumnTextAlign.START);
+    grid.addColumn(WebScrapedProduct::getQuantity).setHeader("Qty Remaining").setTextAlign(ColumnTextAlign.END).setAutoWidth(true).setFlexGrow(0);
 
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
-        grid.setItems(
-                new StockItem(" ", "Smirnoff: Ice Double Black", 296),
-                new StockItem(" ", "Vodka Cruiser: Wild Raspberry", 97),
-                new StockItem(" ", "Suntory: -196 Double Lemon", 156),
-                new StockItem(" ", "Good Day: Watermelon", 46),
-                new StockItem(" ", "Absolut: Vodka 1L", 9),
-                new StockItem(" ", "Fireball: Cinnamon Flavoured Whisky", 60),
-                new StockItem(" ", "Brookvale Union: Vodka Ginger Beer", 302),
-                new StockItem(" ", "Moët & Chandon: Impérial", 250),
-                new StockItem(" ", "Moët & Chandon: Rosé Impérial", 48),
-                new StockItem(" ", "Vodka Cruiser: Lush Guava", 32)
-        );
-        
-        grid.setHeight("auto");
+    grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
+    grid.setItems(
+        webScrapedProducts.stream().filter(product -> product.getQuantity() < 100).collect(Collectors.toList())
+    );
 
-        H6 h6 = new H6("Low Stock Items");
-        h6.addClassNames(TextColor.SECONDARY);
-        
-        VerticalLayout layout = new VerticalLayout(h6, grid);
-        layout.addClassName("rounded-rectangle");
+    grid.setHeight("auto");
 
-        VerticalLayout layout_wrapper = new VerticalLayout(layout);
-        layout_wrapper.addClassName("rounded-rectangle-wrapper");
-        return layout_wrapper;
+    H6 h6 = new H6("Low Stock Items");
+    h6.addClassNames(TextColor.SECONDARY);
+    
+    VerticalLayout layout = new VerticalLayout(h6, grid);
+    layout.addClassName("rounded-rectangle");
+
+    VerticalLayout layout_wrapper = new VerticalLayout(layout);
+    layout_wrapper.addClassName("rounded-rectangle-wrapper");
+
+    // HorizontalLayout head = createHeader("Low Stock Items", "");
+    // Icon icon = LumoIcon.UNORDERED_LIST.create();
+    // icon.getElement().getThemeList().add("badge pill cir");
+    
+    // head.add(icon);
+    // head.setAlignItems(FlexComponent.Alignment.CENTER);
+    // VerticalLayout layout = new VerticalLayout(head, grid);
+    // layout.addClassName(Padding.LARGE);
+    // layout.setPadding(false);
+    // layout.addClassName("rounded-rectangle");
+
+    return layout_wrapper;
     }
 
     private HorizontalLayout createHeader(String title, String subtitle) {
