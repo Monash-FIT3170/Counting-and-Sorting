@@ -16,6 +16,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.LumoIcon;
+
 import jakarta.annotation.security.RolesAllowed;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,9 +78,12 @@ public class ShoppingListsView extends Div {
         
         addClassName("shopping-lists-view");
         grid = new Grid<>(ShoppingList.class);
-        searchField = new TextField("Search", "Search Lists");
-        // Add 10 px xpacing on left
-        searchField.getStyle().set("margin-left", "10px");
+        
+        searchField = new TextField();
+        searchField.addClassName("toolbar-search-bar");
+        searchField.setPlaceholder("Search Lists");
+        searchField.setSuffixComponent(LumoIcon.SEARCH.create());
+        searchField.setWidth("300px"); 
 
         newButton = new Button("Create New Shopping List");
         newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
