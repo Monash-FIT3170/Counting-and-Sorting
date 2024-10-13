@@ -2,7 +2,6 @@ package com.business.application.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,8 +12,8 @@ public class WebScrapedStore extends AbstractEntity {
     private String address;
     private String supplier;
 
-    @Column
-    private String geolocation;
+    @Column(nullable = true, length = 255)
+    private String appendedDate;
 
     @Column(nullable = true)
     private Double latitude;
@@ -24,11 +23,11 @@ public class WebScrapedStore extends AbstractEntity {
 
     // Getters and Setters
 
-    public String getName() {
+    public String getTitle() {
         return title;
     }
 
-    public void setName(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -48,13 +47,12 @@ public class WebScrapedStore extends AbstractEntity {
         this.supplier = supplier;
     }
 
-    public String getGeolocation() {
-        return geolocation;
+    public String getAppendedDate() {
+        return appendedDate;
     }
 
-    public void setGeolocation(String geolocation) {
-        this.geolocation = geolocation;
-        parseGeolocation();
+    public void setAppendedDate(String appendedDate) {
+        this.appendedDate = appendedDate;
     }
 
     public Double getLatitude() {
@@ -63,7 +61,6 @@ public class WebScrapedStore extends AbstractEntity {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
-        updateGeolocation();
     }
 
     public Double getLongitude() {
@@ -72,36 +69,19 @@ public class WebScrapedStore extends AbstractEntity {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-        updateGeolocation();
     }
 
-    // Helper methods to parse and update geolocation
-
-    private void parseGeolocation() {
-        if (this.geolocation != null && this.geolocation.startsWith("POINT")) {
-            String point = geolocation.substring(6, geolocation.length() - 1);
-            String[] coords = point.split(" ");
-            if (coords.length == 2) {
-                try {
-                    this.longitude = Double.parseDouble(coords[0]);
-                    this.latitude = Double.parseDouble(coords[1]);
-                } catch (NumberFormatException e) {
-                    // Handle parse error
-                }
-            }
-        }
-    }
-
-    private void updateGeolocation() {
-        if (this.latitude != null && this.longitude != null) {
-            this.geolocation = String.format("POINT (%s %s)", this.longitude, this.latitude);
-        }
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (this.geolocation == null && this.latitude != null && this.longitude != null) {
-            updateGeolocation();
-        }
+    // Optional: Override toString for better debugging
+    @Override
+    public String toString() {
+        return "WebScrapedStore{" +
+                "id=" + getId() +
+                ", title='" + title + '\'' +
+                ", address='" + address + '\'' +
+                ", supplier='" + supplier + '\'' +
+                ", appendedDate='" + appendedDate + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 }
