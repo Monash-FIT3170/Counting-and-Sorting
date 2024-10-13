@@ -232,11 +232,11 @@ public class InventoryView extends Div {
             LumoUtility.Padding.Right.XLARGE
             );
         
-        H6 location = new H6(title);
+        H6 title_txt = new H6(title);
         
-        location.addClassNames(LumoUtility.TextColor.SECONDARY);
+        title_txt.addClassNames(LumoUtility.TextColor.SECONDARY);
 
-        header.add(location);
+        header.add(title_txt);
         return header;
     }
 

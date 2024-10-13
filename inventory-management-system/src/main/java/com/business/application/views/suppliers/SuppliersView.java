@@ -203,23 +203,23 @@ public class SuppliersView extends Div {
 
     private HorizontalLayout createHeader(String title) {
         // Header container
-        HorizontalLayout layout = new HorizontalLayout();
+        HorizontalLayout header = new HorizontalLayout();
         
-        layout.addClassName("search-top-section");
-        layout.setWidthFull();
-        layout.setAlignItems(FlexComponent.Alignment.CENTER);
-        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        layout.addClassNames(
+        header.addClassName("search-top-section");
+        header.setWidthFull();
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.addClassNames(
             LumoUtility.Padding.Left.XLARGE,
             LumoUtility.Padding.Right.XLARGE
             );
         
-        H6 location = new H6(title);
+        H6 title_txt = new H6(title);
         
-        location.addClassNames(LumoUtility.TextColor.SECONDARY);
+        title_txt.addClassNames(LumoUtility.TextColor.SECONDARY);
 
-        layout.add(location);
-        return layout;
+        header.add(title_txt);
+        return header;
     }
 
     private void addFiltersToGrid() {
