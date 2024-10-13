@@ -77,20 +77,3 @@
   height: 220px;
   gap: 0;
 }
-
-vaadin-grid-cell-content[slot$="-9"],
-vaadin-grid-cell-content[slot$="-12"],
-vaadin-grid-cell-content[slot$="-15"],
-vaadin-grid-cell-content[slot$="-18"],
-vaadin-grid-cell-content[slot$="-21"],
-vaadin-grid-cell-content[slot$="-24"],
-vaadin-grid-cell-content[slot$="-27"],
-vaadin-grid-cell-content[slot$="-30"],
-vaadin-grid-cell-content[slot$="-33"],
-vaadin-grid-cell-content[slot$="-36"] {
-  display: flex;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-}
