@@ -77,15 +77,21 @@ Here, you can execute API requests directly from the browser, making it easier t
 <a id="item-four"></a>
 
 ## Versioning Strategy
-We are adopting Semantic Versioning: [MAJOR].[MINOR].[PATCH]
+We are adopting Semantic Versioning: [MAJOR].[MINOR].[PATCH] <br/>
+MAJOR: Changes when incompatible API modifications are made. <br/>
+MINOR: Changes when functionality is added in a backward-compatible manner. <br/>
+PATCH: Changes when backward-compatible bug fixes are made. <br/>
+Each release should be tagged in the Git repository with the version number to ensure traceability.
+<br/>
+The current verson number is 4.1.1
 
 <a id="item-five"></a>
 
 ## Pull Request Strategy
-1. Create a New Branch.
+1. Create a New Branch. ```git checkout -b feature/my-new-feature```
 2. Commit Changes using the format: [Feature/Refactor/Fix] [Scope] [Description].
-3. Open a Pull Request with a proper title and description.
-4. Delete Source Branch after the PR is merged.
+3. Open a Pull Request. Submit your pull request (PR) with an appropriate title and description. All PRs must be reviewed by a systems architect and pass the CI/CD pipeline before merging into the main branch. Be sure to include appropriate version tags.
+4. Delete Source Branch after the PR is merged to maintain cleanliness in the repository.
 
 <a id="item-six"></a>
 
