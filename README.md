@@ -9,6 +9,7 @@ The "Counting and Sorting" project endeavours to create an inventory management 
  - [Pull Request Strategy](#item-five)
  - [Additional Notes](#item-six)
  - [Team Members](#item-seven)
+ - [Gen AI Statement](#item-eight)
 
 
 
@@ -125,3 +126,8 @@ side/top bar and the main menu). This setup uses [App Layout](https://vaadin.com
 - Abdus Sami - asam0025@student.monash.edu
 - Erin Koay - ekoa0001@student.monash.edu
 - Yokabit Fesshaye - yfes0001@student.monash.edu
+
+<a id="item-eight"></a>
+
+## Gen AI Statement
+This document has been created with the assistance of Generative Artificial Intelligence (Gen AI) technology. Specifically, Gen AI has been employed to create the structure of the markdown document.
