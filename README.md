@@ -90,7 +90,7 @@ The current verson number is 4.1.1
 ## Pull Request Strategy
 1. Create a New Branch. ```git checkout -b feature/my-new-feature```
 2. Commit Changes using the format: [Feature/Refactor/Fix] [Scope] [Description].
-3. Open a Pull Request. Submit your pull request (PR) with an appropriate title and description. All PRs must be reviewed by a systems architect and pass the CI/CD pipeline before merging into the main branch. Be sure to include appropriate version tags.
+3. Open a Pull Request. Submit your pull request (PR) with an appropriate title and description. Be sure to include appropriate version tags.
 4. Delete Source Branch after the PR is merged to maintain cleanliness in the repository.
 
 <a id="item-six"></a>
