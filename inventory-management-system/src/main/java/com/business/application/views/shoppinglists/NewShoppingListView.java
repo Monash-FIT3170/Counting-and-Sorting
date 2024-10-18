@@ -117,6 +117,7 @@ public class NewShoppingListView extends Div {
         shoppingListGrid.addComponentColumn(item -> {
             Button deleteButton = new Button(new Icon(VaadinIcon.TRASH));
             deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.getStyle().set("cursor", "pointer");
             deleteButton.addClickListener(click -> {
                 shoppingListItems.remove(item);
                 // deleting price from total price
@@ -125,6 +126,7 @@ public class NewShoppingListView extends Div {
             });
             return deleteButton;
         }).setHeader("Delete");
+        
         
 
         TextField quantityField = new TextField("Quantity");
@@ -147,6 +149,9 @@ public class NewShoppingListView extends Div {
                 Notification.show("Please select a product");
             }
         });
+        addButton.getStyle().set("cursor", "pointer");
+
+        
 
         Button saveButton = new Button("Save Shopping List", event -> {
             if (ShoppingListName.isEmpty()) {
@@ -165,6 +170,7 @@ public class NewShoppingListView extends Div {
                 UI.getCurrent().navigate("master-detail");
             }
         });
+        saveButton.getStyle().set("cursor", "pointer");
 
         VerticalLayout productLayout = new VerticalLayout(new H3("Products"),searchField, productGrid);
         productLayout.addClassName("dynamic-style");
