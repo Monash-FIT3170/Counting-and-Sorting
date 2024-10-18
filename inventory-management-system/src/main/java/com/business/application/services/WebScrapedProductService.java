@@ -16,4 +16,9 @@ public class WebScrapedProductService {
     public List<WebScrapedProduct> getAllWebscrapedProducts() {
         return webscrapedProductRepository.findAll();
     }
+
+    public WebScrapedProduct getWebscrapedProductById(Long id) {
+        return webscrapedProductRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Webscraped product not found"));
+    }
 }

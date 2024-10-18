@@ -1,11 +1,16 @@
 package com.business.application.domain;
 
-import com.vaadin.flow.component.template.Id;
 
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 
 @Entity
@@ -19,6 +24,9 @@ public class WebScrapedProduct extends AbstractEntity {
 
     @Column(nullable = true)
     private Integer quantity;
+
+    @ManyToMany(mappedBy = "webScrapedProducts", fetch = FetchType.LAZY)
+    private List<Inventory> inventories;
 
     
 
@@ -63,6 +71,8 @@ public String getSupplier() {
 public void setSupplier(String supplier) {
     this.supplier = supplier;
 }
+
+
 
 @PrePersist
     public void prePersist() {

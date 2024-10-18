@@ -22,6 +22,10 @@ public class Store {
     @Column(name ="budget")
     private int budget;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id_one")
+    private Inventory inventory;
+
     // Constructors, Getters, Setters
     public Store() {}
 
@@ -55,6 +59,29 @@ public class Store {
     public void setBudget(int amount){
         this.budget = amount;
     }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+        if(inventory != null) {
+            inventory.setStore(this);
+        }
+    }
+    
+    //If inventory is null, set it to a new Inventory object
+    @PrePersist
+    public void ensureInventory() {
+        if(this.inventory == null) {
+            this.inventory = new Inventory();
+            this.inventory.setStore(this);
+        }
+    }
+
+
+
 
    
 }
