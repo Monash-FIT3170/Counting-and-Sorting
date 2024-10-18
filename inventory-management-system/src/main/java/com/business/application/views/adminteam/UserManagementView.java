@@ -221,9 +221,11 @@ public class UserManagementView extends VerticalLayout {
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.getStyle().set("cursor", "pointer");
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancelButton.getStyle().set("cursor", "pointer");
 
         formLayout.add(usernameField, nameField, passwordField, roleGroup);
         HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);

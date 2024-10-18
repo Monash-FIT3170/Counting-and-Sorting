@@ -109,9 +109,11 @@ public class StoreView extends VerticalLayout {
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.getStyle().set("cursor", "pointer");
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancelButton.getStyle().set("cursor", "pointer");
 
         formLayout.add(locationField);
         HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
