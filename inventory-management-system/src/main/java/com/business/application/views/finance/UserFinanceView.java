@@ -81,10 +81,10 @@ public class UserFinanceView extends Div {
         HorizontalLayout highlightsLayout = new HorizontalLayout();
         highlightsLayout.setWidthFull();
         highlightsLayout.add(
-                createHighlight("Account Balance", formatCurrency(accountBalance), 56.3),
-                createHighlight("Profit", formatCurrency(profit), 3.9),
-                createHighlight("Total Sales", formatCurrency(totalSales), 8.3),
-                createHighlight("Total Expenses", formatCurrency(totalExpenses), 0.0)
+                createHighlight("ACCOUNT BALANCE", formatCurrency(accountBalance), 56.3),
+                createHighlight("PROFIT", formatCurrency(profit), 3.9),
+                createHighlight("TOTAL SALES", formatCurrency(totalSales), 8.3),
+                createHighlight("TOTAL EXPENSES", formatCurrency(totalExpenses), 0.0)
         );
         highlightsLayout.addClassName("horizontal-scroll");
 

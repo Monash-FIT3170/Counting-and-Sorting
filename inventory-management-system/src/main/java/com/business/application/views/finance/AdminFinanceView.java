@@ -81,9 +81,9 @@ public class AdminFinanceView extends Div {
         overallMetricsLayout.setWidthFull();
         overallMetricsLayout.add(
                 // createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 3.6),
-                createHighlight("Total Revenue", formatCurrency(getTotalRevenue().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 3.6),
-                createHighlight("Total Store Profits", formatCurrency(getTotalProfit()), -2.4),
-                createHighlight("Total Royalty Fees Collected", formatCurrency(getTotalDisbursements()), 3.6)
+                createHighlight("TOTAL RENENUE", formatCurrency(getTotalRevenue().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 3.6),
+                createHighlight("TOTAL STORE PROFITS", formatCurrency(getTotalProfit()), -2.4),
+                createHighlight("TOTAL ROYALTY FEES COLLECTED", formatCurrency(getTotalDisbursements()), 3.6)
         );
         mainLayout.add(overallMetricsLayout);
 
