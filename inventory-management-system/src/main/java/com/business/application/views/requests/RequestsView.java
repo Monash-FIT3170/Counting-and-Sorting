@@ -121,7 +121,6 @@ public class RequestsView extends Div implements AfterNavigationObserver {
 
     private void handleApprove(ShoppingList shoppingList) {
         shoppingList.setStatus("Approved");
-        updateInventory(shoppingList);
         Notification.show("Shopping List " + shoppingList.getListId() + " approved.");
         refreshGrid();
     }
