@@ -65,8 +65,6 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-// TODO: remove unused code
-
 /**
  * The main view is a top-level placeholder for other views.
  */
@@ -111,8 +109,6 @@ public class MainLayout extends AppLayout {
         rightLayout.setAlignItems(Alignment.CENTER);
 
         rightLayout.add(createThemeToggleButton(), createUserMenu());
-        // rightLayout.setSpacing(true);
-        // rightLayout.getStyle().set("padding-right", "40px");
 
         mainLayout.add(leftLayout, rightLayout);
         mainLayout.expand(leftLayout);
@@ -161,17 +157,11 @@ public class MainLayout extends AppLayout {
         themeToggleButton.addClickListener(e -> toggleTheme(themeIcon));
         themeToggleButton.addThemeVariants(ButtonVariant.LUMO_ICON);
         themeToggleButton.addClassName("theme-toggle");
-        // Set button margin to align with user menu
-        // Set button size to be 40 pixels to match the user menu
-        // themeToggleButton.getElement().getStyle().set("width", "40px").set("height",
-        // "40px");
-        // themeToggleButton.getElement().getStyle().set("margin-right", "20px");
 
         return themeToggleButton;
     }
 
     private void addDrawerContent() {
-        // updateLogo(UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK));
         
         SvgIcon logoImage = new SvgIcon("VAADIN/themes/liquor-store/img/logo.svg");
         logoImage.addClassName("logo");
@@ -254,7 +244,6 @@ public class MainLayout extends AppLayout {
                     new SideNavItem("Forecasts", ForecastView.class, VaadinIcon.BAR_CHART_H.create()));
 
         } /* working to connect to new view */
-        /* working to connect to new view */
         if (accessChecker.hasAccess(UserFinanceView.class)) {
             nav.addItem(
                     new SideNavItem("Finance", UserFinanceView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
@@ -350,12 +339,6 @@ public class MainLayout extends AppLayout {
             themeList.add(Lumo.DARK);
             icon.getElement().setAttribute("icon", "vaadin:moon-o");
         }
-        // Immediately reflect the new theme state on the UI without full page refresh
-
-        // UI.getCurrent().getPage().executeJs("document.documentElement.setAttribute('theme',
-        // $0)",
-        // themeList.contains(Lumo.DARK) ? "dark" : "light");
-        // updateLogo(themeList.contains(Lumo.DARK));
     }
 
     @Override

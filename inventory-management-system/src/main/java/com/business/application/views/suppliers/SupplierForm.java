@@ -30,9 +30,6 @@ public class SupplierForm extends Dialog {
     private ComboBox<String> categoryField = new ComboBox<>("Category");
     private Button saveButton = new Button("Save");
 
-    //public class SupplierForm extends Dialog {
-    // ...
-
     public SupplierForm() {
         // Set up the FormLayout
         FormLayout formLayout = new FormLayout();

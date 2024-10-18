@@ -175,7 +175,6 @@ public class StoreLocatorView extends VerticalLayout {
     }
 
     // Method to load Leaflet library and initialize the map with store markers
-    // Method to load Leaflet library and initialize the map with store markers
     private void loadLeafletLibraryAndInitializeMap() {
         // Fetch store data
         List<WebScrapedStore> stores = webscrapedStoreService.getAllWebscrapedStores();
