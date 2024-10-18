@@ -113,9 +113,11 @@ public class ApiKeyManagementView extends VerticalLayout {
                 Notification.show("API Key deleted");
             });
             confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            confirmButton.getStyle().set("cursor", "pointer");
 
             Button cancelButton = new Button("Cancel", event -> confirmationDialog.close());
             cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            cancelButton.getStyle().set("cursor", "pointer");
 
             HorizontalLayout dialogButtons = new HorizontalLayout(confirmButton, cancelButton);
             confirmationDialog.add(dialogButtons);
@@ -210,9 +212,11 @@ public class ApiKeyManagementView extends VerticalLayout {
             }
         });
         generateButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        generateButton.getStyle().set("cursor", "pointer");
 
         Button cancelButton = new Button("Cancel", event -> dialog.close());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancelButton.getStyle().set("cursor", "pointer");
 
         formLayout.add(storeIdField, descriptionField, accessLevelGroup);
         HorizontalLayout buttonsLayout = new HorizontalLayout(generateButton, cancelButton);
