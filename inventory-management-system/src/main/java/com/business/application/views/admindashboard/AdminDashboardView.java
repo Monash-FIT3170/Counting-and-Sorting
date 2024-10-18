@@ -383,17 +383,6 @@ public class AdminDashboardView extends Main {
     VerticalLayout layout_wrapper = new VerticalLayout(layout);
     layout_wrapper.addClassName("rounded-rectangle-wrapper");
 
-    // HorizontalLayout head = createHeader("Low Stock Items", "");
-    // Icon icon = LumoIcon.UNORDERED_LIST.create();
-    // icon.getElement().getThemeList().add("badge pill cir");
-    
-    // head.add(icon);
-    // head.setAlignItems(FlexComponent.Alignment.CENTER);
-    // VerticalLayout layout = new VerticalLayout(head, grid);
-    // layout.addClassName(Padding.LARGE);
-    // layout.setPadding(false);
-    // layout.addClassName("rounded-rectangle");
-
     return layout_wrapper;
     }
 

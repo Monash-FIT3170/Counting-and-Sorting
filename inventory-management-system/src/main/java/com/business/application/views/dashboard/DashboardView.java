@@ -81,8 +81,6 @@ private List<WebScrapedProduct> products;
         BigDecimal totalSales = transactionService.getTotalSalesForStore(storeId);
         BigDecimal profit = transactionService.getProfitForStore(storeId);
 
-        // HorizontalLayout storeInfoLayout = createStoreInfoLayout();
-        // add(storeInfoLayout);
         Optional<User> maybeUser = authenticatedUser.get(); // Assuming authenticatedUser is an Optional<User>
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
@@ -183,63 +181,6 @@ private List<WebScrapedProduct> products;
         
         return layout_wrapper;
     }
-
-    // private Component createShoppingListRequests() {
-    //     // Header
-    //     HorizontalLayout header = createHeader("PENDING SHOPPING LIST REQUESTS", "Approve or Deny Requests");
-
-    //     // Grid
-    //     Grid<ShoppingList> grid = new Grid<>(ShoppingList.class, false);
-    //     grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-    //     grid.setAllRowsVisible(true);
-
-    //     grid.addColumn(ShoppingList::getListId).setHeader("List ID").setSortable(true);
-    //     grid.addColumn(ShoppingList::getName).setHeader("List Name").setSortable(true);
-    //     grid.addColumn(ShoppingList::getDateString).setHeader("Date").setSortable(true);
-
-    //     List<ShoppingList> pendingShoppingLists = getPendingShoppingLists();
-    //     grid.setItems(pendingShoppingLists);
-
-    //     // Add click listener to navigate to requests tab
-    //     grid.addItemClickListener(event -> {
-    //         // Navigate to requests tab
-    //         getUI().ifPresent(ui -> ui.navigate("requests"));
-    //     });
-
-    //     // Add it all together
-    //     VerticalLayout layout = new VerticalLayout(header, grid);
-    //     layout.addClassName(Padding.LARGE);
-    //     layout.setPadding(false);
-    //     layout.setSpacing(false);
-    //     layout.addClassName("rounded-rectangle");
-    //     return layout;
-    // }
-
-    // private List<ShoppingList> getPendingShoppingLists() {
-    //     return ListOfShoppingList.getInstance().getShoppingLists().stream()
-    //         .filter(list -> "Pending".equals(list.getStatus()))
-    //         .collect(Collectors.toList());
-    // }
-
-    // private HorizontalLayout createStoreInfoLayout() {
-    //     // Search bar
-    //     // TextField searchBar = new TextField();
-    //     // searchBar.addClassName("admin-dashboard-view-store-search");
-    //     // searchBar.setPlaceholder("Select Store");
-    //     // searchBar.setSuffixComponent(LumoIcon.SEARCH.create());
-    //     // searchBar.setWidth("300px");
-
-    //     // Layout for store info and search bar
-    //     // HorizontalLayout layout = createHeader("CLAYTON", "");
-    //     // layout.add(searchBar);
-    //     layout.setWidthFull();
-    //     layout.setHeight("50px");
-    //     layout.setAlignItems(FlexComponent.Alignment.CENTER);
-    //     layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-    //     layout.addClassName(Padding.LARGE);
-    //     layout.addClassName("search-top-section");
-    //     return layout;
-    // }
 
     private Component createHighlight(String title, String value, Double percentage) {
         VaadinIcon icon = VaadinIcon.ARROW_UP;
@@ -364,11 +305,7 @@ private List<WebScrapedProduct> products;
         h6.addClassNames(TextColor.SECONDARY);
 
         VerticalLayout layout = new VerticalLayout(h6, chart);
-        // layout.addClassName(Padding.LARGE);
-        // layout.setPadding(false);
         layout.addClassNames("rounded-rectangle", "stock-levels");
-        // layout.setHeight("30%");
-        // layout.setWidth("100%");
 
         VerticalLayout layout_wrapper = new VerticalLayout(layout);
         layout_wrapper.addClassNames("rounded-rectangle-wrapper", "stock-levels-wrapper");
@@ -378,7 +315,6 @@ private List<WebScrapedProduct> products;
 
     private Component createLowStockItemsGrid() {
         Grid<WebScrapedProduct> grid = new Grid<>(WebScrapedProduct.class, false);
-    // <theme-editor-local-classname>
     grid.addClassName("admin-dashboard-view-grid-1");
 
         // Custom renderer for status column
@@ -433,16 +369,6 @@ private List<WebScrapedProduct> products;
     VerticalLayout layout_wrapper = new VerticalLayout(layout);
     layout_wrapper.addClassName("rounded-rectangle-wrapper");
 
-    // HorizontalLayout head = createHeader("Low Stock Items", "");
-    // Icon icon = LumoIcon.UNORDERED_LIST.create();
-    // icon.getElement().getThemeList().add("badge pill cir");
-    
-    // head.add(icon);
-    // head.setAlignItems(FlexComponent.Alignment.CENTER);
-    // VerticalLayout layout = new VerticalLayout(head, grid);
-    // layout.addClassName(Padding.LARGE);
-    // layout.setPadding(false);
-    // layout.addClassName("rounded-rectangle");
 
     return layout_wrapper;
     }

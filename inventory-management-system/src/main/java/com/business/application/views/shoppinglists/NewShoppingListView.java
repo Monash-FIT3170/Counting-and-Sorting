@@ -100,7 +100,6 @@ public class NewShoppingListView extends Div {
         // Create a grid for all the products
         productDataProvider = new ListDataProvider<>(webScrapedProductService.getAllWebscrapedProducts());
         productGrid.setDataProvider(productDataProvider);
-        //productGrid.setColumns("productId", "name", "salePrice", "category", "description");
         productGrid.removeAllColumns();
         productGrid.addColumn(WebScrapedProduct::getName).setHeader("Product Name").setSortable(true);
         productGrid.addColumn(WebScrapedProduct::getPrice).setHeader("Product Sale Price").setSortable(true);

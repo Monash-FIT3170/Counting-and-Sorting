@@ -46,6 +46,7 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -79,7 +80,8 @@ public class AdminFinanceView extends Div {
         HorizontalLayout overallMetricsLayout = new HorizontalLayout();
         overallMetricsLayout.setWidthFull();
         overallMetricsLayout.add(
-                createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 3.6),
+                // createHighlight("Total Revenue", formatCurrency(getTotalRevenue()), 3.6),
+                createHighlight("Total Revenue", formatCurrency(getTotalRevenue().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_EVEN)), 3.6),
                 createHighlight("Total Store Profits", formatCurrency(getTotalProfit()), -2.4),
                 createHighlight("Total Royalty Fees Collected", formatCurrency(getTotalDisbursements()), 3.6)
         );

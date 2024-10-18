@@ -117,17 +117,10 @@ public class ForecastView extends Main {
             // Create Clear Button
             clearBtn.getStyle().set("margin-left", "40px");
 
-
-            // clearBtn.getStyle().set("background-color", "#FF0000"); // Red color
-            // clearBtn.getStyle().set("color", "#FFFFFF"); // White text
-            // clearBtn.getStyle().set("border", "none");
-            // clearBtn.getStyle().set("border-radius", "4px");
-            // clearBtn.getStyle().set("padding", "10px");
             clearBtn.addClickListener(event -> {
                 multiSelectListBox.deselectAll(); // Deselect all items
                 searchBar.clear();
                 updateItemList();
-                // updateChartData(chart.getConfiguration(), new ArrayList<>()); // Clear the chart
             });
 
             HorizontalLayout buttonLayout = new HorizontalLayout(allCategoriesBtn, beerBtn, wineBtn, spiritsBtn, premixBtn, miscBtn, searchBar, clearBtn);
@@ -176,8 +169,6 @@ public class ForecastView extends Main {
             selectLayout.setSpacing(false);
             selectLayout.setAlignItems(FlexComponent.Alignment.START);
             selectLayout.setHeight("70vh"); 
-
-            // selectLayout.getStyle().set("border", "1px solid #e0e0e0");
         
 
             // Chart configuration
